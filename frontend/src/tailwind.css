@@ -6,4 +6,11 @@
 }
 
 @layer components {
+    .btn {
+        @apply px-4 py-2 rounded font-semibold text-sm shadow-sm bg-sky-400 text-white hover:bg-sky-500;
+    }
+
+    .input-field {
+        @apply w-full border-2 border-slate-400 rounded;
+    }
 }

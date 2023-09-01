@@ -6,6 +6,7 @@
 pub mod util;
 
 pub mod app;
+pub mod page;
 
 use cfg_if::cfg_if;
 
@@ -25,4 +26,9 @@ cfg_if! {
 fn main() {
     init_log();
     dioxus_web::launch(app::App)
+}
+
+mod prelude {
+    pub use crate::page;
+    pub use crate::util::{async_handler, sync_handler};
 }
