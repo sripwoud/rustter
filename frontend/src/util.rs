@@ -24,10 +24,9 @@ pub struct ApiResponse {
 #[macro_export]
 macro_rules! maybe_class {
     ($class:expr, $condition:expr) => {
-        if $condition {
-            $class
-        } else {
-            ""
+        match $condition {
+            true => $class,
+            false => "",
         }
     };
 }

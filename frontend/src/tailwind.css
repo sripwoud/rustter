@@ -13,4 +13,12 @@
     .input-field {
         @apply w-full border-2 border-slate-400 rounded;
     }
+
+    .fieldset {
+        @apply p-3 border-2 border-solid rounded border-slate-400;
+    }
+
+    .button-disabled {
+        @apply bg-slate-300 cursor-not-allowed;
+    }
 }
