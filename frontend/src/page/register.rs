@@ -73,6 +73,7 @@ pub fn Register(cx: Scope) -> Element {
     let page_state = use_ref(cx, || page_state);
 
     let username_oninput = sync_handler!([page_state], move |ev: FormEvent| {
+        let username = twitterrs_domain::Username::new(&ev.value);
         page_state.with_mut(|state| state.username.set(ev.value.clone()))
     });
 
