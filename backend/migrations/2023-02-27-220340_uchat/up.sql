@@ -7,7 +7,7 @@
 -- Database creation must be performed outside a multi lined SQL file. 
 -- These commands were put in this file only as a convenience.
 -- 
--- object: uchat | type: DATABASE --
+-- object: rustter | type: DATABASE --
 -- ddl-end --
 
 

@@ -83,7 +83,7 @@ pub fn Register(cx: Scope) -> Element {
     let page_state = use_ref(cx, || page_state);
 
     let username_oninput = sync_handler!([page_state], move |ev: FormEvent| {
-        if let Err(e) = twitterrs_domain::Username::new(&ev.value) {
+        if let Err(e) = rustter_domain::Username::new(&ev.value) {
             page_state.with_mut(|state| state.form_errors.set("bad-username", e.to_string()))
         } else {
             page_state.with_mut(|state| state.form_errors.remove("bad-username"))
@@ -92,7 +92,7 @@ pub fn Register(cx: Scope) -> Element {
     });
 
     let password_oninput = sync_handler!([page_state], move |ev: FormEvent| {
-        if let Err(e) = twitterrs_domain::Password::new(&ev.value) {
+        if let Err(e) = rustter_domain::Password::new(&ev.value) {
             page_state.with_mut(|state| state.form_errors.set("bad-password", e.to_string()))
         } else {
             page_state.with_mut(|state| state.form_errors.remove("bad-password"))

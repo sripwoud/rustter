@@ -1,11 +1,11 @@
-# uChat Project Info
+# rustter Project Info
 
 ## Design
 
 The `design/` directory contains a some design-related files:
 
 | File                              | Purpose                                                                          |
-| --------------------------------- | -------------------------------------------------------------------------------- |
+|-----------------------------------|----------------------------------------------------------------------------------|
 | database.dbm                      | [pgModeler](https://pgmodeler.io/) database modeling file                        |
 | database.svg                      | Visual overview of the database tables exported from `database.dbm`              |
 | mockup.svg                        | Visual sample of how the final application should look                           |
@@ -38,6 +38,12 @@ rustup target add wasm32-unknown-unknown
 This project uses [PostgreSQL](https://www.postgresql.org/) for the database.
 Please follow the [official instructions](https://www.postgresql.org/download/)
 for how to install PostgreSQL on your system.
+
+Linux: you'll especially need to install `libpq-dev` to compile the api server.
+
+```bash
+sudo apt install libpq-dev
+```
 
 ### Trunk
 
@@ -74,8 +80,8 @@ be packaged separately depending on your operating system and package manager
 Create a `.env` file in the workspace directory containing:
 
 ```bash
-DATABASE_URL=postgres://DATABASE_USER:PASSWORD@localhost/uchat
-TEST_DATABASE_URL=postgres://DATABASE_USER:PASSWORD@localhost/uchat_test
+DATABASE_URL=postgres://DATABASE_USER:PASSWORD@localhost/rustter
+TEST_DATABASE_URL=postgres://DATABASE_USER:PASSWORD@localhost/rustter_test
 ```
 
 Substitute these:
@@ -157,7 +163,7 @@ trunk serve --open
 To run the backend server:
 
 ```bash
-cargo run -p uchat_server
+cargo run -p rustter_server
 ```
 
 ### Build for production
@@ -198,5 +204,5 @@ diesel migration redo
 After creating a new migration, delete the testing database using:
 
 ```bash
-psql -d postgres -c 'DROP DATABASE uchat_test;'
+psql -d postgres -c 'DROP DATABASE rustter_test;'
 ```

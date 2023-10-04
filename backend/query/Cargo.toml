@@ -1,5 +1,5 @@
 [package]
-name = "uchat_query"
+name = "rustter_query"
 version = "0.1.0"
 edition = "2021"
 
@@ -23,16 +23,16 @@ uuid = { version = "1.3.0", features = ["v4", "serde"] }
 
 [dependencies.diesel]
 features = [
-  "postgres",
-  "uuid",
-  "chrono",
-  "serde_json",
-  "i-implement-a-third-party-backend-and-opt-into-breaking-changes",
-  "postgres_backend",
+    "postgres",
+    "uuid",
+    "chrono",
+    "serde_json",
+    "i-implement-a-third-party-backend-and-opt-into-breaking-changes",
+    "postgres_backend",
 ]
 version = "=2.0.3"
 default-features = false
 
 [dev-dependencies]
 dotenvy = "0.15.7"
-uchat_crypto = { path = "../crypto" }
+rustter_crypto = { path = "../crypto" }
