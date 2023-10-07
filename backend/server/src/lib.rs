@@ -35,7 +35,7 @@ pub mod cli {
     pub fn load_keys() -> color_eyre::Result<Keys> {
         let private_key = std::env::var("API_PRIVATE_KEY")
             .wrap_err("failed to locate private API key")
-            .suggestion("set API_PRIVATE_KEY environement variable")?;
+            .suggestion("set API_PRIVATE_KEY environment variable")?;
 
         Ok(Keys::from_encoded(private_key)?)
     }
