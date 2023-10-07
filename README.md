@@ -39,12 +39,6 @@ This project uses [PostgreSQL](https://www.postgresql.org/) for the database.
 Please follow the [official instructions](https://www.postgresql.org/download/)
 for how to install PostgreSQL on your system.
 
-Linux: you'll especially need to install `libpq-dev` to compile the api server.
-
-```bash
-sudo apt install libpq-dev
-```
-
 ### Trunk
 
 [Trunk](https://trunkrs.dev/) is a tool to build and bundle Rust WASM
@@ -87,7 +81,7 @@ TEST_DATABASE_URL=postgres://DATABASE_USER:PASSWORD@localhost/rustter_test
 Substitute these:
 
 - `DATABASE_USER`: role created to access PostgreSQL
-- `PASSWORD`: your password to login to the database (omit `:PASSWORD` if
+- `PASSWORD`: your password to log in to the database (omit `:PASSWORD` if
   not using a password)
 
 After the `.env` is ready, run this command to create the database:
@@ -131,7 +125,7 @@ gets updated.
 Check the two different targets (frontend and backend):
 
 ```bash
-cargo check -p frtonend --target wasm32-unknown-unknown
+cargo check -p frontend --target wasm32-unknown-unknown
 cargo check --workspace --exclude frontend
 ```
 
