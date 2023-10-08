@@ -2604,6 +2604,7 @@ dependencies = [
  "rand_core",
  "rustter_cookie",
  "rustter_crypto",
+ "rustter_endpoint",
  "rustter_query",
  "serde",
  "serde_json",

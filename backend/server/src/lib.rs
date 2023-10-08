@@ -1,17 +1,19 @@
 use axum::extract::FromRef;
 use rustter_query::{AsyncConnection, AsyncConnectionPool, QueryError};
 
+pub mod error;
+pub mod extractor;
 pub mod logging;
 pub mod router;
 
 #[derive(FromRef, Clone)]
-pub struct State {
+pub struct AppState {
     pub db_pool: AsyncConnectionPool,
     pub signing_keys: rustter_crypto::sign::Keys,
     pub rng: rand::rngs::StdRng,
 }
 
-impl State {
+impl AppState {
     pub async fn connect(&self) -> Result<AsyncConnection, QueryError> {
         self.db_pool.get().await
     }

@@ -39,4 +39,5 @@ uuid = { version = "1.3.0", features = ["v4", "serde"] }
 
 rustter_cookie = { path = "../../shared/cookie" }
 rustter_crypto = { path = "../crypto" }
+rustter_endpoint = { path = "../../shared/endpoint"}
 rustter_query = { path = "../query" }

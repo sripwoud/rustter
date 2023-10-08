@@ -1,18 +1,18 @@
-use serde::{Deserialize, Serialize};
-use rustter_domain::{ids::*, Password, Username};
 use crate::Endpoint;
+use rustter_domain::{ids::*, Password, Username};
+use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Deserialize, Serialize)]
 pub struct CreateUser {
     pub username: Username,
-    pub password: Password
+    pub password: Password,
 }
 impl Endpoint for CreateUser {
-    const URL:&'static str = "/account/create";
+    const URL: &'static str = "/account/create";
 }
 
 #[derive(Clone, Deserialize, Serialize)]
-pub struct CreateUserOk{
-    pub user_id:UserId,
-    pub username: Username
+pub struct CreateUserOk {
+    pub user_id: UserId,
+    pub username: Username,
 }

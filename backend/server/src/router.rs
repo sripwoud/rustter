@@ -1,4 +1,4 @@
-use crate::State;
+use crate::AppState;
 use axum::http::HeaderValue;
 use axum::routing::get;
 use axum::{Extension, Router};
@@ -10,7 +10,7 @@ use tower_http::trace::{DefaultMakeSpan, DefaultOnRequest, DefaultOnResponse, Tr
 use tower_http::LatencyUnit;
 use tracing::Level;
 
-pub fn new_router(state: State) -> axum::Router {
+pub fn new_router(state: AppState) -> axum::Router {
     let public_routes = Router::new().route("/", get(move || async { "this is the root route" }));
     let authorized_routes = Router::new();
 

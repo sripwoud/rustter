@@ -71,7 +71,7 @@ async fn run() -> Result<()> {
         .with_suggestion(|| "ensure correct database access rights")
         .with_suggestion(|| "ensure database exists")?;
 
-    let state = rustter_server::State {
+    let state = rustter_server::AppState {
         db_pool,
         signing_keys,
         rng: rustter_crypto::new_rng(),
