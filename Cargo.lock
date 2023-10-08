@@ -2567,6 +2567,7 @@ dependencies = [
  "password-hash",
  "r2d2",
  "rustter_crypto",
+ "rustter_domain",
  "serde",
  "serde_json",
  "thiserror",

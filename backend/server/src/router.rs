@@ -1,10 +1,49 @@
 use crate::State;
+use axum::http::HeaderValue;
 use axum::routing::get;
-use axum::Router;
+use axum::{Extension, Router};
+use hyper::header::CONTENT_TYPE;
+use hyper::Method;
+use tower::ServiceBuilder;
+use tower_http::cors::CorsLayer;
+use tower_http::trace::{DefaultMakeSpan, DefaultOnRequest, DefaultOnResponse, TraceLayer};
+use tower_http::LatencyUnit;
+use tracing::Level;
 
 pub fn new_router(state: State) -> axum::Router {
     let public_routes = Router::new().route("/", get(move || async { "this is the root route" }));
     let authorized_routes = Router::new();
 
-    Router::new().merge(public_routes).merge(authorized_routes)
+    // using layer(ServiceBuilder::new().layer()) execute layers in same order as they are defined
+    // instead of layer().layer().layer() which doesn't
+    Router::new()
+        .merge(public_routes)
+        .merge(authorized_routes)
+        .layer(
+            ServiceBuilder::new()
+                .layer(
+                    TraceLayer::new_for_http()
+                        .make_span_with(DefaultMakeSpan::new().include_headers(true))
+                        .on_request(DefaultOnRequest::new().level(Level::INFO))
+                        .on_response(
+                            DefaultOnResponse::new()
+                                .level(Level::INFO)
+                                .latency_unit(LatencyUnit::Micros),
+                        ),
+                )
+                .layer(
+                    CorsLayer::new()
+                        .allow_methods([Method::GET, Method::POST, Method::OPTIONS])
+                        .allow_credentials(true)
+                        .allow_origin(
+                            std::env::var("FRONTEND_URL")
+                                .unwrap()
+                                .parse::<HeaderValue>()
+                                .unwrap(),
+                        )
+                        .allow_headers([CONTENT_TYPE]),
+                )
+                .layer(Extension(state.clone())), // for layers
+        )
+        .with_state(state) // for handlers
 }
