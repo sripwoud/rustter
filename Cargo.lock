@@ -1128,6 +1128,7 @@ dependencies = [
  "reqwest",
  "rustter_cookie",
  "rustter_domain",
+ "rustter_endpoint",
  "serde",
  "serde_json",
  "thiserror",

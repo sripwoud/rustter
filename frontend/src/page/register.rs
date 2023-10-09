@@ -1,8 +1,9 @@
 #![allow(non_snake_case)]
 
 use crate::elements::{KeyedNotifications, KeyedNotificationsBox};
-use crate::maybe_class;
 use crate::prelude::*;
+use crate::util::ApiClient;
+use crate::{fetch_json, maybe_class};
 use dioxus::prelude::*;
 
 pub struct PageState {
@@ -79,8 +80,27 @@ pub fn PasswordInput<'a>(
 }
 
 pub fn Register(cx: Scope) -> Element {
+    let api_client = ApiClient::global();
     let page_state = PageState::new(cx);
     let page_state = use_ref(cx, || page_state);
+
+    let form_onsubmit = async_handler!(&cx, [api_client, page_state], move |_| async move {
+        use rustter_endpoint::user::endpoint::{CreateUser, CreateUserOk};
+        let request_data = {
+            use rustter_domain::{Password, Username};
+            CreateUser {
+                username: Username::new(page_state.with(|state| state.username.current().to_string()))
+                    .unwrap(),
+                password: Password::new(page_state.with(|state| state.password.current().to_string()))
+                    .unwrap(),
+            }
+        };
+        let response = fetch_json!(<CreateUserOk>, api_client, request_data);
+        match response {
+            Ok(res) => (),
+            Err(e) => (),
+        }
+    });
 
     let username_oninput = sync_handler!([page_state], move |ev: FormEvent| {
         if let Err(e) = rustter_domain::Username::new(&ev.value) {
@@ -115,7 +135,7 @@ pub fn Register(cx: Scope) -> Element {
         form {
             class: "flex flex-col gap-5 m-5",
             prevent_default: "onsubmit",
-            onsubmit: move |_| {},
+            onsubmit: form_onsubmit,
             UsernameInput {
                 state: page_state.with(|state|state.username.clone()),
                 oninput:username_oninput
