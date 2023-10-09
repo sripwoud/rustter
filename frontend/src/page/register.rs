@@ -5,6 +5,7 @@ use crate::prelude::*;
 use crate::util::ApiClient;
 use crate::{fetch_json, maybe_class};
 use dioxus::prelude::*;
+use rustter_domain::UserFacingError;
 
 pub struct PageState {
     username: UseState<String>,
@@ -104,7 +105,7 @@ pub fn Register(cx: Scope) -> Element {
 
     let username_oninput = sync_handler!([page_state], move |ev: FormEvent| {
         if let Err(e) = rustter_domain::Username::new(&ev.value) {
-            page_state.with_mut(|state| state.form_errors.set("bad-username", e.to_string()))
+            page_state.with_mut(|state| state.form_errors.set("bad-username", e.formatted_error()))
         } else {
             page_state.with_mut(|state| state.form_errors.remove("bad-username"))
         }
@@ -113,7 +114,7 @@ pub fn Register(cx: Scope) -> Element {
 
     let password_oninput = sync_handler!([page_state], move |ev: FormEvent| {
         if let Err(e) = rustter_domain::Password::new(&ev.value) {
-            page_state.with_mut(|state| state.form_errors.set("bad-password", e.to_string()))
+            page_state.with_mut(|state| state.form_errors.set("bad-password", e.formatted_error()))
         } else {
             page_state.with_mut(|state| state.form_errors.remove("bad-password"))
         }
