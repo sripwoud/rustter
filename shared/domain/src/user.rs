@@ -20,6 +20,7 @@ impl UserFacingError for UsernameError {
 pub struct Password(String);
 
 impl UserFacingError for PasswordError {
+    // TODO: consider changing result type to have a dynamic error (that would e.g. display length of current pwd)
     fn formatted_error(&self) -> &'static str {
         match self {
             PasswordError::TooShort => "Password is too short (min 8 characters)"
