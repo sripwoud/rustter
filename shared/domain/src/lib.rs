@@ -8,5 +8,5 @@ pub mod user;
 pub use user::{Password, Username};
 
 pub trait UserFacingError {
-    fn formatted_error(&self) ->&'static str;
+    fn formatted_error(&self) -> &'static str;
 }

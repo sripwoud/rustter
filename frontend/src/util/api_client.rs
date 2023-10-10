@@ -116,9 +116,7 @@ macro_rules! fetch_json {
         use rustter_endpoint::Endpoint;
         use $crate::util::RequestError;
         let duration = std::time::Duration::from_millis(6000);
-        let response = $client
-            .post_json($request.url(), &$request, duration)
-            .await;
+        let response = $client.post_json($request.url(), &$request, duration).await;
         match response {
             Ok(res) => {
                 if res.status().is_success() {

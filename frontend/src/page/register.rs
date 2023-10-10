@@ -90,10 +90,14 @@ pub fn Register(cx: Scope) -> Element {
         let request_data = {
             use rustter_domain::{Password, Username};
             CreateUser {
-                username: Username::new(page_state.with(|state| state.username.current().to_string()))
-                    .unwrap(),
-                password: Password::new(page_state.with(|state| state.password.current().to_string()))
-                    .unwrap(),
+                username: Username::new(
+                    page_state.with(|state| state.username.current().to_string()),
+                )
+                .unwrap(),
+                password: Password::new(
+                    page_state.with(|state| state.password.current().to_string()),
+                )
+                .unwrap(),
             }
         };
         let response = fetch_json!(<CreateUserOk>, api_client, request_data);

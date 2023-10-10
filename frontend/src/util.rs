@@ -15,7 +15,7 @@ pub enum RequestError {
     Timeout,
 
     #[error("bad request: {0}")]
-    BadRequest(#[from] rustter_endpoint::RequestFailed)
+    BadRequest(#[from] rustter_endpoint::RequestFailed),
 }
 
 #[derive(Clone, Deserialize, PartialEq)]

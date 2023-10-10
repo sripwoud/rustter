@@ -1,6 +1,6 @@
-use std::str::ParseBoolError;
-use nutype::nutype;
 use crate::UserFacingError;
+use nutype::nutype;
+use std::str::ParseBoolError;
 
 #[nutype(validate(min_len = 3, max_len = 30))]
 #[derive(AsRef, Clone, Debug, Deserialize, PartialEq, Serialize)]
@@ -23,7 +23,7 @@ impl UserFacingError for PasswordError {
     // TODO: consider changing result type to have a dynamic error (that would e.g. display length of current pwd)
     fn formatted_error(&self) -> &'static str {
         match self {
-            PasswordError::TooShort => "Password is too short (min 8 characters)"
+            PasswordError::TooShort => "Password is too short (min 8 characters)",
         }
     }
 }
