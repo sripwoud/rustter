@@ -4,7 +4,7 @@ use crate::handler::PublicApiRequest;
 use crate::AppState;
 use axum::http::StatusCode;
 use axum::{async_trait, Json};
-use rustter_endpoint::user::endpoint::{CreateUser, CreateUserOk};
+use rustter_endpoint::{CreateUser, CreateUserOk, Login, LoginOk};
 use tracing::info;
 
 #[async_trait]
@@ -26,6 +26,32 @@ impl PublicApiRequest for CreateUser {
             Json(CreateUserOk {
                 user_id,
                 username: self.username,
+            }),
+        ))
+    }
+}
+
+#[async_trait]
+impl PublicApiRequest for Login {
+    type Response = (StatusCode, Json<LoginOk>);
+
+    async fn process_request(
+        self,
+        DbConnection(mut conn): DbConnection,
+        state: AppState,
+    ) -> ApiResult<Self::Response> {
+        // info!(username = self.username.as_ref(), "user logged in");
+
+        Ok((
+            StatusCode::FOUND,
+            Json(LoginOk {
+                session_signature: "".to_string(),
+                session_id: Default::default(),
+                session_expires: Default::default(),
+                display_name: None,
+                email: None,
+                profile_image: None,
+                user_id: Default::default(),
             }),
         ))
     }
