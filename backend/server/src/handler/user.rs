@@ -4,8 +4,10 @@ use crate::handler::PublicApiRequest;
 use crate::AppState;
 use axum::http::StatusCode;
 use axum::{async_trait, Json};
+use chrono::Duration;
 use rustter_endpoint::{CreateUser, CreateUserOk, Login, LoginOk};
-use tracing::info;
+use rustter_query::session::Session;
+use tracing::{info, span};
 
 #[async_trait]
 impl PublicApiRequest for CreateUser {
@@ -40,18 +42,41 @@ impl PublicApiRequest for Login {
         DbConnection(mut conn): DbConnection,
         state: AppState,
     ) -> ApiResult<Self::Response> {
-        // info!(username = self.username.as_ref(), "user logged in");
+        let _span = span!(
+            tracing::Level::INFO, "logging in",
+        user = %self.username.as_ref())
+        .entered();
+
+        let password_hash = rustter_query::user::get_password_hash(&mut conn, &self.username)?;
+        let password_hash = rustter_crypto::password::deserialize_hash(&password_hash)?;
+        rustter_crypto::verify_password(self.password, &password_hash)?;
+
+        let user = rustter_query::user::find(&mut conn, &self.username)?;
+
+        // new session
+        let (session, signature) = {
+            let fingerprint = serde_json::json!({});
+            // TODO extract in Session::new()?
+            let duration = Duration::weeks(3);
+            let session = Session::new(user.id, fingerprint.into(), duration);
+
+            let mut rng = state.rng.clone();
+            let signature = state.signing_keys.sign(&mut rng, session.id.as_uuid().as_bytes());
+            let signature = rustter_crypto::encode_base64(signature);
+            (session, signature)
+        };
 
         Ok((
             StatusCode::FOUND,
             Json(LoginOk {
-                session_signature: "".to_string(),
-                session_id: Default::default(),
-                session_expires: Default::default(),
-                display_name: None,
-                email: None,
+                session_signature: signature.to_string(),
+                session_id: session.id,
+                session_expires: session.expires_at,
+
+                display_name: user.display_name,
+                email: user.email,
                 profile_image: None,
-                user_id: Default::default(),
+                user_id: user.id,
             }),
         ))
     }

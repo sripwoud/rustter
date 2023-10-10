@@ -22,8 +22,8 @@ pub struct CreateUserOk {
 
 #[derive(Clone, Deserialize, Serialize)]
 pub struct Login {
-    username: Username,
-    password: Password,
+    pub username: Username,
+    pub password: Password,
 }
 
 impl Endpoint for Login {
