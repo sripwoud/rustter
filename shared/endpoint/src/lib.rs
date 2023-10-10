@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 pub mod user;
+pub use user::endpoint::{CreateUser, CreateUserOk, Login, LoginOk};
 
 pub trait Endpoint {
     const URL: &'static str;
