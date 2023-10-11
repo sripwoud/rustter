@@ -22,8 +22,10 @@ macro_rules! new_id {
             pub fn as_uuid(&self) -> &Uuid {
                 &self.0
             }
+        }
 
-            pub fn to_string(&self) -> String {
+        impl Into<String> for $name {
+            fn into(self) -> String {
                 self.0.to_string()
             }
         }

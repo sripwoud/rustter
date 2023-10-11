@@ -61,15 +61,17 @@ impl PublicApiRequest for Login {
             let session = Session::new(user.id, fingerprint.into(), duration);
 
             let mut rng = state.rng.clone();
-            let signature = state.signing_keys.sign(&mut rng, session.id.as_uuid().as_bytes());
+            let signature = state
+                .signing_keys
+                .sign(&mut rng, session.id.as_uuid().as_bytes());
             let signature = rustter_crypto::encode_base64(signature);
             (session, signature)
         };
 
         Ok((
-            StatusCode::FOUND,
+            StatusCode::OK,
             Json(LoginOk {
-                session_signature: signature.to_string(),
+                session_signature: signature,
                 session_id: session.id,
                 session_expires: session.expires_at,
 

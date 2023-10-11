@@ -5,6 +5,7 @@ use crate::prelude::*;
 use crate::util::ApiClient;
 use crate::{fetch_json, maybe_class};
 use dioxus::prelude::*;
+use log::info;
 use rustter_domain::UserFacingError;
 
 pub struct PageState {
@@ -86,8 +87,30 @@ pub fn Login(cx: Scope) -> Element {
     let page_state = use_ref(cx, || page_state);
 
     let form_onsubmit = async_handler!(&cx, [api_client, page_state], move |_| async move {
-        // TODO
         use rustter_endpoint::user::endpoint::{Login, LoginOk};
+        let request_data = {
+            use rustter_domain::{Password, Username};
+            Login {
+                username: Username::new(
+                    page_state.with(|state| state.username.current().to_string()),
+                )
+                .unwrap(),
+                password: Password::new(
+                    page_state.with(|state| state.password.current().to_string()),
+                )
+                .unwrap(),
+            }
+        };
+
+        info!(target: "rustter_frontend", "form submitted");
+        let response = fetch_json!(<LoginOk>, api_client, request_data);
+        info!(target: "rustter_frontend", "response fetched");
+        match response {
+            Ok(res) => {
+                crate::util::cookie::set_session(res.session_id, res.session_signature, res.session_expires);
+            }
+            Err(e) => {}
+        }
     });
 
     let username_oninput = sync_handler!([page_state], move |ev: FormEvent| {

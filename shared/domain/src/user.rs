@@ -1,6 +1,5 @@
 use crate::UserFacingError;
 use nutype::nutype;
-use std::str::ParseBoolError;
 
 #[nutype(validate(min_len = 3, max_len = 30))]
 #[derive(AsRef, Clone, Debug, Deserialize, PartialEq, Serialize)]
