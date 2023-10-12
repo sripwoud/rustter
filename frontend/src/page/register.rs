@@ -4,7 +4,6 @@ use crate::elements::{KeyedNotifications, KeyedNotificationsBox};
 use crate::prelude::*;
 use crate::util::ApiClient;
 use crate::{fetch_json, maybe_class};
-use dioxus::prelude::*;
 use rustter_domain::UserFacingError;
 
 pub struct PageState {
