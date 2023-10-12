@@ -136,10 +136,8 @@ pub fn Register(cx: Scope) -> Element {
     // };
 
     cx.render(rsx! {
-        form {
+        div {
             class: "flex flex-col gap-5 m-5",
-            prevent_default: "onsubmit",
-            onsubmit: form_onsubmit,
             UsernameInput {
                 state: page_state.with(|state|state.username.clone()),
                 oninput:username_oninput
@@ -157,7 +155,7 @@ pub fn Register(cx: Scope) -> Element {
 
             button {
                 class: "btn  {submit_button_style}",
-                r#type:"submit",
+                onclick: form_onsubmit,
                 disabled: !page_state.with(|state|state.can_submit()),
                 "Signup"
             }

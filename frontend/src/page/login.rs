@@ -102,9 +102,7 @@ pub fn Login(cx: Scope) -> Element {
             }
         };
 
-        info!(target: "rustter_frontend", "form submitted");
         let response = fetch_json!(<LoginOk>, api_client, request_data);
-        info!(target: "rustter_frontend", "response fetched");
         match response {
             Ok(res) => {
                 crate::util::cookie::set_session(
@@ -147,10 +145,8 @@ pub fn Login(cx: Scope) -> Element {
     // };
 
     cx.render(rsx! {
-        form {
+        div {
             class: "flex flex-col gap-5 m-5",
-            prevent_default: "onsubmit",
-            onsubmit: form_onsubmit,
             UsernameInput {
                 state: page_state.with(|state|state.username.clone()),
                 oninput:username_oninput
@@ -168,7 +164,7 @@ pub fn Login(cx: Scope) -> Element {
 
             button {
                 class: "btn  {submit_button_style}",
-                r#type:"submit",
+                onclick: form_onsubmit,
                 disabled: !page_state.with(|state|state.can_submit()),
                 "Login"
             }
