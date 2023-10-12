@@ -9,21 +9,27 @@ use rustter_endpoint::{CreateUser, CreateUserOk, Login, LoginOk};
 use rustter_query::session::Session;
 use tracing::{info, span};
 use rustter_domain::ids::UserId;
+use rustter_query::{AsyncConnection, session};
+
+#[derive(Clone)]
+struct SessionSignature(String);
 
 fn new_session(state: &AppState,
-               user_id: UserId) -> (Session, String) {
+               conn: &mut AsyncConnection,
+               user_id: UserId) -> ApiResult<(Session, SessionSignature)> {
 
         let fingerprint = serde_json::json!({});
         // TODO extract in Session::new()?
         let duration = Duration::weeks(3);
-        let session = Session::new(user_id, fingerprint.into(), duration);
+        let session = session::new(conn, user_id, duration, fingerprint.into())?;
 
         let mut rng = state.rng.clone();
         let signature = state
             .signing_keys
             .sign(&mut rng, session.id.as_uuid().as_bytes());
         let signature = rustter_crypto::encode_base64(signature);
-        (session, signature)
+
+        Ok((session, SessionSignature(signature)))
 }
 
 #[async_trait]
@@ -40,12 +46,12 @@ impl PublicApiRequest for CreateUser {
 
         info!(username = self.username.as_ref(), "new user created");
 
-        let (session,signature) = new_session(&state,  user_id);
+        let (session,signature) = new_session(&state,  &mut conn, user_id)?;
 
         Ok((
             StatusCode::CREATED,
             Json(CreateUserOk {
-                session_signature: signature,
+                session_signature: signature.0,
                 session_id: session.id,
                 session_expires: session.expires_at,
 
@@ -76,12 +82,12 @@ impl PublicApiRequest for Login {
 
         let user = rustter_query::user::find(&mut conn, &self.username)?;
 
-        let (session,signature) = new_session(&state,  user.id);
+        let (session,signature) = new_session(&state,  &mut conn, user.id)?;
 
         Ok((
             StatusCode::OK,
             Json(LoginOk {
-                session_signature: signature,
+                session_signature: signature.0,
                 session_id: session.id,
                 session_expires: session.expires_at,
 
