@@ -1,9 +1,9 @@
 #![allow(non_snake_case)]
 
 use crate::elements::{KeyedNotifications, KeyedNotificationsBox};
-use crate::prelude::*;
+use crate::{fetch_json, maybe_class, prelude::*};
+use dioxus::prelude::*;
 use crate::util::ApiClient;
-use crate::{fetch_json, maybe_class};
 use rustter_domain::UserFacingError;
 
 pub struct PageState {

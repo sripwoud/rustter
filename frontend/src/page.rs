@@ -1,14 +1,14 @@
 #![allow(non_snake_case)]
-use crate::prelude::*;
+
+use dioxus_router::prelude::*;
+use dioxus::prelude::*;
 
 pub mod home;
-use home::Home;
 pub mod login;
 use login::Login;
 pub mod register;
 use register::Register;
 pub mod not_found;
-use not_found::PageNotFound;
 
 
 
