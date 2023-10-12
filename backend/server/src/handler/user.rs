@@ -8,6 +8,23 @@ use chrono::Duration;
 use rustter_endpoint::{CreateUser, CreateUserOk, Login, LoginOk};
 use rustter_query::session::Session;
 use tracing::{info, span};
+use rustter_domain::ids::UserId;
+
+fn new_session(state: &AppState,
+               user_id: UserId) -> (Session, String) {
+
+        let fingerprint = serde_json::json!({});
+        // TODO extract in Session::new()?
+        let duration = Duration::weeks(3);
+        let session = Session::new(user_id, fingerprint.into(), duration);
+
+        let mut rng = state.rng.clone();
+        let signature = state
+            .signing_keys
+            .sign(&mut rng, session.id.as_uuid().as_bytes());
+        let signature = rustter_crypto::encode_base64(signature);
+        (session, signature)
+}
 
 #[async_trait]
 impl PublicApiRequest for CreateUser {
@@ -23,9 +40,15 @@ impl PublicApiRequest for CreateUser {
 
         info!(username = self.username.as_ref(), "new user created");
 
+        let (session,signature) = new_session(&state,  user_id);
+
         Ok((
             StatusCode::CREATED,
             Json(CreateUserOk {
+                session_signature: signature,
+                session_id: session.id,
+                session_expires: session.expires_at,
+
                 user_id,
                 username: self.username,
             }),
@@ -53,20 +76,7 @@ impl PublicApiRequest for Login {
 
         let user = rustter_query::user::find(&mut conn, &self.username)?;
 
-        // new session
-        let (session, signature) = {
-            let fingerprint = serde_json::json!({});
-            // TODO extract in Session::new()?
-            let duration = Duration::weeks(3);
-            let session = Session::new(user.id, fingerprint.into(), duration);
-
-            let mut rng = state.rng.clone();
-            let signature = state
-                .signing_keys
-                .sign(&mut rng, session.id.as_uuid().as_bytes());
-            let signature = rustter_crypto::encode_base64(signature);
-            (session, signature)
-        };
+        let (session,signature) = new_session(&state,  user.id);
 
         Ok((
             StatusCode::OK,

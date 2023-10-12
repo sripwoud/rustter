@@ -41,3 +41,4 @@ rustter_cookie = { path = "../../shared/cookie" }
 rustter_crypto = { path = "../crypto" }
 rustter_endpoint = { path = "../../shared/endpoint"}
 rustter_query = { path = "../query" }
+rustter_domain = { version = "0.1.0", path = "../../shared/domain", features = ["query"] }
