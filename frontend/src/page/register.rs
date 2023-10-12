@@ -4,7 +4,9 @@ use crate::elements::{KeyedNotifications, KeyedNotificationsBox};
 use crate::util::ApiClient;
 use crate::{fetch_json, maybe_class, prelude::*};
 use dioxus::prelude::*;
+use dioxus_router::prelude::*;
 use rustter_domain::UserFacingError;
+use crate::page::Route;
 
 pub struct PageState {
     username: UseState<String>,
@@ -83,8 +85,9 @@ pub fn Register(cx: Scope) -> Element {
     let api_client = ApiClient::global();
     let page_state = PageState::new(cx);
     let page_state = use_ref(cx, || page_state);
+    let nav = use_navigator(cx);
 
-    let form_onsubmit = async_handler!(&cx, [api_client, page_state], move |_| async move {
+    let form_onsubmit = async_handler!(&cx, [api_client, page_state, nav], move |_| async move {
         use rustter_endpoint::user::endpoint::{CreateUser, CreateUserOk};
         let request_data = {
             use rustter_domain::{Password, Username};
@@ -101,7 +104,9 @@ pub fn Register(cx: Scope) -> Element {
         };
         let response = fetch_json!(<CreateUserOk>, api_client, request_data);
         match response {
-            Ok(res) => (),
+            Ok(res) => {
+                nav.push(Route::Home {});
+            },
             Err(e) => (),
         }
     });
