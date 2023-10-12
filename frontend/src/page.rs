@@ -1,7 +1,7 @@
 #![allow(non_snake_case)]
 
-use dioxus_router::prelude::*;
 use dioxus::prelude::*;
+use dioxus_router::prelude::*;
 
 pub mod home;
 pub mod login;
@@ -9,8 +9,6 @@ use login::Login;
 pub mod register;
 use register::Register;
 pub mod not_found;
-
-
 
 /// An enum of all of the possible routes in the app.
 // #[derive(Routable, Clone)]

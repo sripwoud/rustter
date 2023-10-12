@@ -1,13 +1,13 @@
 #![allow(dead_code)]
 
-use std::fmt::{Debug, Display};
 use super::document;
 use chrono::{DateTime, Duration, Utc};
+use log::info;
 use rustter_cookie::CookieKey;
 use rustter_domain::ids;
 use rustter_domain::ids::SessionId;
+use std::fmt::{Debug, Display};
 use std::str::FromStr;
-use log::info;
 
 pub fn get_session() -> Option<ids::SessionId> {
     let cookies = document().cookie().unwrap();
@@ -58,9 +58,9 @@ fn format_expiration(expires: DateTime<Utc>) -> String {
 }
 
 fn format_kv<K, V>(key: K, value: V) -> String
-    where
-        K: AsRef<str>,
-        V: AsRef<str>,
+where
+    K: AsRef<str>,
+    V: AsRef<str>,
 {
     let key = key.as_ref();
     let value = value.as_ref();

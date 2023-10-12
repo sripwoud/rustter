@@ -107,7 +107,11 @@ pub fn Login(cx: Scope) -> Element {
         info!(target: "rustter_frontend", "response fetched");
         match response {
             Ok(res) => {
-                crate::util::cookie::set_session(res.session_id, res.session_signature, res.session_expires);
+                crate::util::cookie::set_session(
+                    res.session_id,
+                    res.session_signature,
+                    res.session_expires,
+                );
             }
             Err(e) => {}
         }
