@@ -51,12 +51,11 @@ db-migrate:
     diesel migration run
     # test migration
     diesel migration redo
-    psql -d postgres -c 'DROP DATABASE rustter_test;'
 
 # reset the database
 db-reset:
     diesel database reset
-    psql -d postgres -c 'DROP DATABASE rustter_test;' || true
+    diesel database reset --database-url $TEST_DATABASE_URL
 
 # create a new database migration
 db-new-migration NAME:
