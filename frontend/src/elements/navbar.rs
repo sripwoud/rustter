@@ -20,11 +20,11 @@ pub fn NavButton<'a>(cx: Scope<'a, NavButtonProps<'a>>) -> Element {
     let selected_bgcolor = maybe_class!("bg-slate-500", matches!(cx.props.highlight, Some(true)));
 
     cx.render(rsx! {
-        Link {
-            to: cx.props.to.clone(),
             button {
                 class: "cursor-pointer flex flex-col items-center justify-center h-full {selected_bgcolor}",
                 onclick: move |ev| cx.props.onclick.call(ev),
+        Link {
+            to: cx.props.to.clone(),
                 img {
                     class: "invert",
                     src: cx.props.img,
@@ -35,8 +35,8 @@ pub fn NavButton<'a>(cx: Scope<'a, NavButtonProps<'a>>) -> Element {
                     class: "text-sm text-white",
                     cx.props.label
                 },
-                &cx.props.children
             }
+                &cx.props.children
         }
     })
 }
