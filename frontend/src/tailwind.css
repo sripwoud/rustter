@@ -5,7 +5,7 @@
 :root {
     --navbar-height: 3.8rem;
     --content-min-width: 300px;
-    --content-min-width: 300px;
+    --content-max-width: 600x;
 }
 
 @layer components {
