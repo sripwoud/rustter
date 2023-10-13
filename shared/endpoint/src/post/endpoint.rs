@@ -1,6 +1,5 @@
 use super::types::Content;
 use crate::post::types::NewPostOptions;
-use crate::Endpoint;
 use rustter_domain::ids::PostId;
 use serde::{Deserialize, Serialize};
 
@@ -8,10 +7,6 @@ use serde::{Deserialize, Serialize};
 pub struct NewPost {
     pub content: Content,
     pub options: NewPostOptions,
-}
-
-impl Endpoint for NewPost {
-    const URL: &'static str = "/post/new";
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
