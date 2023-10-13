@@ -1,12 +1,12 @@
 #![allow(non_snake_case)]
 
 use crate::elements::{KeyedNotifications, KeyedNotificationsBox};
+use crate::page::Route;
 use crate::util::ApiClient;
 use crate::{fetch_json, maybe_class, prelude::*};
 use dioxus::prelude::*;
 use dioxus_router::prelude::*;
 use rustter_domain::UserFacingError;
-use crate::page::Route;
 
 pub struct PageState {
     username: UseState<String>,
@@ -105,13 +105,13 @@ pub fn Register(cx: Scope) -> Element {
         let response = fetch_json!(<CreateUserOk>, api_client, request_data);
         match response {
             Ok(res) => {
-                 crate::util::cookie::set_session(
+                crate::util::cookie::set_session(
                     res.session_id,
                     res.session_signature,
                     res.session_expires,
                 );
                 nav.push(Route::Home {});
-            },
+            }
             Err(e) => (),
         }
     });

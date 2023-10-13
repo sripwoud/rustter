@@ -3,22 +3,33 @@
 @tailwind utilities;
 
 :root {
+    --navbar-height: 3.8rem;
+    --content-min-width: 300px;
+    --content-max-width: 600x;
 }
 
 @layer components {
     .btn {
-        @apply px-4 py-2 rounded font-semibold text-sm shadow-sm bg-sky-400 text-white hover:bg-sky-500;
+        @apply px-4 py-2 rounded font-semibold text-sm shadow-sm bg-violet-400 text-white hover:bg-violet-500;
     }
 
     .input-field {
-        @apply w-full border-2 border-slate-400 rounded;
+        @apply w-full border-2 border-violet-400 rounded;
     }
 
     .fieldset {
-        @apply p-3 border-2 border-solid rounded border-slate-400;
+        @apply p-3 border-2 border-solid rounded border-violet-400;
     }
 
     .button-disabled {
-        @apply bg-slate-300 cursor-not-allowed;
+        @apply bg-violet-300 cursor-not-allowed;
+    }
+
+    .navbar-bg-color {
+        @apply bg-indigo-600;
+    }
+
+    .navbar-border-color {
+        @apply border-indigo-300;
     }
 }
