@@ -1,19 +1,21 @@
 use chrono::{DateTime, Utc};
-use serde::{Deserialize, Serialize};
 use rustter_domain::ids::{PostId, UserId};
 use rustter_domain::post::{Headline, Message};
+use serde::{Deserialize, Serialize};
 
+#[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
 pub enum PostType {
     Chat(Chat),
     Image(Image),
-    // Poll(Poll),
+    Poll(Poll),
 }
 
+#[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
 pub struct NewPostOptions {
     pub reply_to: Option<PostId>,
     /// TODO: no interface for this yet
-    pub direct_message_to:Option<UserId>,
-    pub time_posted: DateTime<Utc>
+    pub direct_message_to: Option<UserId>,
+    pub time_posted: DateTime<Utc>,
 }
 
 impl Default for NewPostOptions {
@@ -21,7 +23,7 @@ impl Default for NewPostOptions {
         Self {
             reply_to: None,
             direct_message_to: None,
-            time_posted: Utc::now()
+            time_posted: Utc::now(),
         }
     }
 }
@@ -49,7 +51,6 @@ impl From<Image> for PostType {
         Self::Image(image)
     }
 }
-
 
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
 pub struct Poll {

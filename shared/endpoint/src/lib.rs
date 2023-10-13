@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 
-pub mod user;
 pub mod post;
+pub mod user;
 
 pub use user::endpoint::{CreateUser, CreateUserOk, Login, LoginOk};
 

@@ -1,5 +1,5 @@
-use nutype::nutype;
 use crate::UserFacingError;
+use nutype::nutype;
 
 #[nutype(validate(min_len = 1, max_len = 30))]
 #[derive(AsRef, Clone, Debug, Deserialize, PartialEq, Serialize)]
@@ -26,6 +26,3 @@ impl UserFacingError for MessageError {
         }
     }
 }
-
-#[derive(Clone, Debug)]
-pub struct Post(PostType);
