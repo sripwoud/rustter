@@ -32,8 +32,9 @@ format:
 doc *ARGS:
     cargo doc -F docbuild {{ ARGS }}
 
-# run frontend devserver. use --open to open a new browser
+# run frontend dev server. use --open to open a new browser
 serve-frontend *ARGS:
+    [ -d "./target/dist" } || mkdir -p "./target/dist"
     trunk --config {{TRUNK_CONFIG_FILE}} serve {{ ARGS }}
 
 # run API server
