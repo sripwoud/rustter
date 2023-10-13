@@ -4,7 +4,7 @@ use rustter_domain::post::{Headline, Message};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
-pub enum PostType {
+pub enum Content {
     Chat(Chat),
     Image(Image),
     Poll(Poll),
@@ -34,7 +34,7 @@ pub struct Chat {
     pub message: Message,
 }
 
-impl From<Chat> for PostType {
+impl From<Chat> for Content {
     fn from(chat: Chat) -> Self {
         Self::Chat(chat)
     }
@@ -46,7 +46,7 @@ pub struct Image {
     pub caption: String,
 }
 
-impl From<Image> for PostType {
+impl From<Image> for Content {
     fn from(image: Image) -> Self {
         Self::Image(image)
     }
@@ -58,7 +58,7 @@ pub struct Poll {
     pub options: Vec<String>,
 }
 
-impl From<Poll> for PostType {
+impl From<Poll> for Content {
     fn from(poll: Poll) -> Self {
         Self::Poll(poll)
     }

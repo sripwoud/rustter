@@ -5,6 +5,18 @@ use password_hash::PasswordHashString;
 use rustter_domain::ids::UserId;
 use rustter_domain::Username;
 
+#[derive(Debug, Queryable)]
+pub struct User {
+    pub id: UserId,
+    pub email: Option<String>,
+    pub email_confirm: Option<DateTime<Utc>>,
+    pub password_hash: String,
+    pub display_name: Option<String>,
+    pub handle: String,
+    pub created_at: DateTime<Utc>,
+    pub profile_image: Option<String>,
+}
+
 pub fn new<T: AsRef<str>>(
     conn: &mut PgConnection,
     _hash: PasswordHashString,
@@ -24,7 +36,6 @@ pub fn new<T: AsRef<str>>(
 
     Ok(user_id)
 }
-
 pub fn get_password_hash(
     conn: &mut PgConnection,
     username: &Username,
@@ -35,18 +46,6 @@ pub fn get_password_hash(
         .filter(handle.eq(username.as_ref()))
         .select(password_hash)
         .get_result(conn)?)
-}
-
-#[derive(Debug, Queryable)]
-pub struct User {
-    pub id: UserId,
-    pub email: Option<String>,
-    pub email_confirm: Option<DateTime<Utc>>,
-    pub password_hash: String,
-    pub display_name: Option<String>,
-    pub handle: String,
-    pub created_at: DateTime<Utc>,
-    pub profile_image: Option<String>,
 }
 
 pub fn get(conn: &mut PgConnection, user_id: UserId) -> Result<User, DieselError> {

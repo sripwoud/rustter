@@ -2564,6 +2564,7 @@ dependencies = [
  "r2d2",
  "rustter_crypto",
  "rustter_domain",
+ "rustter_endpoint",
  "serde",
  "serde_json",
  "thiserror",

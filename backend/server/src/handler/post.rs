@@ -6,6 +6,7 @@ use crate::AppState;
 use axum::http::StatusCode;
 use axum::{async_trait, Json};
 use rustter_endpoint::post::endpoint::{NewPost, NewPostOk};
+use rustter_query::post::Post;
 
 #[async_trait]
 impl AuthorizedApiRequest for NewPost {
@@ -14,20 +15,12 @@ impl AuthorizedApiRequest for NewPost {
     async fn process_request(
         self,
         DbConnection(mut conn): DbConnection,
-        UserSession {
-            user_id: mut _conn,
-            session_id: _session_id,
-        }: UserSession,
-        state: AppState,
+        session: UserSession,
+        _state: AppState,
     ) -> ApiResult<Self::Response> {
-        todo!();
-        // let post_id = rustter_query::post::new(&mut _conn, user_id, self.r#type, self.options)?;
+        let post = Post::new(session.user_id, self.content, self.options)?;
+        let post_id = rustter_query::post::new(&mut conn, post)?;
 
-        // Ok((
-        //     StatusCode::CREATED,
-        //     Json(NewPostOk {
-        //         post_id,
-        //     }),
-        // ))
+        Ok((StatusCode::CREATED, Json(NewPostOk { post_id })))
     }
 }

@@ -1,10 +1,11 @@
-use crate::handler::with_public_handler;
+use crate::handler::{with_handler, with_public_handler};
 use crate::AppState;
 use axum::http::HeaderValue;
 use axum::routing::{get, post};
 use axum::{Extension, Router};
 use hyper::header::CONTENT_TYPE;
 use hyper::Method;
+use rustter_endpoint::post::endpoint::NewPost;
 use rustter_endpoint::Endpoint;
 use rustter_endpoint::{CreateUser, Login};
 use tower::ServiceBuilder;
@@ -18,7 +19,7 @@ pub fn new_router(state: AppState) -> axum::Router {
         .route("/", get(move || async { "this is the root route" }))
         .route(CreateUser::URL, post(with_public_handler::<CreateUser>))
         .route(Login::URL, post(with_public_handler::<Login>));
-    let authorized_routes = Router::new();
+    let authorized_routes = Router::new().route(NewPost::URL, post(with_handler::<NewPost>));
 
     // using layer(ServiceBuilder::new().layer()) execute layers in same order as they are defined
     // instead of layer().layer().layer() which doesn't
