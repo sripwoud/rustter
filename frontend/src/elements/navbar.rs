@@ -125,7 +125,7 @@ pub fn NavBar(cx: Scope) -> Element {
                     img: "/static/icons/icon-trending.svg",
                     label: "Trending",
                     onclick: hide_new_post_popup,
-                    to: Route::Trending {}
+                    to: Route::TrendingPosts {}
                 },
                 NavButton {
                     img: "/static/icons/icon-home.svg",

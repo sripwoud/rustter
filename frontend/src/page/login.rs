@@ -114,7 +114,7 @@ pub fn Login(cx: Scope) -> Element {
                 );
                 nav.push(Route::Home {});
             }
-            Err(e) => {}
+            Err(_e) => {}
         }
     });
 

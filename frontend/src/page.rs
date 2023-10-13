@@ -1,21 +1,16 @@
 #![allow(non_snake_case)]
-
 use dioxus::prelude::*;
 use dioxus_router::prelude::*;
-
-pub mod home;
+mod home;
 use home::Home;
-pub mod login;
+mod login;
 use login::Login;
-pub mod register;
-use register::Register;
-pub mod not_found;
-mod trending;
-use trending::Trending;
-mod new_post;
-use new_post::NewPost;
-
+mod new;
+use new::{user::Register,post::{chat::NewChatPost, image::NewImagePost, poll::NewPollPost}};
+mod not_found;
 use not_found::NotFound;
+mod post;
+use post::trending::TrendingPosts;
 
 use crate::elements::NavBar;
 
@@ -26,17 +21,23 @@ pub enum Route {
     #[route("/")]
     Home {},
     #[redirect("/home", || Route::Home {})]
-        #[nest("/account")]
-            #[route("/login")]
-            Login {},
-            #[route("/register")]
-            Register {},
-        #[end_nest]
+    #[route("/login")]
+    Login {},
+    #[nest("/new")]
+        #[route("/user")]
+        Register {},
         #[nest("/post")]
-            #[route("/new")]
-            NewPost {},
-            #[route("/trending")]
-            Trending {},
+            #[route("/chat")]
+            NewChatPost {},
+            #[route("/image")]
+            NewImagePost {},
+            #[route("/poll")]
+            NewPollPost {},
+        #[end_nest]
+    #[end_nest]
+        #[nest("/post")]
+          #[route("/trending")]
+          TrendingPosts {},
         #[end_nest]
     #[end_layout]
 
