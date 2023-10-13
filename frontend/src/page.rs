@@ -6,7 +6,10 @@ use home::Home;
 mod login;
 use login::Login;
 mod new;
-use new::{user::Register,post::{chat::NewChatPost, image::NewImagePost, poll::NewPollPost}};
+use new::{
+    post::{chat::NewChatPost, image::NewImagePost, poll::NewPollPost},
+    user::Register,
+};
 mod not_found;
 use not_found::NotFound;
 mod post;
