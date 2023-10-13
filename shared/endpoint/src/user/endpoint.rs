@@ -1,4 +1,3 @@
-use crate::Endpoint;
 use chrono::{DateTime, Utc};
 use rustter_domain::{ids::*, Password, Username};
 use serde::{Deserialize, Serialize};

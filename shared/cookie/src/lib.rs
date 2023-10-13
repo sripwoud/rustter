@@ -1,4 +1,4 @@
-use strum::{AsRefStr, Display};
+use strum::AsRefStr;
 
 #[derive(AsRefStr, Clone)]
 pub enum CookieKey {

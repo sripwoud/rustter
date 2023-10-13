@@ -2,11 +2,9 @@
 
 use super::document;
 use chrono::{DateTime, Duration, Utc};
-use log::info;
 use rustter_cookie::CookieKey;
 use rustter_domain::ids;
 use rustter_domain::ids::SessionId;
-use std::fmt::{Debug, Display};
 use std::str::FromStr;
 
 pub fn get_session() -> Option<ids::SessionId> {
@@ -15,7 +13,7 @@ pub fn get_session() -> Option<ids::SessionId> {
         .and_then(|id| ids::SessionId::from_str(id).ok())
 }
 
-fn set_session_cookie<T: Into<String>>(cookie_type: CookieKey) -> impl Fn(String, DateTime<Utc>) {
+fn set_session_cookie(cookie_type: CookieKey) -> impl Fn(String, DateTime<Utc>) {
     move |cookie_value, expires| {
         let cookie = format_cookie(format_kv(cookie_type.clone(), cookie_value), expires);
         document().set_cookie(&cookie).unwrap()
@@ -23,11 +21,11 @@ fn set_session_cookie<T: Into<String>>(cookie_type: CookieKey) -> impl Fn(String
 }
 
 fn set_session_id(session_id: SessionId, expires: DateTime<Utc>) {
-    set_session_cookie::<SessionId>(rustter_cookie::SESSION_ID)(session_id.into(), expires)
+    set_session_cookie(rustter_cookie::SESSION_ID)(session_id.into(), expires)
 }
 
 fn set_session_signature(session_signature: String, expires: DateTime<Utc>) {
-    set_session_cookie::<String>(rustter_cookie::SESSION_SIGNATURE)(session_signature, expires)
+    set_session_cookie(rustter_cookie::SESSION_SIGNATURE)(session_signature, expires)
 }
 
 pub fn set_session(session_id: SessionId, session_signature: String, expires: DateTime<Utc>) {

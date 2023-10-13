@@ -1,3 +1,4 @@
+#![allow(non_snake_case)]
 use crate::extractor::DbConnection::DbConnection;
 use crate::AppState;
 use axum::extract::FromRequestParts;
@@ -20,7 +21,7 @@ pub struct UserSession {
 impl<S> FromRequestParts<S> for UserSession {
     type Rejection = (StatusCode, Json<RequestFailed>);
 
-    async fn from_request_parts(parts: &mut Parts, state: &S) -> Result<Self, Self::Rejection> {
+    async fn from_request_parts(parts: &mut Parts, _state: &S) -> Result<Self, Self::Rejection> {
         let unauthorized = || {
             (
                 StatusCode::UNAUTHORIZED,
@@ -31,7 +32,7 @@ impl<S> FromRequestParts<S> for UserSession {
         };
 
         let DbConnection(mut conn) = parts.extract::<DbConnection>().await.unwrap();
-        let Extension(state) = parts.extract::<Extension<AppState>>().await.unwrap(); // can safely unwrap as we added state to the layer
+        let Extension(state) = parts.extract::<Extension<AppState>>().await.unwrap(); // can safely unwrap as we added _state to the layer
         let cookies = parts
             .headers
             .get(header::COOKIE)
@@ -44,7 +45,7 @@ impl<S> FromRequestParts<S> for UserSession {
 
         let session_signature = get_from_str(cookies, CookieKey::Signature.as_ref())
             .and_then(|signature| rustter_crypto::decode_base64(signature).ok())
-            .and_then(|signature| rustter_crypto::sign::signature_from_bytes(&signature).ok())
+            .and_then(|signature| rustter_crypto::sign::signature_from_bytes(signature).ok())
             .ok_or_else(unauthorized)?;
 
         state

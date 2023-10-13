@@ -1,5 +1,3 @@
-use crate::schema::posts::dsl::posts;
-use crate::QueryError;
 use crate::{schema, DieselError};
 use chrono::{DateTime, Utc};
 use diesel::insert_into;
@@ -29,7 +27,7 @@ pub fn new(conn: &mut PgConnection, post: Post) -> Result<PostId, DieselError> {
     conn.transaction::<PostId, DieselError, _>(|conn| {
         insert_into(posts).values(&post).execute(conn)?;
 
-        Ok(posts.select(id).order(created_at.desc()).first(conn)?)
+        posts.select(id).order(created_at.desc()).first(conn)
     })
 }
 

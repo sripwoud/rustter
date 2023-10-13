@@ -24,9 +24,9 @@ macro_rules! new_id {
             }
         }
 
-        impl Into<String> for $name {
-            fn into(self) -> String {
-                self.0.to_string()
+        impl From<$name> for String {
+            fn from(id: $name) -> Self {
+                id.0.to_string()
             }
         }
 
