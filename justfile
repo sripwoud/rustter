@@ -8,20 +8,25 @@ build:
     # build backend
     cargo build --release --workspace --exclude frontend
 
-# run cargo check
+# run `cargo check`
 check:
     cargo check -p frontend --target wasm32-unknown-unknown
     cargo check --workspace --exclude frontend
 
-# run cargo clippy
-clippy:
+# run `cargo clippy`
+lint:
     cargo clippy -p frontend --target wasm32-unknown-unknown
     cargo clippy --workspace --exclude frontend
 
-# run clippy fix
+# run `clippy fix`
 fix:
     cargo clippy -p frontend --fix --target wasm32-unknown-unknown --allow-dirty
     cargo clippy --workspace --fix --exclude frontend --allow-dirty
+
+# run `cargo fmt`
+format:
+    cargo fmt
+
 
 # build docs. use --open to open in browser
 doc *ARGS:
