@@ -5,31 +5,32 @@ use crate::AppState;
 use axum::http::StatusCode;
 use axum::{async_trait, Json};
 use chrono::Duration;
+use rustter_domain::ids::UserId;
 use rustter_endpoint::{CreateUser, CreateUserOk, Login, LoginOk};
 use rustter_query::session::Session;
+use rustter_query::{session, AsyncConnection};
 use tracing::{info, span};
-use rustter_domain::ids::UserId;
-use rustter_query::{AsyncConnection, session};
 
 #[derive(Clone)]
 struct SessionSignature(String);
 
-fn new_session(state: &AppState,
-               conn: &mut AsyncConnection,
-               user_id: UserId) -> ApiResult<(Session, SessionSignature)> {
+fn new_session(
+    state: &AppState,
+    conn: &mut AsyncConnection,
+    user_id: UserId,
+) -> ApiResult<(Session, SessionSignature)> {
+    let fingerprint = serde_json::json!({});
+    // TODO extract in Session::new()?
+    let duration = Duration::weeks(3);
+    let session = session::new(conn, user_id, duration, fingerprint.into())?;
 
-        let fingerprint = serde_json::json!({});
-        // TODO extract in Session::new()?
-        let duration = Duration::weeks(3);
-        let session = session::new(conn, user_id, duration, fingerprint.into())?;
+    let mut rng = state.rng.clone();
+    let signature = state
+        .signing_keys
+        .sign(&mut rng, session.id.as_uuid().as_bytes());
+    let signature = rustter_crypto::encode_base64(signature);
 
-        let mut rng = state.rng.clone();
-        let signature = state
-            .signing_keys
-            .sign(&mut rng, session.id.as_uuid().as_bytes());
-        let signature = rustter_crypto::encode_base64(signature);
-
-        Ok((session, SessionSignature(signature)))
+    Ok((session, SessionSignature(signature)))
 }
 
 #[async_trait]
@@ -46,7 +47,7 @@ impl PublicApiRequest for CreateUser {
 
         info!(username = self.username.as_ref(), "new user created");
 
-        let (session,signature) = new_session(&state,  &mut conn, user_id)?;
+        let (session, signature) = new_session(&state, &mut conn, user_id)?;
 
         Ok((
             StatusCode::CREATED,
@@ -82,7 +83,7 @@ impl PublicApiRequest for Login {
 
         let user = rustter_query::user::find(&mut conn, &self.username)?;
 
-        let (session,signature) = new_session(&state,  &mut conn, user.id)?;
+        let (session, signature) = new_session(&state, &mut conn, user.id)?;
 
         Ok((
             StatusCode::OK,

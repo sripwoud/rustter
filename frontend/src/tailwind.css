@@ -3,6 +3,9 @@
 @tailwind utilities;
 
 :root {
+    --navbar-height: 3.8rem;
+    --content-min-width: 300px;
+    --content-min-width: 300px;
 }
 
 @layer components {
@@ -20,5 +23,13 @@
 
     .button-disabled {
         @apply bg-slate-300 cursor-not-allowed;
+    }
+
+    .navbar-bg-color {
+        @apply bg-slate-600;
+    }
+
+    .navbar-bg-color {
+        @apply bg-slate-300;
     }
 }
