@@ -1,4 +1,3 @@
-use crate::schema::web;
 use crate::{schema, DieselError};
 use chrono::{DateTime, Utc};
 use diesel::prelude::*;

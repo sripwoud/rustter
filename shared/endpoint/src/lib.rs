@@ -1,6 +1,9 @@
 use serde::{Deserialize, Serialize};
 
+pub mod post;
+pub use post::endpoint::{NewPost, NewPostOk};
 pub mod user;
+
 pub use user::endpoint::{CreateUser, CreateUserOk, Login, LoginOk};
 
 pub trait Endpoint {
@@ -16,3 +19,16 @@ pub trait Endpoint {
 pub struct RequestFailed {
     pub msg: String,
 }
+
+#[macro_export]
+macro_rules! route {
+    ($name:ident => $url:expr) => {
+        impl $crate::Endpoint for $name {
+            const URL: &'static str = $url;
+        }
+    };
+}
+
+route!(CreateUser => "/account/create");
+route!(Login => "/account/login");
+route!(NewPost => "/post/new");

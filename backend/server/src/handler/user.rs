@@ -1,5 +1,5 @@
 use crate::error::ApiResult;
-use crate::extractor::DbConnection;
+use crate::extractor::DbConnection::DbConnection;
 use crate::handler::PublicApiRequest;
 use crate::AppState;
 use axum::http::StatusCode;
