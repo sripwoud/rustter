@@ -1,6 +1,8 @@
 use serde::{Deserialize, Serialize};
 
 pub mod user;
+pub mod post;
+
 pub use user::endpoint::{CreateUser, CreateUserOk, Login, LoginOk};
 
 pub trait Endpoint {
