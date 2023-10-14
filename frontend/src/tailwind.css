@@ -10,7 +10,7 @@
 
 @layer components {
     .btn {
-        @apply px-4 py-2 rounded font-semibold text-sm shadow-sm bg-violet-400 text-white hover:bg-violet-500;
+        @apply px-4 py-2 rounded font-semibold text-sm shadow-sm bg-violet-500 text-white hover:bg-violet-600;
     }
 
     .input-field {
@@ -31,5 +31,9 @@
 
     .navbar-border-color {
         @apply border-indigo-300;
+    }
+
+    .err-text-color {
+        @apply text-red-700;
     }
 }
