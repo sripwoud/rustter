@@ -8,15 +8,18 @@ use dioxus_router::prelude::*;
 #[inline_props]
 pub fn NewPostPopup(cx: Scope, hide: UseState<bool>) -> Element {
     let hide_class = maybe_class!("hidden", *hide.get());
+    let nav = use_navigator(cx);
     const BUTTON_CLASS: &str = "grid grid-cols-[20px_1fr] gap-4 pl-4 justify-center items-center w-full h-12 border-y navbar-border-color";
 
     cx.render(rsx! {
         div {
             class: "flex flex-col absolute right-0 bottom-[var(--navbar-height)] w-28 items-center navbar-bg-color text-white text-sm {hide_class}",
-            onclick: |_| hide.set(true),
             div {
                 class: BUTTON_CLASS,
-                onclick: move |_| (),
+                onclick: move |_| {
+                    hide.set(true);
+                    nav.push(Route::NewPollPost {});
+                },
                 img {
                     class: "invert",
                     src: "/static/icons/icon-poll.svg",
@@ -25,7 +28,10 @@ pub fn NewPostPopup(cx: Scope, hide: UseState<bool>) -> Element {
             },
             div {
                 class: BUTTON_CLASS,
-                onclick: move |_| (),
+                onclick: move |_| {
+                    hide.set(true);
+                    nav.push(Route::NewImagePost {});
+                },
                 img {
                     class: "invert",
                     src: "/static/icons/icon-image.svg",
@@ -34,7 +40,10 @@ pub fn NewPostPopup(cx: Scope, hide: UseState<bool>) -> Element {
             },
             div {
                 class: BUTTON_CLASS,
-                onclick: move |_| (),
+                onclick: move |_| {
+                    hide.set(true);
+                    nav.push(Route::NewChatPost {});
+                },
                 img {
                     class: "invert",
                     src: "/static/icons/icon-messages.svg",
@@ -124,13 +133,13 @@ pub fn NavBar(cx: Scope) -> Element {
                 NavButton {
                     img: "/static/icons/icon-trending.svg",
                     label: "Trending",
-                    onclick: hide_new_post_popup,
+                    onclick: |_|{},
                     to: Route::TrendingPosts {}
                 },
                 NavButton {
                     img: "/static/icons/icon-home.svg",
                     label: "Home",
-                    onclick: hide_new_post_popup,
+                    onclick: |_|{},
                     to: Route::Home {}
                 },
                 // NavButton {
