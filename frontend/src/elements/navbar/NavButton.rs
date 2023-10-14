@@ -1,5 +1,4 @@
-use crate::maybe_class;
-use crate::page::Route;
+use crate::prelude::*;
 use dioxus::prelude::*;
 use dioxus_router::prelude::*;
 

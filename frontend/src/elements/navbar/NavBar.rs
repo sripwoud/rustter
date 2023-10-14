@@ -1,7 +1,7 @@
 #![allow(non_snake_case)]
 
 use super::{NavButton, NewPostPopup};
-use crate::page::Route;
+use crate::prelude::*;
 use dioxus::prelude::*;
 use dioxus_router::prelude::*;
 
