@@ -45,7 +45,7 @@ impl PublicApiRequest for CreateUser {
         let password_hash = rustter_crypto::hash_password(self.password)?;
         let user_id = rustter_query::user::new(&mut conn, password_hash, &self.username)?;
 
-        info!(username = self.username.as_ref(), "new user created");
+        info!(target:"rustter_server",username = self.username.as_ref(), "new user created");
 
         let (session, signature) = new_session(&state, &mut conn, user_id)?;
 
