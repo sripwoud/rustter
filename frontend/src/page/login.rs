@@ -168,6 +168,8 @@ pub fn Login(cx: Scope) -> Element {
                 disabled: !page_state.with(|state|state.can_submit()),
                 "Login"
             }
+
+            // TODO: add a link to the register page
         }
     })
 }
