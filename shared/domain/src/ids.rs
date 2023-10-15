@@ -1,11 +1,22 @@
 use serde::{Deserialize, Serialize};
 use std::str::FromStr;
 use uuid::Uuid;
+use derive_more::Display;
 
 macro_rules! new_id {
     ($name:ident) => {
         #[derive(
-            Clone, Copy, Debug, Deserialize, Eq, Hash, Serialize, PartialEq, Ord, PartialOrd,
+            Clone,
+            Copy,
+            Debug,
+            Display,
+            Deserialize,
+            Eq,
+            Hash,
+            Serialize,
+            PartialEq,
+            Ord,
+            PartialOrd,
         )]
         #[cfg_attr(feature = "query", derive(DieselNewType))] // allows to use a UserId directly with the DB without having to extract the Uuid out of it
         pub struct $name(Uuid);
@@ -51,6 +62,8 @@ macro_rules! new_id {
                     .map_err(|_| IdError::Parse)
             }
         }
+
+        // impl From<$name> for Value
     };
 }
 
