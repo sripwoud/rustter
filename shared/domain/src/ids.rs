@@ -1,7 +1,7 @@
+use derive_more::Display;
 use serde::{Deserialize, Serialize};
 use std::str::FromStr;
 use uuid::Uuid;
-use derive_more::Display;
 
 macro_rules! new_id {
     ($name:ident) => {
