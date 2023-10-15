@@ -60,6 +60,7 @@ impl<S> FromRequestParts<S> for UserSession {
             .user_id;
 
         info!(
+            target:"rustter_server",
             user_id = user_id.into_inner().to_string(),
             "user authenticated"
         );

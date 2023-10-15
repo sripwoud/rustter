@@ -7,6 +7,7 @@ use axum::http::StatusCode;
 use axum::{async_trait, Json};
 use rustter_endpoint::post::endpoint::{NewPost, NewPostOk};
 use rustter_query::post::Post;
+use tracing::info;
 
 #[async_trait]
 impl AuthorizedApiRequest for NewPost {
@@ -20,7 +21,7 @@ impl AuthorizedApiRequest for NewPost {
     ) -> ApiResult<Self::Response> {
         let post = Post::new(session.user_id, self.content, self.options)?;
         let post_id = rustter_query::post::new(&mut conn, post)?;
-
+        info!(target:"rustter_server", "created post {post_id}");
         Ok((StatusCode::CREATED, Json(NewPostOk { post_id })))
     }
 }

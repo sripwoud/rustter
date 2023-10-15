@@ -24,7 +24,7 @@ fix:
     cargo clippy --workspace --fix --exclude frontend --allow-dirty
 
 # run `cargo fmt`
-format:
+fmt:
     cargo fmt
 
 
