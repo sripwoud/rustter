@@ -101,7 +101,7 @@ pub fn NewChatPost(cx: Scope) -> Element {
 
     let submit_btn_style = maybe_class!("button-disabled", !state.read().can_submit());
 
-    let handle_submit = async_handler!(&cx, [api_client, state, nav], move |_| async move {
+    let onclick = async_handler!(&cx, [api_client, state, nav], move |_| async move {
         use rustter_endpoint::post::endpoint::{NewPost, NewPostOk};
         use rustter_endpoint::post::types::{Chat, NewPostOptions};
 
@@ -128,16 +128,14 @@ pub fn NewChatPost(cx: Scope) -> Element {
         match response {
             Ok(_) => {
                 nav.push(Route::Home {});
-            },
+            }
             Err(_e) => (),
         }
-
     });
 
     render! {
-        form {
+        div {
             class: "flex flex-col gap-4",
-            onsubmit: move |_|{},
             prevent_default: "onsubmit",
             HeadlineInput {
                 state: state.clone(),
@@ -149,6 +147,7 @@ pub fn NewChatPost(cx: Scope) -> Element {
                 class: "btn {submit_btn_style}",
                 r#type: "submit",
                 disabled: !state.read().can_submit(),
+                onclick: onclick,
                 "Post"
             }
 
