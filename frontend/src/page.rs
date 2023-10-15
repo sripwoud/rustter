@@ -21,14 +21,14 @@ use crate::elements::NavBar;
 #[rustfmt::skip]
 pub enum Route {
     #[layout(NavBar)]
-    #[route("/")]
+    #[route("/")] // TODO: Add redirect to login if not logged in
     Home {},
     #[redirect("/home", || Route::Home {})]
-    #[route("/login")]
+    #[route("/login")] // TODO: Add redirect to home if logged in
     Login {},
     #[nest("/new")]
         #[route("/user")]
-        Register {},
+        Register {}, // TODO: Add redirect to home if logged in
         #[nest("/post")]
             #[route("/chat")]
             NewChatPost {},
