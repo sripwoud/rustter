@@ -1,5 +1,8 @@
 TRUNK_CONFIG_FILE := if os() == "windows" { "Trunk.win.toml" } else { "Trunk.toml" }
 TRUNK_RELEASE_CONFIG_FILE := if os() == "windows" { "Trunk-release.win.toml" } else { "Trunk.toml" }
+API_DOCKER_FILE := "backend/server/Dockerfile"
+UI_DOCKER_FILE := "frontend/Dockerfile"
+API_FLY_CONFIG_FILE := "backend/server/fly.toml"
 
 # build in release mode
 build:
@@ -62,3 +65,14 @@ db-reset:
 db-new-migration NAME:
     diesel migration generate {{ NAME }}
 
+# build api docker image
+build-docker-api *ARGS:
+    docker build -f {{ API_DOCKER_FILE }} -t rustter-api .
+
+# build ui docker image
+build-docker-ui *ARGS:
+    docker build -f {{ UI_DOCKER_FILE }} -t rustter-ui .
+
+# deploy api
+deploy-api:
+    flyctl deploy -c {{ API_FLY_CONFIG_FILE }} --dockerfile {{ API_DOCKER_FILE }} --remote-only

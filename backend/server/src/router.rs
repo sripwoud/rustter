@@ -41,10 +41,10 @@ pub fn new_router(state: AppState) -> axum::Router {
                 .layer(
                     CorsLayer::new()
                         .allow_methods([Method::GET, Method::POST, Method::OPTIONS])
-                        .allow_credentials(true)
+                        .allow_credentials(std::env::var("FRONTEND_URL").is_ok())
                         .allow_origin(
                             std::env::var("FRONTEND_URL")
-                                .unwrap()
+                                .unwrap_or(String::from("*"))
                                 .parse::<HeaderValue>()
                                 .unwrap(),
                         )
