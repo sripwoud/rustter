@@ -16,7 +16,7 @@ struct Cli {
         short,
         long,
         default_value = "postgres://test@localhost/test",
-        env = "API_DATABASE_URL"
+        env = "DATABASE_URL"
     )]
     database_url: String,
 
