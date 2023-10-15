@@ -1087,6 +1087,7 @@ dependencies = [
  "cfg-if",
  "chrono",
  "console_log",
+ "derive_more",
  "dioxus",
  "dioxus-router",
  "dioxus-web",

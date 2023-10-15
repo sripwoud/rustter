@@ -50,7 +50,7 @@ pub fn NavBar(cx: Scope) -> Element {
                     }
                 }
             }
-        }
+        },
         Outlet::<Route> {}
     })
 }

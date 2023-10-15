@@ -50,6 +50,7 @@ rustter_cookie = { path = "../shared/cookie" }
 rustter_domain = { path = "../shared/domain" }
 rustter_endpoint = { path = "../shared/endpoint"}
 fermi = "0.4.0"
+derive_more = "0.99.17"
 
 
 [features]

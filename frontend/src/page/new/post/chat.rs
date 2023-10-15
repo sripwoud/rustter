@@ -2,6 +2,7 @@ use crate::prelude::*;
 use dioxus::prelude::*;
 use dioxus_router::hooks::use_navigator;
 use serde::{Deserialize, Serialize};
+use crate::elements::use_toaster;
 
 #[derive(Clone, Default, Debug, Serialize, Deserialize)]
 pub struct PageState {
@@ -97,11 +98,12 @@ pub fn HeadlineInput(cx: Scope, state: UseRef<PageState>) -> Element {
 pub fn NewChatPost(cx: Scope) -> Element {
     let state = use_ref(cx, || PageState::default());
     let nav = use_navigator(cx);
+    let toaster = use_toaster(cx);
     let api_client = ApiClient::global();
 
     let submit_btn_style = maybe_class!("button-disabled", !state.read().can_submit());
 
-    let onclick = async_handler!(&cx, [api_client, state, nav], move |_| async move {
+    let onclick = async_handler!(&cx, [api_client, state, nav, toaster], move |_| async move {
         use rustter_endpoint::post::endpoint::{NewPost, NewPostOk};
         use rustter_endpoint::post::types::{Chat, NewPostOptions};
 
@@ -127,9 +129,12 @@ pub fn NewChatPost(cx: Scope) -> Element {
         let response = fetch_json!(<NewPostOk>, api_client, request);
         match response {
             Ok(_) => {
+                toaster.write().success("Posted!", None);
                 nav.push(Route::Home {});
             }
-            Err(_e) => (),
+            Err(_e) => {
+                toaster.write().error("Failed to post: {e}!", None);
+            },
         }
     });
 
