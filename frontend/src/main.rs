@@ -12,8 +12,6 @@ pub mod page;
 use crate::util::ApiClient;
 use cfg_if::cfg_if;
 
-pub const ROOT_API_URL: &str = "http://127.0.0.1:8070/";
-
 cfg_if! {
     if #[cfg(feature = "console_log")] {
         fn init_log() {
