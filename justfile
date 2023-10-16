@@ -3,9 +3,11 @@ TRUNK_RELEASE_CONFIG_FILE := if os() == "windows" { "Trunk-release.win.toml" } e
 API_DOCKER_FILE := "backend/server/Dockerfile"
 UI_DOCKER_FILE := "frontend/Dockerfile"
 API_FLY_CONFIG_FILE := "backend/server/fly.toml"
+UI_FLY_CONFIG_FILE := "frontend/fly.toml"
 
 # build in release mode
 build:
+    [ ! -d "./target/dist" ] && mkdir -p "./target/dist" || true
     # build frontend
     trunk --config {{TRUNK_RELEASE_CONFIG_FILE}} build
     # build backend
@@ -75,4 +77,7 @@ build-docker-ui *ARGS:
 
 # deploy api
 deploy-api:
-    flyctl deploy -c {{ API_FLY_CONFIG_FILE }} --dockerfile {{ API_DOCKER_FILE }} --remote-only
+    flyctl deploy -c {{ API_FLY_CONFIG_FILE }} --dockerfile {{ API_DOCKER_FILE }} --remote-only# deploy api
+
+deploy-ui:
+    flyctl deploy -c {{ UI_FLY_CONFIG_FILE }} --dockerfile {{ UI_DOCKER_FILE }} --remote-only

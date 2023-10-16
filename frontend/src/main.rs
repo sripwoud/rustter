@@ -3,16 +3,14 @@
 #![allow(clippy::drop_non_drop)]
 #![allow(non_snake_case)]
 
-pub mod util;
-
-pub mod app;
-pub mod elements;
-pub mod page;
-
-use crate::util::ApiClient;
 use cfg_if::cfg_if;
 
-pub const ROOT_API_URL: &str = "http://127.0.0.1:8070/";
+pub mod util;
+use util::api_client::ApiClient;
+pub mod app;
+use app::App;
+pub mod elements;
+pub mod page;
 
 cfg_if! {
     if #[cfg(feature = "console_log")] {
@@ -28,7 +26,9 @@ cfg_if! {
 fn main() {
     init_log();
     ApiClient::init();
-    dioxus_web::launch(app::App)
+    // FIXME: route tree needs to be flattened for the deployment as a static site to work
+    // https://dioxuslabs.com/learn/0.4/router/reference/static-generation
+    dioxus_web::launch(App)
 }
 
 mod prelude {
