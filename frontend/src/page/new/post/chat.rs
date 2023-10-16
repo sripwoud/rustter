@@ -1,8 +1,8 @@
+use crate::elements::use_toaster;
 use crate::prelude::*;
 use dioxus::prelude::*;
 use dioxus_router::hooks::use_navigator;
 use serde::{Deserialize, Serialize};
-use crate::elements::use_toaster;
 
 #[derive(Clone, Default, Debug, Serialize, Deserialize)]
 pub struct PageState {
@@ -103,40 +103,44 @@ pub fn NewChatPost(cx: Scope) -> Element {
 
     let submit_btn_style = maybe_class!("button-disabled", !state.read().can_submit());
 
-    let onclick = async_handler!(&cx, [api_client, state, nav, toaster], move |_| async move {
-        use rustter_endpoint::post::endpoint::{NewPost, NewPostOk};
-        use rustter_endpoint::post::types::{Chat, NewPostOptions};
+    let onclick = async_handler!(
+        &cx,
+        [api_client, state, nav, toaster],
+        move |_| async move {
+            use rustter_endpoint::post::endpoint::{NewPost, NewPostOk};
+            use rustter_endpoint::post::types::{Chat, NewPostOptions};
 
-        let request = {
-            use rustter_domain::post::{Headline, Message};
-            NewPost {
-                content: Chat {
-                    headline: {
-                        let headline = &state.read().headline;
-                        if headline.is_empty() {
-                            None
-                        } else {
-                            Some(Headline::new(headline).unwrap())
-                        }
-                    },
-                    message: Message::new(&state.read().message).unwrap(),
+            let request = {
+                use rustter_domain::post::{Headline, Message};
+                NewPost {
+                    content: Chat {
+                        headline: {
+                            let headline = &state.read().headline;
+                            if headline.is_empty() {
+                                None
+                            } else {
+                                Some(Headline::new(headline).unwrap())
+                            }
+                        },
+                        message: Message::new(&state.read().message).unwrap(),
+                    }
+                    .into(),
+                    options: NewPostOptions::default(),
                 }
-                .into(),
-                options: NewPostOptions::default(),
-            }
-        };
+            };
 
-        let response = fetch_json!(<NewPostOk>, api_client, request);
-        match response {
-            Ok(_) => {
-                toaster.write().success("Posted!", None);
-                nav.push(Route::Home {});
+            let response = fetch_json!(<NewPostOk>, api_client, request);
+            match response {
+                Ok(_) => {
+                    toaster.write().success("Posted!", None);
+                    nav.push(Route::Home {});
+                }
+                Err(_e) => {
+                    toaster.write().error("Failed to post: {e}!", None);
+                }
             }
-            Err(_e) => {
-                toaster.write().error("Failed to post: {e}!", None);
-            },
         }
-    });
+    );
 
     render! {
         div {

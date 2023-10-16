@@ -85,7 +85,6 @@ fn make_absolute_url(endpoint: &str) -> reqwest::Url {
     let root_api_url = match std::env::var("API_URL") {
         Ok(url) => url,
         Err(_) => "http://127.0.0.1:8070/".to_owned(),
-
     };
     let url = reqwest::Url::parse(&*root_api_url).unwrap();
     url.join(endpoint).unwrap()

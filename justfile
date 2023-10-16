@@ -7,6 +7,7 @@ UI_FLY_CONFIG_FILE := "frontend/fly.toml"
 
 # build in release mode
 build:
+    [ ! -d "./target/dist" ] && mkdir -p "./target/dist" || true
     # build frontend
     trunk --config {{TRUNK_RELEASE_CONFIG_FILE}} build
     # build backend
