@@ -1,6 +1,8 @@
+use crate::user::types::PublicUserProfile;
 use chrono::{DateTime, Utc};
 use rustter_domain::ids::{PostId, UserId};
 use rustter_domain::post::{Headline, Message};
+use rustter_domain::Username;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
@@ -62,4 +64,25 @@ impl From<Poll> for Content {
     fn from(poll: Poll) -> Self {
         Self::Poll(poll)
     }
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
+pub enum LikeStatus {
+    Liked,
+    Disliked,
+    NoReaction,
+}
+#[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
+pub struct PublicPost {
+    pub id: PostId,
+    pub author: PublicUserProfile,
+    pub content: Content,
+    pub time_posted: DateTime<Utc>,
+    pub reply_to: Option<(Username, UserId, PostId)>,
+    pub like_status: LikeStatus,
+    pub bookmarked: bool,
+    pub boosted: bool, // aka retweet
+    pub boosts: i64,
+    pub likes: i64,
+    pub dislikes: i64,
 }

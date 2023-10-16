@@ -4,6 +4,7 @@ use diesel::prelude::*;
 use password_hash::PasswordHashString;
 use rustter_domain::ids::UserId;
 use rustter_domain::Username;
+use rustter_endpoint::user::types::PublicUserProfile;
 
 #[derive(Debug, Queryable)]
 pub struct User {
@@ -15,6 +16,18 @@ pub struct User {
     pub handle: String,
     pub created_at: DateTime<Utc>,
     pub profile_image: Option<String>,
+}
+
+impl From<User> for PublicUserProfile {
+    fn from(user: User) -> Self {
+        Self {
+            id: user.id,
+            display_name: user.display_name,
+            handle: Username::new(user.handle).unwrap(),
+            profile_image: user.profile_image,
+            created_at: user.created_at,
+        }
+    }
 }
 
 pub fn new<T: AsRef<str>>(

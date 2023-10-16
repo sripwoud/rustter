@@ -28,21 +28,18 @@ pub enum Route {
     #[route("/login")] // TODO: Add redirect to home if logged in
     Login {},
     #[nest("/new")]
-    #[route("/user")]
-    Register {},
-    // TODO: Add redirect to home if logged in
-    #[nest("/post")]
-    #[route("/chat")]
-    NewChatPost {},
-    #[route("/image")]
-    NewImagePost {},
-    #[route("/poll")]
-    NewPollPost {},
-    #[end_nest]
-    #[end_nest]
-    #[nest("/post")]
-    #[route("/trending")]
-    TrendingPosts {},
+        #[route("/user")]
+        Register {}, // TODO: Add redirect to home if logged in
+        #[route("/posts")]
+        TrendingPosts {},
+        #[nest("/post")]
+            #[route("/chat")]
+            NewChatPost {},
+            #[route("/image")]
+            NewImagePost {},
+            #[route("/poll")]
+            NewPollPost {},
+        #[end_nest]
     #[end_nest]
     #[end_layout]
     #[route("/:..route")]
