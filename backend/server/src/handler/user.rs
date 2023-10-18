@@ -1,5 +1,6 @@
 use crate::error::ApiResult;
 use crate::extractor::DbConnection::DbConnection;
+use crate::extractor::UserSession::UserSession;
 use crate::handler::PublicApiRequest;
 use crate::AppState;
 use axum::http::StatusCode;
@@ -105,7 +106,7 @@ impl PublicApiRequest for Login {
     }
 }
 
-pub fn to_public(user: User, session: Option<&Session>) -> ApiResult<PublicUserProfile> {
+pub fn to_public(user: User, session: Option<&UserSession>) -> ApiResult<PublicUserProfile> {
     Ok(PublicUserProfile {
         id: user.id,
         display_name: user.display_name.and_then(|s| DisplayName::new(s).ok()),

@@ -1,13 +1,9 @@
-use crate::session::Session;
-use crate::{schema, DieselError, QueryError};
+use crate::{DieselError, QueryError};
 use chrono::{DateTime, Utc};
 use diesel::prelude::*;
 use password_hash::PasswordHashString;
 use rustter_domain::ids::UserId;
-use rustter_domain::user::DisplayName;
 use rustter_domain::Username;
-use rustter_endpoint::user::types::PublicUserProfile;
-use url::Url;
 
 #[derive(Debug, Queryable)]
 pub struct User {

@@ -16,16 +16,14 @@ pub enum ToastKind {
 
 #[derive(Debug)]
 pub struct Toast {
-    id: usize,
     kind: ToastKind,
     message: String,
     expires: DateTime<Utc>,
 }
 
 impl Toast {
-    pub fn new(id: usize, kind: ToastKind, message: String, expires: Duration) -> Self {
+    pub fn new(kind: ToastKind, message: String, expires: Duration) -> Self {
         Self {
-            id,
             kind,
             message,
             expires: Utc::now() + expires,
@@ -43,19 +41,14 @@ impl Toaster {
     fn increment_id(&mut self) {
         self.next_id += 1;
     }
-    fn push<'a, T: Into<String>>(
-        &'a mut self,
+    fn push<T: Into<String>>(
+        &mut self,
         toast_kind: ToastKind,
-    ) -> impl FnMut(T, Option<Duration>) + 'a {
+    ) -> impl FnMut(T, Option<Duration>) + '_ {
         move |message, duration| {
             let toast = match duration {
-                Some(expires) => Toast::new(self.next_id, toast_kind, message.into(), expires),
-                None => Toast::new(
-                    self.next_id,
-                    toast_kind,
-                    message.into(),
-                    Duration::seconds(5),
-                ),
+                Some(expires) => Toast::new(toast_kind, message.into(), expires),
+                None => Toast::new(toast_kind, message.into(), Duration::seconds(5)),
             };
             self.toasts.insert(self.next_id, toast);
             self.increment_id();

@@ -1,13 +1,9 @@
-use crate::session::Session;
-use crate::user::User;
-use crate::{schema, user, AsyncConnection, DieselError, QueryError};
+use crate::{schema, DieselError};
 use chrono::{DateTime, Utc};
 use diesel::insert_into;
 use diesel::prelude::*;
 use rustter_domain::ids::{PostId, UserId};
-use rustter_domain::Username;
 use rustter_endpoint::post;
-use rustter_endpoint::post::types::{LikeStatus, PublicPost};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, DieselNewType, Deserialize, Serialize)]
@@ -47,9 +43,9 @@ pub fn trending_posts(
         .get_results(conn)
 }
 
-pub fn get(conn: &mut PgConnection, id: PostId) -> Result<Post, DieselError> {
+pub fn get(conn: &mut PgConnection, post_id: PostId) -> Result<Post, DieselError> {
     use crate::schema::posts::dsl::*;
-    posts.find(id).first(conn)
+    posts.find(post_id).first(conn)
 }
 
 impl Post {

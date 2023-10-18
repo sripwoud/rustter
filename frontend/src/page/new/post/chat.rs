@@ -96,7 +96,7 @@ pub fn HeadlineInput(cx: Scope, state: UseRef<PageState>) -> Element {
 }
 
 pub fn NewChatPost(cx: Scope) -> Element {
-    let state = use_ref(cx, || PageState::default());
+    let state = use_ref(cx, PageState::default);
     let nav = use_navigator(cx);
     let toaster = use_toaster(cx);
     let api_client = ApiClient::global();
