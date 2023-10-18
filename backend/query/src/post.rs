@@ -1,11 +1,14 @@
-use crate::{schema, DieselError};
+use crate::session::Session;
+use crate::user::User;
+use crate::{schema, user, AsyncConnection, DieselError, QueryError};
 use chrono::{DateTime, Utc};
 use diesel::insert_into;
 use diesel::prelude::*;
 use rustter_domain::ids::{PostId, UserId};
+use rustter_domain::Username;
 use rustter_endpoint::post;
+use rustter_endpoint::post::types::{LikeStatus, PublicPost};
 use serde::{Deserialize, Serialize};
-use rustter_endpoint::post::types::PublicPost;
 
 #[derive(Clone, Debug, DieselNewType, Deserialize, Serialize)]
 pub struct Content(pub serde_json::Value);
@@ -32,27 +35,21 @@ pub fn new(conn: &mut PgConnection, post: Post) -> Result<PostId, DieselError> {
     })
 }
 
-pub fn get_trending_posts(
+pub fn trending_posts(
     conn: &mut PgConnection,
     limit: Option<i64>,
-) -> Result<Vec<PublicPost>, DieselError> {
+) -> Result<Vec<Post>, DieselError> {
     use crate::schema::posts::dsl::*;
-
-  posts
+    posts
+        .filter(reply_to.is_null())
         .order(created_at.desc())
         .limit(limit.unwrap_or(20))
-        .load::<Post>(conn).unwrap().iter().map(|post| {
-            let user = crate::user::get(conn, post.user_id).unwrap();
-            PublicPost {
-                id: post.id,
-                author: user.handle,
-                user: user.into(),
-                content: post.content.0.clone(),
-                time_posted: post.time_posted,
-                direct_message_to: post.direct_message_to,
-                reply_to: post.reply_to,
-            }
-        }).collect(
+        .get_results(conn)
+}
+
+pub fn get(conn: &mut PgConnection, id: PostId) -> Result<Post, DieselError> {
+    use crate::schema::posts::dsl::*;
+    posts.find(id).first(conn)
 }
 
 impl Post {

@@ -18,4 +18,4 @@ pub struct NewPostOk {
 pub struct TrendingPosts; // no request data, we just return the most recent posts
 
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
-pub struct TrendingPostsOk(Vec<PublicPost>);
+pub struct TrendingPostsOk(pub Vec<PublicPost>);

@@ -18,13 +18,10 @@ pub fn new_router(state: AppState) -> axum::Router {
     let public_routes = Router::new()
         .route("/", get(move || async { "this is the root route" }))
         .route(CreateUser::URL, post(with_public_handler::<CreateUser>))
-        .route(Login::URL, post(with_public_handler::<Login>))
-        .route(
-            TrendingPosts::URL,
-            get(with_public_handler::<TrendingPosts>),
-        );
-    let authorized_routes = Router::new().route(NewPost::URL, post(with_handler::<NewPost>));
-
+        .route(Login::URL, post(with_public_handler::<Login>));
+    let authorized_routes = Router::new()
+        .route(NewPost::URL, post(with_handler::<NewPost>))
+        .route(TrendingPosts::URL, get(with_handler::<TrendingPosts>));
     // using layer(ServiceBuilder::new().layer()) execute layers in same order as they are defined
     // instead of layer().layer().layer() which doesn't
     Router::new()

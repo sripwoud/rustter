@@ -28,7 +28,7 @@ pub trait AuthorizedApiRequest {
     async fn process_request(
         self,
         conn: DbConnection,
-        user_session: UserSession,
+        session: UserSession,
         state: AppState,
     ) -> ApiResult<Self::Response>;
 }
@@ -46,12 +46,12 @@ where
 
 pub async fn with_handler<'a, Req>(
     conn: DbConnection,
-    user_session: UserSession,
+    session: UserSession,
     State(state): State<AppState>,
     Json(payload): Json<Req>,
 ) -> ApiResult<Req::Response>
 where
     Req: AuthorizedApiRequest + Deserialize<'a>,
 {
-    payload.process_request(conn, user_session, state).await
+    payload.process_request(conn, session, state).await
 }
