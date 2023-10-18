@@ -1,7 +1,7 @@
 use crate::error::{ApiError, ApiResult};
 use crate::extractor::DbConnection::DbConnection;
 use crate::extractor::UserSession::UserSession;
-use crate::handler::{AuthorizedApiRequest, PublicApiRequest};
+use crate::handler::AuthorizedApiRequest;
 use crate::AppState;
 use axum::http::StatusCode;
 use axum::{async_trait, Json};
@@ -10,7 +10,6 @@ use rustter_endpoint::post::endpoint::{NewPost, NewPostOk, TrendingPostsOk};
 use rustter_endpoint::post::types::{LikeStatus, PublicPost};
 use rustter_endpoint::{RequestFailed, TrendingPosts};
 use rustter_query::post as post_query;
-use rustter_query::session::Session;
 use rustter_query::{user, AsyncConnection};
 use tracing::info;
 
@@ -34,7 +33,7 @@ impl AuthorizedApiRequest for NewPost {
 fn to_public(
     post: post_query::Post,
     conn: &mut AsyncConnection,
-    session: Option<&Session>,
+    session: Option<&UserSession>,
 ) -> ApiResult<PublicPost> {
     let user = user::get(conn, post.user_id).unwrap();
     let author = super::user::to_public(user, session)?;
@@ -51,7 +50,7 @@ fn to_public(
         None => None,
     };
 
-    if let Ok(mut content) = serde_json::from_value(post.content.0) {
+    if let Ok(content) = serde_json::from_value(post.content.0) {
         Ok(PublicPost {
             id: post.id,
             author,
@@ -79,8 +78,7 @@ fn trending_posts(
     DbConnection(mut conn): DbConnection,
     session: Option<&UserSession>,
     limit: Option<i64>,
-) -> ApiResult<Vec<PublicPost>
-> {
+) -> ApiResult<Vec<PublicPost>> {
     let mut posts = vec![];
 
     for post in post_query::trending_posts(&mut conn, limit)? {
