@@ -86,9 +86,17 @@ diesel::table! {
     }
 }
 
-diesel::joinable!(followers -> users (follows));
+diesel::joinable!(bookmarks -> posts (post_id));
+diesel::joinable!(bookmarks -> users (user_id));
+diesel::joinable!(boosts -> posts (post_id));
+diesel::joinable!(boosts -> users (user_id));
+diesel::joinable!(poll_choices -> posts (post_id));
 diesel::joinable!(poll_votes -> poll_choices (choice_id));
-diesel::joinable!(posts -> users (direct_message_to));
+diesel::joinable!(poll_votes -> posts (post_id));
+diesel::joinable!(poll_votes -> users (user_id));
+diesel::joinable!(reactions -> posts (post_id));
+diesel::joinable!(reactions -> users (user_id));
+diesel::joinable!(web -> users (user_id));
 
 diesel::allow_tables_to_appear_in_same_query!(
     bookmarks,

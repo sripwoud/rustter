@@ -96,7 +96,7 @@ pub fn HeadlineInput(cx: Scope, state: UseRef<PageState>) -> Element {
 }
 
 pub fn NewChatPost(cx: Scope) -> Element {
-    let state = use_ref(cx, || PageState::default());
+    let state = use_ref(cx, PageState::default);
     let nav = use_navigator(cx);
     let toaster = use_toaster(cx);
     let api_client = ApiClient::global();
@@ -129,7 +129,7 @@ pub fn NewChatPost(cx: Scope) -> Element {
                 }
             };
 
-            let response = fetch_json!(<NewPostOk>, api_client, request);
+            let response = post_json!(<NewPostOk>, api_client, request);
             match response {
                 Ok(_) => {
                     toaster.write().success("Posted!", None);

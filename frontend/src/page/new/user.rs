@@ -100,7 +100,7 @@ pub fn Register(cx: Scope) -> Element {
                 .unwrap(),
             }
         };
-        let response = fetch_json!(<CreateUserOk>, api_client, request_data);
+        let response = post_json!(<CreateUserOk>, api_client, request_data);
         match response {
             Ok(res) => {
                 crate::util::cookie::set_session(

@@ -3,13 +3,10 @@
 use crate::elements::navbar::NewPostPopupButton::NewPostPopupButton;
 use crate::prelude::*;
 use dioxus::prelude::*;
-use dioxus_router::prelude::*;
 
 #[inline_props]
 pub fn NewPostPopup(cx: Scope, hide: UseState<bool>) -> Element {
     let hide_class = maybe_class!("hidden", *hide.get());
-    let nav = use_navigator(cx);
-    const BUTTON_CLASS: &str = "grid grid-cols-[20px_1fr] gap-4 pl-4 justify-center items-center w-full h-12 border-y navbar-border-color";
 
     cx.render(rsx! {
         div {

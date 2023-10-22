@@ -25,7 +25,15 @@ impl ApiClient {
     where
         T: Serialize + ?Sized,
     {
-        post_json(self.clone(), endpoint, json, timeout).await
+        _post_json(self.clone(), endpoint, json, timeout).await
+    }
+
+    pub async fn fetch_json(
+        &self,
+        endpoint: &str,
+        timeout: std::time::Duration,
+    ) -> Result<reqwest::Response, RequestError> {
+        _fetch_json(self.clone(), endpoint, timeout).await
     }
 
     pub fn global() -> &'static ApiClient {
@@ -42,7 +50,26 @@ impl ApiClient {
 }
 
 #[cfg(target_arch = "wasm32")]
-async fn post_json<T>(
+async fn _fetch_json(
+    client: ApiClient,
+    endpoint: &str,
+    timeout: std::time::Duration,
+) -> Result<reqwest::Response, RequestError> {
+    let url = make_absolute_url(endpoint);
+
+    let api_request = async {
+        client
+            .inner
+            .get(url)
+            .fetch_credentials_include()
+            .send()
+            .await
+    };
+    make_request(api_request, timeout).await
+}
+
+#[cfg(target_arch = "wasm32")]
+async fn _post_json<T>(
     client: ApiClient,
     endpoint: &str,
     json: &T,
@@ -66,7 +93,19 @@ where
 }
 
 #[cfg(not(target_arch = "wasm32"))]
-async fn post_json<T>(
+async fn _fetch_json(
+    client: ApiClient,
+    endpoint: &str,
+    timeout: std::time::Duration,
+) -> Result<reqwest::Response, RequestError> {
+    let url = make_absolute_url(endpoint);
+
+    let api_request = async { client.inner.get(url).send().await };
+    make_request(api_request, timeout).await
+}
+
+#[cfg(not(target_arch = "wasm32"))]
+async fn _post_json<T>(
     client: ApiClient,
     endpoint: &str,
     json: &T,
@@ -86,7 +125,7 @@ fn make_absolute_url(endpoint: &str) -> reqwest::Url {
         Ok(url) => url,
         Err(_) => "http://127.0.0.1:8070/".to_owned(),
     };
-    let url = reqwest::Url::parse(&*root_api_url).unwrap();
+    let url = reqwest::Url::parse(&root_api_url).unwrap();
     url.join(endpoint).unwrap()
 }
 
@@ -115,7 +154,7 @@ async fn make_request(
 }
 
 #[macro_export]
-macro_rules! fetch_json {
+macro_rules! post_json {
     (<$target:ty>, $client:ident, $request:expr) => {{
         use rustter_endpoint::Endpoint;
         use $crate::util::RequestError;
@@ -134,4 +173,27 @@ macro_rules! fetch_json {
         }
     }};
 }
+
+#[macro_export]
+macro_rules! fetch_json {
+    (<$target:ty>, $client:ident, $request:expr) => {{
+        use rustter_endpoint::Endpoint;
+        use $crate::util::RequestError;
+        let duration = std::time::Duration::from_millis(6000);
+        let response = $client.fetch_json($request.url(), duration).await;
+        match response {
+            Ok(res) => {
+                if res.status().is_success() {
+                    Ok(res.json::<$target>().await.unwrap())
+                } else {
+                    let err_payload = res.json::<rustter_endpoint::RequestFailed>().await.unwrap();
+                    Err(RequestError::BadRequest(err_payload))
+                }
+            }
+            Err(e) => Err(e),
+        }
+    }};
+}
+
 pub use fetch_json;
+pub use post_json;

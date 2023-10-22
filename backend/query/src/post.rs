@@ -31,6 +31,23 @@ pub fn new(conn: &mut PgConnection, post: Post) -> Result<PostId, DieselError> {
     })
 }
 
+pub fn trending_posts(
+    conn: &mut PgConnection,
+    limit: Option<i64>,
+) -> Result<Vec<Post>, DieselError> {
+    use crate::schema::posts::dsl::*;
+    posts
+        .filter(reply_to.is_null())
+        .order(created_at.desc())
+        .limit(limit.unwrap_or(20))
+        .get_results(conn)
+}
+
+pub fn get(conn: &mut PgConnection, post_id: PostId) -> Result<Post, DieselError> {
+    use crate::schema::posts::dsl::*;
+    posts.find(post_id).first(conn)
+}
+
 impl Post {
     pub fn new(
         author: UserId,

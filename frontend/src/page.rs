@@ -25,24 +25,19 @@ pub enum Route {
     #[route("/")] // TODO: Add redirect to login if not logged in
     Home {},
     #[redirect("/home", || Route::Home {})]
+    #[route("/register")]
+    Register {}, // TODO: Add redirect to home if logged in
     #[route("/login")] // TODO: Add redirect to home if logged in
     Login {},
-    #[nest("/new")]
-    #[route("/user")]
-    Register {},
-    // TODO: Add redirect to home if logged in
-    #[nest("/post")]
-    #[route("/chat")]
-    NewChatPost {},
-    #[route("/image")]
-    NewImagePost {},
-    #[route("/poll")]
-    NewPollPost {},
-    #[end_nest]
-    #[end_nest]
-    #[nest("/post")]
-    #[route("/trending")]
+    #[route("/posts")]
     TrendingPosts {},
+    #[nest("/post")]
+        #[route("/chat")]
+        NewChatPost {},
+        #[route("/image")]
+        NewImagePost {},
+        #[route("/poll")]
+        NewPollPost {},
     #[end_nest]
     #[end_layout]
     #[route("/:..route")]

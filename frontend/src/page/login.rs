@@ -101,7 +101,7 @@ pub fn Login(cx: Scope) -> Element {
             }
         };
 
-        let response = fetch_json!(<LoginOk>, api_client, request_data);
+        let response = post_json!(<LoginOk>, api_client, request_data);
         match response {
             Ok(res) => {
                 crate::util::cookie::set_session(

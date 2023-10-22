@@ -1,5 +1,7 @@
+// use std::str::FromStr;
 use crate::UserFacingError;
 use nutype::nutype;
+// use derive_more::FromStr;
 
 #[nutype(validate(min_len = 3, max_len = 30))]
 #[derive(AsRef, Clone, Debug, Deserialize, PartialEq, Serialize)]
@@ -23,6 +25,22 @@ impl UserFacingError for PasswordError {
     fn formatted_error(&self) -> &'static str {
         match self {
             PasswordError::TooShort => "Password is too short (min 8 characters)",
+        }
+    }
+}
+
+#[nutype(validate(max_len = 30))]
+#[derive(AsRef, Clone, Debug, Deserialize, PartialEq, Serialize)]
+pub struct DisplayName(String);
+
+impl DisplayName {
+    pub const MAX_CHARACTERS: usize = 30;
+}
+
+impl UserFacingError for DisplayNameError {
+    fn formatted_error(&self) -> &'static str {
+        match self {
+            DisplayNameError::TooLong => "Display name is too long (max 30 characters)",
         }
     }
 }

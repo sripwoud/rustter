@@ -1,15 +1,20 @@
 use crate::error::ApiResult;
 use crate::extractor::DbConnection::DbConnection;
+use crate::extractor::UserSession::UserSession;
 use crate::handler::PublicApiRequest;
 use crate::AppState;
 use axum::http::StatusCode;
 use axum::{async_trait, Json};
 use chrono::Duration;
 use rustter_domain::ids::UserId;
+use rustter_domain::user::DisplayName;
+use rustter_endpoint::user::types::PublicUserProfile;
 use rustter_endpoint::{CreateUser, CreateUserOk, Login, LoginOk};
 use rustter_query::session::Session;
+use rustter_query::user::User;
 use rustter_query::{session, AsyncConnection};
 use tracing::{info, span};
+use url::Url;
 
 #[derive(Clone)]
 struct SessionSignature(String);
@@ -99,4 +104,17 @@ impl PublicApiRequest for Login {
             }),
         ))
     }
+}
+
+pub fn to_public(user: User, session: Option<&UserSession>) -> ApiResult<PublicUserProfile> {
+    Ok(PublicUserProfile {
+        id: user.id,
+        display_name: user.display_name.and_then(|s| DisplayName::new(s).ok()),
+        handle: user.handle,
+        profile_image: user.profile_image.and_then(|s| Url::parse(&s).ok()),
+        created_at: user.created_at,
+        am_following: session
+            .map(|session| session.user_id == user.id)
+            .unwrap_or(false),
+    })
 }
