@@ -1,4 +1,4 @@
-mod post;
+pub mod post;
 pub mod user;
 
 use crate::error::ApiResult;
@@ -33,7 +33,7 @@ pub trait AuthorizedApiRequest {
     ) -> ApiResult<Self::Response>;
 }
 
-pub async fn with_public_handler<'a, Req>(
+pub async fn with_json_public_handler<'a, Req>(
     conn: DbConnection,
     State(state): State<AppState>,
     Json(payload): Json<Req>,
@@ -44,7 +44,7 @@ where
     payload.process_request(conn, state).await
 }
 
-pub async fn with_handler<'a, Req>(
+pub async fn with_json_handler<'a, Req>(
     conn: DbConnection,
     session: UserSession,
     State(state): State<AppState>,

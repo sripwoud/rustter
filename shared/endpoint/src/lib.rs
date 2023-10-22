@@ -29,7 +29,7 @@ macro_rules! route {
     };
 }
 
-route!(CreateUser => "/account/create");
-route!(Login => "/account/login");
-route!(NewPost => "/post/new");
+route!(CreateUser => "/register");
+route!(Login => "/login");
+route!(NewPost => "/post");
 route!(TrendingPosts => "/posts");

@@ -74,7 +74,7 @@ fn to_public(
     }
 }
 
-fn trending_posts(
+fn _trending_posts(
     DbConnection(mut conn): DbConnection,
     session: Option<&UserSession>,
     limit: Option<i64>,
@@ -107,8 +107,18 @@ impl AuthorizedApiRequest for TrendingPosts {
         _state: AppState,
     ) -> ApiResult<Self::Response> {
         info!(target:"rustter_server", "fetching trending posts");
-        let posts = trending_posts(conn, Some(&session), None)?;
+        let posts = _trending_posts(conn, Some(&session), None)?;
 
         Ok((StatusCode::OK, Json(TrendingPostsOk(posts))))
     }
+}
+
+pub async fn trending_posts(
+    conn: DbConnection,
+    session: UserSession,
+) -> ApiResult<(StatusCode, Json<TrendingPostsOk>)> {
+    info!(target:"rustter_server", "fetching trending posts");
+    let posts = _trending_posts(conn, Some(&session), None)?;
+
+    Ok((StatusCode::OK, Json(TrendingPostsOk(posts))))
 }

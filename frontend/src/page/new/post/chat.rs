@@ -129,7 +129,7 @@ pub fn NewChatPost(cx: Scope) -> Element {
                 }
             };
 
-            let response = fetch_json!(<NewPostOk>, api_client, request);
+            let response = post_json!(<NewPostOk>, api_client, request);
             match response {
                 Ok(_) => {
                     toaster.write().success("Posted!", None);
