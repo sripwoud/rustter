@@ -1,0 +1,29 @@
+name: Deploy API
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['backend/**']
+    paths-ignore:
+      - 'backend/**/*.md'
+
+jobs:
+  deployment:
+    environment:
+      name: ui
+      url: https://rustter-api.fly.dev/
+    name: Deploy API
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+      - name: Deploy
+        run: |
+          flyctl deploy \
+            --config backend/server/fly.toml \
+            --dockerfile backend/server/Dockerfile \
+            --remote-only
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
