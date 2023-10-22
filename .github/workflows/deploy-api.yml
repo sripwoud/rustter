@@ -3,14 +3,12 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
-    paths: ['backend/**']
-    paths-ignore:
-      - 'backend/**/*.md'
+    paths: ['backend/**', '!backend/**/*.md']
 
 jobs:
   deployment:
     environment:
-      name: ui
+      name: api
       url: https://rustter-api.fly.dev/
     name: Deploy API
     runs-on: ubuntu-latest
