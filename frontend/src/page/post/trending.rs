@@ -34,15 +34,14 @@ pub fn TrendingPosts(cx: Scope) -> Element {
         .posts
         .iter()
         .map(|(&id, _)| {
-            rsx! {
-                div {
-                    PublicPostEntry { post_id: id }
-                }
-            }
+            rsx! { PublicPostEntry { post_id: id } }
         })
         .collect::<Vec<LazyNodes>>();
 
     cx.render(rsx! {
+        div {
+         class:"overflow-y-auto max-h-[calc(100vh-var(--navbar-height))]",
             TrendingPosts.into_iter()
+        }
     })
 }

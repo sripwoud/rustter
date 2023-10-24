@@ -4,9 +4,11 @@ mod Content;
 use Content::Content;
 mod PublicPostEntry;
 pub use PublicPostEntry::PublicPostEntry;
+mod ActionBar;
 mod Chat;
 mod Header;
 
+pub use ActionBar::ActionBar;
 pub use Chat::Chat;
 pub use Header::Header;
 
@@ -46,8 +48,8 @@ impl PostManager {
     pub fn clear(&mut self) {
         self.posts.clear();
     }
-    pub fn get(&self, id: PostId) -> Option<&PublicPost> {
-        self.posts.get(&id)
+    pub fn get(&self, id: &PostId) -> Option<&PublicPost> {
+        self.posts.get(id)
     }
     pub fn remove(&mut self, id: PostId) {
         self.posts.remove(&id);

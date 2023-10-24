@@ -23,6 +23,9 @@ lint:
     cargo clippy -p frontend --target wasm32-unknown-unknown
     cargo clippy --workspace --exclude frontend
 
+# validate: check format, lint, build
+validate: fmt lint build
+
 # run `clippy fix`
 fix:
     cargo clippy -p frontend --fix --target wasm32-unknown-unknown --allow-dirty
