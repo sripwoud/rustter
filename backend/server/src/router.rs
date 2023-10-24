@@ -5,7 +5,7 @@ use axum::http::HeaderValue;
 use axum::routing::{get, post};
 use axum::{Extension, Router};
 use hyper::{header::CONTENT_TYPE, Method};
-use rustter_endpoint::{CreateUser, Endpoint, Login, NewPost, TrendingPosts};
+use rustter_endpoint::{Bookmark, CreateUser, Endpoint, Login, NewPost, TrendingPosts};
 use tower::ServiceBuilder;
 use tower_http::{
     cors::CorsLayer,
@@ -24,7 +24,8 @@ pub fn new_router(state: AppState) -> axum::Router {
         .route(Login::URL, post(with_json_public_handler::<Login>));
     let authorized_routes = Router::new()
         .route(NewPost::URL, post(with_json_handler::<NewPost>))
-        .route(TrendingPosts::URL, get(post::trending_posts));
+        .route(TrendingPosts::URL, get(post::trending_posts))
+        .route(Bookmark::URL, post(with_json_handler::<Bookmark>));
     // using layer(ServiceBuilder::new().layer()) execute layers in same order as they are defined
     // instead of layer().layer().layer() which doesn't
     Router::new()

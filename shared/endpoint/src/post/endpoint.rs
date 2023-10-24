@@ -1,5 +1,5 @@
 use super::types::Content;
-use crate::post::types::{NewPostOptions, PublicPost};
+use crate::post::types::{BookmarkAction, NewPostOptions, PublicPost};
 use rustter_domain::ids::PostId;
 use serde::{Deserialize, Serialize};
 
@@ -19,3 +19,13 @@ pub struct TrendingPosts; // no request data, we just return the most recent pos
 
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
 pub struct TrendingPostsOk(pub Vec<PublicPost>);
+
+#[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
+pub struct Bookmark {
+    pub post_id: PostId,
+    pub action: BookmarkAction,
+}
+#[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
+pub struct BookmarkOk {
+    pub status: BookmarkAction,
+}
