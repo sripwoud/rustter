@@ -4,7 +4,7 @@ on:
     branches: [main]
 
 jobs:
-  build_and_test:
+  validate:
     name: Rust project
     runs-on: ubuntu-latest
     steps:
