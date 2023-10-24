@@ -2,8 +2,9 @@
 
 use crate::prelude::*;
 use dioxus::prelude::*;
-use rustter_domain::ids::PostId;
 use log::info;
+use rustter_domain::ids::PostId;
+
 #[inline_props]
 pub fn Bookmark(cx: Scope, post_id: PostId, bookmarked: bool) -> Element {
     let post_manager = use_post_manager(cx);
