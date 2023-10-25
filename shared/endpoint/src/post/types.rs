@@ -68,8 +68,8 @@ impl From<Poll> for Content {
 
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
 pub enum LikeStatus {
-    Liked,
-    Disliked,
+    Like,
+    Dislike,
     NoReaction,
 }
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]

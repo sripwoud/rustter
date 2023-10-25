@@ -16,5 +16,6 @@ pub use util::{AsyncConnection, AsyncConnectionPool, OwnedAsyncConnection};
 
 pub mod bookmark;
 pub mod post;
+pub mod reaction;
 pub mod session;
 pub mod user;

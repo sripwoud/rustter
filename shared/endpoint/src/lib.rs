@@ -2,7 +2,9 @@ use serde::{Deserialize, Serialize};
 
 pub mod post;
 pub use post::endpoint::{Bookmark, NewPost, NewPostOk, TrendingPosts};
+mod reaction;
 pub mod user;
+pub use reaction::{Reaction, ReactionOk};
 
 pub use user::endpoint::{CreateUser, CreateUserOk, Login, LoginOk};
 
@@ -35,3 +37,4 @@ route!(Login => "/login");
 route!(NewPost => "/post");
 route!(TrendingPosts => "/posts");
 route!(Bookmark => "/bookmark");
+route!(Reaction => "/react");

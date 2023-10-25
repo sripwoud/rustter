@@ -1,4 +1,6 @@
+pub mod bookmark;
 pub mod post;
+pub mod reaction;
 pub mod user;
 
 use crate::error::ApiResult;
