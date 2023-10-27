@@ -66,10 +66,10 @@ impl From<Poll> for Content {
     }
 }
 
-#[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
+#[derive(Copy, Clone, Debug, Deserialize, Serialize, PartialEq)]
 pub enum LikeStatus {
-    Liked,
-    Disliked,
+    Like,
+    Dislike,
     NoReaction,
 }
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
@@ -98,6 +98,21 @@ impl From<BookmarkAction> for bool {
         match action {
             BookmarkAction::Save => true,
             BookmarkAction::Remove => false,
+        }
+    }
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Serialize, PartialEq)]
+pub enum BoostAction {
+    Add,
+    Remove,
+}
+
+impl From<BoostAction> for bool {
+    fn from(action: BoostAction) -> Self {
+        match action {
+            BoostAction::Add => true,
+            BoostAction::Remove => false,
         }
     }
 }

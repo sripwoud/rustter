@@ -1,19 +1,26 @@
 use crate::{DeleteStatus, DieselError};
+use chrono::{DateTime, Utc};
 use diesel::prelude::*;
 use diesel::{delete, insert_into};
 use rustter_domain::ids::{PostId, UserId};
 
-pub fn save(conn: &mut PgConnection, user_id: UserId, post_id: PostId) -> Result<(), DieselError> {
+pub fn boost(
+    conn: &mut PgConnection,
+    user_id: UserId,
+    post_id: PostId,
+    when: DateTime<Utc>,
+) -> Result<(), DieselError> {
     let uid = user_id;
     let pid = post_id;
 
     {
-        use crate::schema::bookmarks::dsl::*;
+        use crate::schema::boosts::dsl::*;
 
-        insert_into(bookmarks)
-            .values((user_id.eq(uid), post_id.eq(pid)))
+        insert_into(boosts)
+            .values((user_id.eq(uid), post_id.eq(pid), boosted_at.eq(when)))
             .on_conflict((user_id, post_id))
-            .do_nothing()
+            .do_update()
+            .set(boosted_at.eq(when))
             .execute(conn)
             .map(|_| ())
     }
@@ -28,9 +35,9 @@ pub fn remove(
     let pid = post_id;
 
     {
-        use crate::schema::bookmarks::dsl::*;
+        use crate::schema::boosts::dsl::*;
 
-        delete(bookmarks)
+        delete(boosts)
             .filter(post_id.eq(pid))
             .filter(user_id.eq(uid))
             .execute(conn)
@@ -49,10 +56,10 @@ pub fn get(conn: &mut PgConnection, user_id: UserId, post_id: PostId) -> Result<
     let pid = post_id;
 
     {
-        use crate::schema::bookmarks::dsl::*;
+        use crate::schema::boosts::dsl::*;
         use diesel::dsl::count;
 
-        bookmarks
+        boosts
             .filter(post_id.eq(pid))
             .filter(user_id.eq(uid))
             .select(count(post_id))

@@ -6,11 +6,13 @@ use crate::AppState;
 use axum::http::StatusCode;
 use axum::{async_trait, Json};
 use rustter_domain::Username;
-use rustter_endpoint::post::endpoint::{BookmarkOk, NewPost, NewPostOk, TrendingPostsOk};
-use rustter_endpoint::post::types::{BookmarkAction, LikeStatus, PublicPost};
-use rustter_endpoint::{Bookmark, RequestFailed, TrendingPosts};
+use rustter_endpoint::post::endpoint::{NewPost, NewPostOk, TrendingPostsOk};
+use rustter_endpoint::post::types::{LikeStatus, PublicPost};
+use rustter_endpoint::{RequestFailed, TrendingPosts};
 use rustter_query::bookmark as bookmark_query;
 use rustter_query::post as post_query;
+use rustter_query::reaction as reaction_query;
+use rustter_query::reaction::AggregatePostInfo;
 use rustter_query::{user, AsyncConnection};
 use tracing::info;
 
@@ -52,21 +54,40 @@ fn to_public(
     };
 
     if let Ok(content) = serde_json::from_value(post.content.0) {
+        let AggregatePostInfo {
+            boosts,
+            likes,
+            dislikes,
+            ..
+        } = reaction_query::aggregate(conn, post.id)?;
+
         Ok(PublicPost {
             id: post.id,
             author,
             content,
             time_posted: post.time_posted,
             reply_to,
-            like_status: LikeStatus::NoReaction,
+            like_status: {
+                match session {
+                    Some(session) => match reaction_query::get(conn, post.id, session.user_id)? {
+                        Some(reaction) => match reaction.like_status {
+                            1 => LikeStatus::Like,
+                            -1 => LikeStatus::Dislike,
+                            _ => LikeStatus::NoReaction,
+                        },
+                        None => LikeStatus::NoReaction,
+                    },
+                    None => LikeStatus::NoReaction,
+                }
+            },
             bookmarked: match session {
                 Some(session) => bookmark_query::get(conn, session.user_id, post.id)?,
                 None => false,
             },
-            boosted: false,
-            boosts: 0,
-            likes: 0,
-            dislikes: 0,
+            boosted: !matches!(boosts, 0),
+            boosts,
+            likes,
+            dislikes,
         })
     } else {
         Err(ApiError {
@@ -125,33 +146,4 @@ pub async fn trending_posts(
     let posts = _trending_posts(conn, Some(&session), None)?;
 
     Ok((StatusCode::OK, Json(TrendingPostsOk(posts))))
-}
-
-#[async_trait]
-impl AuthorizedApiRequest for Bookmark {
-    type Response = (StatusCode, Json<BookmarkOk>);
-
-    async fn process_request(
-        self,
-        DbConnection(mut conn): DbConnection,
-        session: UserSession,
-        _state: AppState,
-    ) -> ApiResult<Self::Response> {
-        info!(target:"rustter_server", "edit bookmarking post {post_id} for user {user_id}", post_id=self.post_id, user_id=session.user_id);
-        match self.action {
-            BookmarkAction::Save => {
-                bookmark_query::save(&mut conn, session.user_id, self.post_id)?;
-            }
-            BookmarkAction::Remove => {
-                bookmark_query::remove(&mut conn, session.user_id, self.post_id)?;
-            }
-        }
-
-        Ok((
-            StatusCode::OK,
-            Json(BookmarkOk {
-                status: self.action,
-            }),
-        ))
-    }
 }

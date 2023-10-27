@@ -15,6 +15,14 @@ pub mod util;
 pub use util::{AsyncConnection, AsyncConnectionPool, OwnedAsyncConnection};
 
 pub mod bookmark;
+pub mod boost;
 pub mod post;
+pub mod reaction;
 pub mod session;
 pub mod user;
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub enum DeleteStatus {
+    Deleted,
+    NotFound,
+}
