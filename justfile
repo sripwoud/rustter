@@ -47,7 +47,7 @@ serve-ui *ARGS:
 
 # run API server
 serve-api *ARGS:
-    cargo run -p rustter_server {{ ARGS }}
+    watchexec -r -i "frontend/**" -i "target/**" --exts rs,sql,toml cargo run -p rustter_server {{ ARGS }}
 
 # set up project dependencies
 init:
