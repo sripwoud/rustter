@@ -11,6 +11,8 @@ use rustter_endpoint::post::types::{LikeStatus, PublicPost};
 use rustter_endpoint::{RequestFailed, TrendingPosts};
 use rustter_query::bookmark as bookmark_query;
 use rustter_query::post as post_query;
+use rustter_query::reaction as reaction_query;
+use rustter_query::reaction::AggregatePostInfo;
 use rustter_query::{user, AsyncConnection};
 use tracing::info;
 
@@ -52,21 +54,40 @@ fn to_public(
     };
 
     if let Ok(content) = serde_json::from_value(post.content.0) {
+        let AggregatePostInfo {
+            boosts,
+            likes,
+            dislikes,
+            ..
+        } = reaction_query::aggregate(conn, post.id)?;
+
         Ok(PublicPost {
             id: post.id,
             author,
             content,
             time_posted: post.time_posted,
             reply_to,
-            like_status: LikeStatus::NoReaction,
+            like_status: {
+                match session {
+                    Some(session) => match reaction_query::get(conn, post.id, session.user_id)? {
+                        Some(reaction) => match reaction.like_status {
+                            1 => LikeStatus::Like,
+                            -1 => LikeStatus::Dislike,
+                            _ => LikeStatus::NoReaction,
+                        },
+                        None => LikeStatus::NoReaction,
+                    },
+                    None => LikeStatus::NoReaction,
+                }
+            },
             bookmarked: match session {
                 Some(session) => bookmark_query::get(conn, session.user_id, post.id)?,
                 None => false,
             },
-            boosted: false,
-            boosts: 0,
-            likes: 0,
-            dislikes: 0,
+            boosted: !matches!(boosts, 0),
+            boosts,
+            likes,
+            dislikes,
         })
     } else {
         Err(ApiError {

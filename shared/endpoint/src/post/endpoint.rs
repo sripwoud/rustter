@@ -1,5 +1,5 @@
 use super::types::Content;
-use crate::post::types::{BookmarkAction, NewPostOptions, PublicPost};
+use crate::post::types::{BookmarkAction, BoostAction, NewPostOptions, PublicPost};
 use rustter_domain::ids::PostId;
 use serde::{Deserialize, Serialize};
 
@@ -28,4 +28,14 @@ pub struct Bookmark {
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
 pub struct BookmarkOk {
     pub status: BookmarkAction,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
+pub struct Boost {
+    pub post_id: PostId,
+    pub action: BoostAction,
+}
+#[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
+pub struct BoostOk {
+    pub status: BoostAction,
 }

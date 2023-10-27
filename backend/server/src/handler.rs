@@ -1,4 +1,5 @@
 pub mod bookmark;
+pub mod boost;
 pub mod post;
 pub mod reaction;
 pub mod user;

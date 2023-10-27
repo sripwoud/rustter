@@ -1,9 +1,10 @@
 use crate::{schema, DieselError};
 use chrono::{DateTime, Utc};
-use diesel::prelude::*;
 use diesel::insert_into;
+use diesel::prelude::*;
 use rustter_domain::ids::{PostId, UserId};
 use serde::{Deserialize, Serialize};
+use tracing::info;
 
 #[derive(Clone, Debug, DieselNewType, Deserialize, Serialize)]
 pub struct ReactionData(serde_json::Value);
@@ -49,5 +50,48 @@ pub fn get(
             .filter(user_id.eq(uid))
             .get_result(conn)
             .optional()
+    }
+}
+
+#[derive(Clone, Debug, Serialize)]
+pub struct AggregatePostInfo {
+    pub post_id: PostId,
+    pub likes: i64,
+    pub dislikes: i64,
+    pub boosts: i64,
+}
+
+pub fn aggregate(
+    conn: &mut PgConnection,
+    post_id: PostId,
+) -> Result<AggregatePostInfo, DieselError> {
+    let pid = post_id;
+    {
+        use crate::schema::reactions::dsl::*;
+
+        let likes = reactions
+            .filter(post_id.eq(pid))
+            .filter(like_status.eq(1))
+            .count()
+            .get_result(conn)?;
+        let dislikes = reactions
+            .filter(post_id.eq(pid))
+            .filter(like_status.eq(-1))
+            .count()
+            .get_result(conn)?;
+
+        info!(target:"rustter_server", "likes: {likes}, dislikes: {dislikes}", likes=likes, dislikes=dislikes);
+
+        let boosts = {
+            use crate::schema::boosts::dsl::*;
+            boosts.filter(post_id.eq(pid)).count().get_result(conn)?
+        };
+
+        Ok(AggregatePostInfo {
+            post_id: pid,
+            likes,
+            dislikes,
+            boosts,
+        })
     }
 }

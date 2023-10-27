@@ -8,6 +8,7 @@ use axum::{async_trait, http::StatusCode, Json};
 use rustter_endpoint::post::types::LikeStatus;
 use rustter_endpoint::{Reaction, ReactionOk};
 use rustter_query::reaction as reaction_query;
+use rustter_query::reaction::AggregatePostInfo;
 use tracing::info;
 
 #[async_trait]
@@ -36,12 +37,16 @@ impl AuthorizedApiRequest for Reaction {
             },
         )?;
 
+        let AggregatePostInfo {
+            likes, dislikes, ..
+        } = reaction_query::aggregate(&mut conn, self.post_id)?;
+
         Ok((
             StatusCode::OK,
             Json(ReactionOk {
                 post_id: Default::default(),
-                likes: 0,
-                dislikes: 0,
+                likes,
+                dislikes,
                 like_status: self.like_status,
             }),
         ))
