@@ -5,7 +5,7 @@ on:
 
 jobs:
   validate:
-    name: Rust project
+    name: Validate
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
