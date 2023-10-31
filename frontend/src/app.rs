@@ -13,7 +13,10 @@ pub fn App(cx: Scope) -> Element {
     use_init_atom_root(cx);
 
     cx.render(rsx! {
-        Router::<Route> { },
+        main{
+            class:"max-w-[var(--content-max-width)] min-w-[var(--content-min-width)] mb-[var(--navbar-height)] mx-auto p-4",
+            Router::<Route> { }
+        }
         ToastRoot {
             toaster: use_toaster(cx)
         }

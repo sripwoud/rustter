@@ -5,11 +5,9 @@ use Content::Content;
 mod PublicPostEntry;
 pub use PublicPostEntry::PublicPostEntry;
 mod ActionBar;
-mod Chat;
 mod Header;
 
 pub use ActionBar::ActionBar;
-pub use Chat::Chat;
 pub use Header::Header;
 
 use dioxus::prelude::*;

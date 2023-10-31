@@ -3,6 +3,7 @@ use once_cell::sync::OnceCell;
 use serde::Serialize;
 
 use super::RequestError;
+use rustter_endpoint::app_url::api_url;
 
 pub static API_CLIENT: OnceCell<ApiClient> = OnceCell::new();
 
@@ -121,11 +122,7 @@ where
 }
 
 fn make_absolute_url(endpoint: &str) -> reqwest::Url {
-    let root_api_url = match std::env::var("API_URL") {
-        Ok(url) => url,
-        Err(_) => "http://127.0.0.1:8070/".to_owned(),
-    };
-    let url = reqwest::Url::parse(&root_api_url).unwrap();
+    let url = reqwest::Url::parse(api_url().as_str()).unwrap();
     url.join(endpoint).unwrap()
 }
 
@@ -165,8 +162,18 @@ macro_rules! post_json {
                 if res.status().is_success() {
                     Ok(res.json::<$target>().await.unwrap())
                 } else {
-                    let err_payload = res.json::<rustter_endpoint::RequestFailed>().await.unwrap();
-                    Err(RequestError::BadRequest(err_payload))
+                    let status = res.status();
+                    match res.json::<rustter_endpoint::RequestFailed>().await {
+                        Ok(err_payload) => Err(RequestError::BadRequest(err_payload)),
+                        Err(_) => Err(RequestError::BadRequest(rustter_endpoint::RequestFailed {
+                            msg: {
+                                status
+                                    .canonical_reason()
+                                    .unwrap_or_else(|| "An error occurred. Try again later.")
+                                    .to_string()
+                            },
+                        })),
+                    }
                 }
             }
             Err(e) => Err(e),
@@ -186,8 +193,18 @@ macro_rules! fetch_json {
                 if res.status().is_success() {
                     Ok(res.json::<$target>().await.unwrap())
                 } else {
-                    let err_payload = res.json::<rustter_endpoint::RequestFailed>().await.unwrap();
-                    Err(RequestError::BadRequest(err_payload))
+                    let status = res.status();
+                    match res.json::<rustter_endpoint::RequestFailed>().await {
+                        Ok(err_payload) => Err(RequestError::BadRequest(err_payload)),
+                        Err(_) => Err(RequestError::BadRequest(rustter_endpoint::RequestFailed {
+                            msg: {
+                                status
+                                    .canonical_reason()
+                                    .unwrap_or_else(|| "An error occurred. Try again later.")
+                                    .to_string()
+                            },
+                        })),
+                    }
                 }
             }
             Err(e) => Err(e),

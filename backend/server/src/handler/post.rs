@@ -1,14 +1,16 @@
 use crate::error::{ApiError, ApiResult};
 use crate::extractor::DbConnection::DbConnection;
 use crate::extractor::UserSession::UserSession;
-use crate::handler::AuthorizedApiRequest;
+use crate::handler::{save_image, AuthorizedApiRequest};
 use crate::AppState;
 use axum::http::StatusCode;
 use axum::{async_trait, Json};
+use rustter_domain::ids::ImageId;
 use rustter_domain::Username;
+use rustter_endpoint::app_url::user_content;
 use rustter_endpoint::post::endpoint::{NewPost, NewPostOk, TrendingPostsOk};
-use rustter_endpoint::post::types::{LikeStatus, PublicPost};
-use rustter_endpoint::{RequestFailed, TrendingPosts};
+use rustter_endpoint::post::types::{Content, ImageKind, LikeStatus, PublicPost};
+use rustter_endpoint::{app_url, RequestFailed, TrendingPosts};
 use rustter_query::bookmark as bookmark_query;
 use rustter_query::post as post_query;
 use rustter_query::reaction as reaction_query;
@@ -26,7 +28,17 @@ impl AuthorizedApiRequest for NewPost {
         session: UserSession,
         _state: AppState,
     ) -> ApiResult<Self::Response> {
-        let post = post_query::Post::new(session.user_id, self.content, self.options)?;
+        let mut content = self.content;
+
+        if let Content::Image(ref mut img) = content {
+            if let ImageKind::DataUrl(data) = &img.kind {
+                let id = ImageId::new();
+                save_image(id, &data).await?;
+                img.kind = ImageKind::Id(id);
+            }
+        }
+
+        let post = post_query::Post::new(session.user_id, content, self.options)?;
         let post_id = post_query::new(&mut conn, post)?;
         info!(target:"rustter_server", "created post {post_id}");
         Ok((StatusCode::CREATED, Json(NewPostOk { post_id })))
@@ -53,7 +65,18 @@ fn to_public(
         None => None,
     };
 
-    if let Ok(content) = serde_json::from_value(post.content.0) {
+    if let Ok(mut content) = serde_json::from_value(post.content.0) {
+        if let Content::Image(ref mut image) = content {
+            if let ImageKind::Id(id) = image.kind {
+                let url = app_url::domain_and(user_content::ROOT)
+                    .join(user_content::IMAGES)
+                    .unwrap()
+                    .join(&id.to_string())
+                    .unwrap();
+                image.kind = ImageKind::Url(url);
+            }
+        }
+
         let AggregatePostInfo {
             boosts,
             likes,

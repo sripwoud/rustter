@@ -53,3 +53,5 @@ frontend/.npm/
 **/*.rs.bk
 logfile
 
+user_content
+

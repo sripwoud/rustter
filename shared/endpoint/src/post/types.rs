@@ -1,9 +1,10 @@
 use crate::user::types::PublicUserProfile;
 use chrono::{DateTime, Utc};
-use rustter_domain::ids::{PostId, UserId};
-use rustter_domain::post::{Headline, Message};
+use rustter_domain::ids::{ImageId, PostId, UserId};
+use rustter_domain::post::{Caption, Headline, Message};
 use rustter_domain::Username;
 use serde::{Deserialize, Serialize};
+use url::Url;
 
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
 pub enum Content {
@@ -43,9 +44,16 @@ impl From<Chat> for Content {
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
+pub enum ImageKind {
+    DataUrl(String), // data:text/plain;.... sent from client to server
+    Id(ImageId),     // used for database
+    Url(Url),        // sent from server to client
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
 pub struct Image {
-    pub src: String,
-    pub caption: String,
+    pub kind: ImageKind,
+    pub caption: Option<Caption>,
 }
 
 impl From<Image> for Content {
