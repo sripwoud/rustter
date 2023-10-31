@@ -1,5 +1,5 @@
+use load_dotenv::load_dotenv;
 use serde::{Deserialize, Serialize};
-
 pub mod post;
 pub use post::endpoint::{Bookmark, Boost, NewPost, NewPostOk, TrendingPosts};
 pub use post::types::LikeStatus;
@@ -31,6 +31,28 @@ macro_rules! route {
             const URL: &'static str = $url;
         }
     };
+}
+
+load_dotenv!();
+
+pub mod app_url {
+    use std::str::FromStr;
+    use url::Url;
+
+    pub const API_URL: &str = std::env!("API_URL");
+
+    pub fn domain_and(fragment: &str) -> Url {
+        Url::from_str(API_URL)
+            .and_then(|url| url.join(fragment))
+            .unwrap()
+    }
+
+    pub mod user_content {
+        pub const ROOT: &str = "usercontent/";
+        pub const IMAGES: &str = "img/";
+
+        pub const IMAGE_ROUTE: &str = "usercontent/img/";
+    }
 }
 
 route!(CreateUser => "/register");

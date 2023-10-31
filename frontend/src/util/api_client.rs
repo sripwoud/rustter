@@ -121,11 +121,7 @@ where
 }
 
 fn make_absolute_url(endpoint: &str) -> reqwest::Url {
-    let root_api_url = match std::env::var("API_URL") {
-        Ok(url) => url,
-        Err(_) => "http://127.0.0.1:8070/".to_owned(),
-    };
-    let url = reqwest::Url::parse(&root_api_url).unwrap();
+    let url = reqwest::Url::parse(ROOT_API_URL).unwrap();
     url.join(endpoint).unwrap()
 }
 
@@ -195,5 +191,6 @@ macro_rules! fetch_json {
     }};
 }
 
+use crate::ROOT_API_URL;
 pub use fetch_json;
 pub use post_json;

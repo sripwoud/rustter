@@ -1,5 +1,5 @@
 use super::handler::post;
-use crate::handler::{with_json_handler, with_json_public_handler};
+use crate::handler::{load_image, with_json_handler, with_json_public_handler};
 use crate::AppState;
 use axum::http::HeaderValue;
 use axum::routing::{get, post};
@@ -16,13 +16,16 @@ use tower_http::{
 };
 use tracing::Level;
 
-pub fn new_router(state: AppState) -> axum::Router {
+pub fn new_router(state: AppState) -> Router {
+    use rustter_endpoint::app_url::user_content::IMAGE_ROUTE;
+
     let public_routes = Router::new()
         .route("/", get(move || async { "this is the root route" }))
         .route(
             CreateUser::URL,
             post(with_json_public_handler::<CreateUser>),
         )
+        .route(&format!("{}:id", IMAGE_ROUTE), get(load_image))
         .route(Login::URL, post(with_json_public_handler::<Login>));
     let authorized_routes = Router::new()
         .route(NewPost::URL, post(with_json_handler::<NewPost>))

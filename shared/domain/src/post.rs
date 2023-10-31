@@ -31,3 +31,19 @@ impl UserFacingError for MessageError {
         }
     }
 }
+
+#[nutype(validate(min_len = 1, max_len = 100))]
+#[derive(AsRef, Clone, Debug, Deserialize, PartialEq, Serialize)]
+pub struct Caption(String);
+impl Caption {
+    pub const MAX_CHARS: usize = 60;
+}
+
+impl UserFacingError for CaptionError {
+    fn formatted_error(&self) -> &'static str {
+        match self {
+            CaptionError::TooShort => "Caption cannot be empty",
+            CaptionError::TooLong => "Caption is too long (max 60 characters)",
+        }
+    }
+}
