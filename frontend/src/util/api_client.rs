@@ -3,6 +3,7 @@ use once_cell::sync::OnceCell;
 use serde::Serialize;
 
 use super::RequestError;
+use rustter_endpoint::app_url::api_url;
 
 pub static API_CLIENT: OnceCell<ApiClient> = OnceCell::new();
 
@@ -121,7 +122,7 @@ where
 }
 
 fn make_absolute_url(endpoint: &str) -> reqwest::Url {
-    let url = reqwest::Url::parse(ROOT_API_URL).unwrap();
+    let url = reqwest::Url::parse(api_url().as_str()).unwrap();
     url.join(endpoint).unwrap()
 }
 
@@ -211,6 +212,5 @@ macro_rules! fetch_json {
     }};
 }
 
-use crate::ROOT_API_URL;
 pub use fetch_json;
 pub use post_json;

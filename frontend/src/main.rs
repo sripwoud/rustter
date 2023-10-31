@@ -12,8 +12,6 @@ use app::App;
 pub mod elements;
 pub mod page;
 
-pub const ROOT_API_URL: &str = rustter_endpoint::app_url::API_URL;
-
 cfg_if! {
     if #[cfg(feature = "console_log")] {
         fn init_log() {
