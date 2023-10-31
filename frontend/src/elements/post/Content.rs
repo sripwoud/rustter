@@ -1,7 +1,11 @@
-use super::Chat;
-use super::Image;
 use dioxus::prelude::*;
 use rustter_endpoint::post::types;
+
+mod Chat;
+use Chat::Chat;
+mod Image;
+use Image::Image;
+
 
 #[inline_props]
 pub fn Content<'a>(cx: Scope<'a>, post: &'a types::PublicPost) -> Element {
