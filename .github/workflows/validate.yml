@@ -26,6 +26,8 @@ jobs:
           cargo clippy --workspace --exclude frontend
 
       - name: Check
+        env:
+          API_URL: http://localhost:8080 # to allow cargo check to run
         run: |
           cargo check -p frontend --target wasm32-unknown-unknown
           cargo check --workspace --exclude frontend
