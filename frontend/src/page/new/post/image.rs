@@ -1,9 +1,9 @@
 use crate::elements::use_toaster;
 use crate::prelude::*;
+use crate::util::document;
 use dioxus::prelude::*;
 use dioxus_router::hooks::use_navigator;
 use serde::{Deserialize, Serialize};
-use crate::util::document;
 use web_sys::HtmlInputElement;
 
 #[derive(Clone, Default, Debug, Serialize, Deserialize)]
@@ -29,7 +29,7 @@ impl PageState {
 }
 
 #[inline_props]
-pub fn ImageInput(cx:Scope, state:UseRef<PageState>) -> Element {
+pub fn ImageInput(cx: Scope, state: UseRef<PageState>) -> Element {
     let toaster = use_toaster(cx);
 
     render! {
@@ -57,11 +57,37 @@ pub fn ImageInput(cx:Scope, state:UseRef<PageState>) -> Element {
                                     state.image = Some(data_url);
                                 });
                             }
-                            Err(e) => toaster.write().error(format!("Failed to reading image: {e}"), None)
+                            Err(e) => toaster.write().error(format!("Failed to read image: {e}"), None)
                         }
                     }
                 }
             }
+        }
+    }
+}
+
+#[inline_props]
+pub fn ImagePreview(cx: Scope, state: UseRef<PageState>) -> Element {
+    let image_data = state.read().clone().image;
+    let preview = if let Some(ref image) = image_data {
+        render! {
+            img {
+                class: "max-w-[calc(var(--content-max-width)/2)] max-h-[40vh]",
+                src: "{image}"
+            }
+        }
+    } else {
+        render! {
+            div {
+                class: "max-w-[calc(var(--content-max-width)/2)] max-h-[40vh] bg-gray-200"
+            }
+        }
+    };
+
+    render! {
+        div {
+            class: "flex flex-row justify-center",
+            preview
         }
     }
 }
@@ -144,8 +170,8 @@ pub fn NewImagePost(cx: Scope) -> Element {
                     toaster.write().success("Posted!", None);
                     nav.push(Route::Home {});
                 }
-                Err(_e) => {
-                    toaster.write().error("Failed to post: {e}!", None);
+                Err(e) => {
+                    toaster.write().error(format!("Failed to post: {e}!"), None);
                 }
             }
         }
@@ -158,9 +184,9 @@ pub fn NewImagePost(cx: Scope) -> Element {
             ImageInput {
                 state: state.clone(),
             },
-            // ImagePreview {
-            //
-            // },
+            ImagePreview {
+              state: state.clone(),
+            },
             CaptionInput {
                 state: state.clone(),
             },

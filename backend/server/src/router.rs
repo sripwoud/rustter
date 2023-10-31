@@ -25,7 +25,7 @@ pub fn new_router(state: AppState) -> Router {
             CreateUser::URL,
             post(with_json_public_handler::<CreateUser>),
         )
-        .route(&format!("{}:id", IMAGE_ROUTE), get(load_image))
+        .route(&format!("/{}:id", IMAGE_ROUTE), get(load_image))
         .route(Login::URL, post(with_json_public_handler::<Login>));
     let authorized_routes = Router::new()
         .route(NewPost::URL, post(with_json_handler::<NewPost>))

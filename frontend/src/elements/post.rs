@@ -7,10 +7,12 @@ pub use PublicPostEntry::PublicPostEntry;
 mod ActionBar;
 mod Chat;
 mod Header;
+mod Image;
 
 pub use ActionBar::ActionBar;
 pub use Chat::Chat;
 pub use Header::Header;
+pub use Image::Image;
 
 use dioxus::prelude::*;
 use fermi::{use_atom_ref, UseAtomRef};
