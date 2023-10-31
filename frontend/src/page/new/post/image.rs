@@ -146,7 +146,6 @@ pub fn NewImagePost(cx: Scope) -> Element {
             };
 
             let request = {
-                use rustter_domain::post::{Headline, Message};
                 NewPost {
                     content: Image {
                         caption: {

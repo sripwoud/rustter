@@ -7,7 +7,7 @@ use rustter_domain::ids::PostId;
 #[inline_props]
 pub fn PublicPostEntry(cx: Scope, post_id: PostId) -> Element {
     let post_manager = use_post_manager(cx);
-    let nav = use_navigator(cx);
+    let _nav = use_navigator(cx);
 
     let this_post = {
         let post = post_manager.read().get(post_id).unwrap().clone();

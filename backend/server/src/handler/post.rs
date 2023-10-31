@@ -66,18 +66,15 @@ fn to_public(
     };
 
     if let Ok(mut content) = serde_json::from_value(post.content.0) {
-        match content {
-            Content::Image(ref mut image) => {
-                if let ImageKind::Id(id) = image.kind {
-                    let url = app_url::domain_and(user_content::ROOT)
-                        .join(user_content::IMAGES)
-                        .unwrap()
-                        .join(&id.to_string())
-                        .unwrap();
-                    image.kind = ImageKind::Url(url);
-                }
+        if let Content::Image(ref mut image) = content {
+            if let ImageKind::Id(id) = image.kind {
+                let url = app_url::domain_and(user_content::ROOT)
+                    .join(user_content::IMAGES)
+                    .unwrap()
+                    .join(&id.to_string())
+                    .unwrap();
+                image.kind = ImageKind::Url(url);
             }
-            _ => {}
         }
 
         let AggregatePostInfo {

@@ -40,7 +40,7 @@ pub fn QuickRespondBox(cx: Scope, opened: UseState<bool>) -> Element {
             to_owned![opened];
             Some(rsx! {
                 QuickRespond {
-                    opened:opened.clone(),
+                    opened: opened,
                 }
             })
         }
