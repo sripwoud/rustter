@@ -4,6 +4,7 @@ use crate::AppState;
 use axum::http::HeaderValue;
 use axum::routing::{get, post};
 use axum::{Extension, Router};
+use axum::extract::DefaultBodyLimit;
 use hyper::{header::CONTENT_TYPE, Method};
 use rustter_endpoint::{
     Bookmark, Boost, CreateUser, Endpoint, Login, NewPost, Reaction, TrendingPosts,
@@ -11,10 +12,13 @@ use rustter_endpoint::{
 use tower::ServiceBuilder;
 use tower_http::{
     cors::CorsLayer,
+    limit::RequestBodyLimitLayer,
     trace::{DefaultMakeSpan, DefaultOnRequest, DefaultOnResponse, TraceLayer},
     LatencyUnit,
 };
 use tracing::Level;
+
+const eight_megabytes: usize = 1024 * 1024 * 8;
 
 pub fn new_router(state: AppState) -> Router {
     use rustter_endpoint::app_url::user_content::IMAGE_ROUTE;
@@ -32,7 +36,9 @@ pub fn new_router(state: AppState) -> Router {
         .route(TrendingPosts::URL, get(post::trending_posts))
         .route(Bookmark::URL, post(with_json_handler::<Bookmark>))
         .route(Boost::URL, post(with_json_handler::<Boost>))
-        .route(Reaction::URL, post(with_json_handler::<Reaction>));
+        .route(Reaction::URL, post(with_json_handler::<Reaction>))
+        .layer(DefaultBodyLimit::disable())
+        .layer(RequestBodyLimitLayer::new(eight_megabytes));
     // using layer(ServiceBuilder::new().layer()) execute layers in same order as they are defined
     // instead of layer().layer().layer() which doesn't
     Router::new()
