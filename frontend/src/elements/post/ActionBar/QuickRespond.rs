@@ -3,6 +3,7 @@
 use crate::prelude::*;
 use dioxus::prelude::*;
 use rustter_domain::post::Message;
+use rustter_domain::ConstrainedText;
 
 fn can_reply(message: &str) -> bool {
     message.len() < Message::MAX_CHARS && !message.is_empty()

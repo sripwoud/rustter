@@ -1,5 +1,5 @@
 // use std::str::FromStr;
-use crate::UserFacingError;
+use crate::{ConstrainedText, UserFacingError};
 use nutype::nutype;
 // use derive_more::FromStr;
 
@@ -7,11 +7,19 @@ use nutype::nutype;
 #[derive(AsRef, Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub struct Username(String);
 
-impl UserFacingError for UsernameError {
-    fn formatted_error(&self) -> &'static str {
+impl ConstrainedText for Username {
+    const NAME: &'static str = "Username";
+    const MAX_CHARS: usize = 30;
+    fn min_chars() -> Option<usize> {
+        Some(3)
+    }
+}
+
+impl UserFacingError<Username> for UsernameError {
+    fn formatted_error(&self) -> String {
         match self {
-            UsernameError::TooShort => "Username is too short (min 3 characters)",
-            UsernameError::TooLong => "Username is too long (max 30 characters)",
+            UsernameError::TooShort => Username::too_short_error(),
+            UsernameError::TooLong => Username::too_long_error(),
         }
     }
 }
@@ -20,11 +28,19 @@ impl UserFacingError for UsernameError {
 #[derive(AsRef, Clone, Deserialize, PartialEq, Serialize)]
 pub struct Password(String);
 
-impl UserFacingError for PasswordError {
+impl ConstrainedText for Password {
+    const NAME: &'static str = "Password";
+    const MAX_CHARS: usize = 100;
+    fn min_chars() -> Option<usize> {
+        Some(8)
+    }
+}
+
+impl UserFacingError<Password> for PasswordError {
     // TODO: consider changing result type to have a dynamic error (that would e.g. display length of current pwd)
-    fn formatted_error(&self) -> &'static str {
+    fn formatted_error(&self) -> String {
         match self {
-            PasswordError::TooShort => "Password is too short (min 8 characters)",
+            PasswordError::TooShort => Password::too_short_error(),
         }
     }
 }
@@ -33,14 +49,15 @@ impl UserFacingError for PasswordError {
 #[derive(AsRef, Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub struct DisplayName(String);
 
-impl DisplayName {
-    pub const MAX_CHARACTERS: usize = 30;
+impl ConstrainedText for DisplayName {
+    const NAME: &'static str = "Display name";
+    const MAX_CHARS: usize = 30;
 }
 
-impl UserFacingError for DisplayNameError {
-    fn formatted_error(&self) -> &'static str {
+impl UserFacingError<DisplayName> for DisplayNameError {
+    fn formatted_error(&self) -> String {
         match self {
-            DisplayNameError::TooLong => "Display name is too long (max 30 characters)",
+            DisplayNameError::TooLong => DisplayName::too_long_error(),
         }
     }
 }

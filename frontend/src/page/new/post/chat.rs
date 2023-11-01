@@ -27,6 +27,8 @@ impl PageState {
 #[inline_props]
 pub fn MessageInput(cx: Scope, state: UseRef<PageState>) -> Element {
     use rustter_domain::post::Message;
+    use rustter_domain::ConstrainedText;
+
     let wrong_len = maybe_class!(
         "err-text-color",
         state.read().message.len() > Message::MAX_CHARS || state.read().message.is_empty()
@@ -63,6 +65,8 @@ pub fn MessageInput(cx: Scope, state: UseRef<PageState>) -> Element {
 #[inline_props]
 pub fn HeadlineInput(cx: Scope, state: UseRef<PageState>) -> Element {
     use rustter_domain::post::Headline;
+    use rustter_domain::ConstrainedText;
+
     let wrong_len = maybe_class!(
         "err-text-color",
         state.read().headline.len() > Headline::MAX_CHARS

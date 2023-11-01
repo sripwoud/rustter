@@ -95,6 +95,8 @@ pub fn ImagePreview(cx: Scope, state: UseRef<PageState>) -> Element {
 #[inline_props]
 pub fn CaptionInput(cx: Scope, state: UseRef<PageState>) -> Element {
     use rustter_domain::post::Caption;
+    use rustter_domain::ConstrainedText;
+
     let wrong_len = maybe_class!(
         "err-text-color",
         state.read().caption.len() > Caption::MAX_CHARS
