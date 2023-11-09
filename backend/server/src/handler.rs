@@ -3,6 +3,7 @@ pub mod boost;
 pub mod post;
 pub mod reaction;
 pub mod user;
+pub mod vote;
 
 use crate::error::{ApiError, ApiResult};
 use crate::extractor::DbConnection::DbConnection;

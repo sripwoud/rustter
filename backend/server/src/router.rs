@@ -7,7 +7,7 @@ use axum::routing::{get, post};
 use axum::{Extension, Router};
 use hyper::{header::CONTENT_TYPE, Method};
 use rustter_endpoint::{
-    Bookmark, Boost, CreateUser, Endpoint, Login, NewPost, Reaction, TrendingPosts,
+    Bookmark, Boost, CreateUser, Endpoint, Login, NewPost, Reaction, TrendingPosts, Vote,
 };
 use tower::ServiceBuilder;
 use tower_http::{
@@ -31,11 +31,13 @@ pub fn new_router(state: AppState) -> Router {
         )
         .route(&format!("/{}:id", IMAGE_ROUTE), get(load_image))
         .route(Login::URL, post(with_json_public_handler::<Login>));
+
     let authorized_routes = Router::new()
         .route(NewPost::URL, post(with_json_handler::<NewPost>))
         .route(TrendingPosts::URL, get(post::trending_posts))
         .route(Bookmark::URL, post(with_json_handler::<Bookmark>))
         .route(Boost::URL, post(with_json_handler::<Boost>))
+        .route(Vote::URL, post(with_json_handler::<Vote>))
         .route(Reaction::URL, post(with_json_handler::<Reaction>))
         .layer(DefaultBodyLimit::disable())
         .layer(RequestBodyLimitLayer::new(EIGHT_MEGABYTES));

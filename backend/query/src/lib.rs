@@ -20,6 +20,7 @@ pub mod post;
 pub mod reaction;
 pub mod session;
 pub mod user;
+pub mod vote;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum DeleteStatus {

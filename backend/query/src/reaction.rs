@@ -4,7 +4,6 @@ use diesel::insert_into;
 use diesel::prelude::*;
 use rustter_domain::ids::{PostId, UserId};
 use serde::{Deserialize, Serialize};
-use tracing::info;
 
 #[derive(Clone, Debug, DieselNewType, Deserialize, Serialize)]
 pub struct ReactionData(serde_json::Value);
@@ -79,8 +78,6 @@ pub fn aggregate(
             .filter(like_status.eq(-1))
             .count()
             .get_result(conn)?;
-
-        info!(target:"rustter_server", "likes: {likes}, dislikes: {dislikes}", likes=likes, dislikes=dislikes);
 
         let boosts = {
             use crate::schema::boosts::dsl::*;

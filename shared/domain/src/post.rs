@@ -73,7 +73,7 @@ impl UserFacingError<PollHeadline> for PollHeadlineError {
     }
 }
 
-#[nutype(validate(min_len = 1, max_len = 100))]
+#[nutype(validate(min_len = 1, max_len = 80))]
 #[derive(AsRef, Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub struct PollChoiceDescription(String);
 impl ConstrainedText for PollChoiceDescription {

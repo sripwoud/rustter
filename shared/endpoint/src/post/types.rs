@@ -1,7 +1,7 @@
 use crate::user::types::PublicUserProfile;
 use chrono::{DateTime, Utc};
 use rustter_domain::ids::{ImageId, PollChoiceId, PostId, UserId};
-use rustter_domain::post::{Caption, Headline, Message, PollChoiceDescription};
+use rustter_domain::post::{Caption, Headline, Message, PollChoiceDescription, PollHeadline};
 use rustter_domain::Username;
 use serde::{Deserialize, Serialize};
 use url::Url;
@@ -71,7 +71,7 @@ pub struct PollChoice {
 
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
 pub struct Poll {
-    pub headline: Option<Headline>,
+    pub headline: PollHeadline,
     pub choices: Vec<PollChoice>,
     pub voted: Option<PollChoiceId>,
 }
@@ -80,6 +80,12 @@ impl From<Poll> for Content {
     fn from(poll: Poll) -> Self {
         Self::Poll(poll)
     }
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Serialize, PartialEq)]
+pub enum VoteCast {
+    Yes,
+    AlreadyVoted,
 }
 
 #[derive(Copy, Clone, Debug, Deserialize, Serialize, PartialEq)]

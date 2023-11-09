@@ -6,9 +6,8 @@ use crate::AppState;
 use axum::http::StatusCode;
 use axum::{async_trait, Json};
 use chrono::Utc;
-use rustter_endpoint::post::endpoint::BoostOk;
 use rustter_endpoint::post::types::BoostAction;
-use rustter_endpoint::Boost;
+use rustter_endpoint::{Boost, BoostOk};
 use rustter_query::boost as boost_query;
 use tracing::info;
 

@@ -1,6 +1,6 @@
-use super::types::Content;
+use super::types::{Content, VoteCast};
 use crate::post::types::{BookmarkAction, BoostAction, NewPostOptions, PublicPost};
-use rustter_domain::ids::PostId;
+use rustter_domain::ids::{PollChoiceId, PostId};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
@@ -38,4 +38,14 @@ pub struct Boost {
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
 pub struct BoostOk {
     pub status: BoostAction,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
+pub struct Vote {
+    pub post_id: PostId,
+    pub choice_id: PollChoiceId,
+}
+#[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
+pub struct VoteOk {
+    pub cast: VoteCast,
 }

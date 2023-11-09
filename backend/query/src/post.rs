@@ -25,7 +25,40 @@ pub fn new(conn: &mut PgConnection, post: Post) -> Result<PostId, DieselError> {
     use crate::schema::posts::dsl::*;
 
     conn.transaction::<PostId, DieselError, _>(|conn| {
+        use rustter_endpoint::post::types::Content as EndpointContent;
+
         insert_into(posts).values(&post).execute(conn)?;
+        match serde_json::from_value::<EndpointContent>(post.content.0) {
+            Ok(EndpointContent::Poll(poll)) => {
+                // {
+                //     use crate::schema::poll_votes::dsl::*;
+                //
+                //     if let Some(voted) = poll.voted {
+                //         insert_into(poll_votes)
+                //             .values((
+                //                 user_id.eq(post.user_id),
+                //                 post_id.eq(post.id),
+                //                 choice_id.eq(voted),
+                //                 created_at.eq(Utc::now()),
+                //             ))
+                //             .execute(conn)?;
+                //     }
+                // }
+                {
+                    use crate::schema::poll_choices::dsl::*;
+                    for _choice in poll.choices {
+                        insert_into(poll_choices)
+                            .values((
+                                id.eq(_choice.id),
+                                choice.eq(_choice.description.as_ref()),
+                                post_id.eq(post.id),
+                            ))
+                            .execute(conn)?;
+                    }
+                }
+            }
+            _ => (),
+        }
 
         posts.select(id).order(created_at.desc()).first(conn)
     })

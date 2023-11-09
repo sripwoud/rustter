@@ -51,6 +51,7 @@ rustter_domain = { path = "../shared/domain" }
 rustter_endpoint = { path = "../shared/endpoint"}
 fermi = "0.4.0"
 derive_more = "0.99.17"
+uuid = { version = "1.4.1", features = ["v4"] }
 
 
 [features]

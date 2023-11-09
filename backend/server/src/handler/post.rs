@@ -1,21 +1,25 @@
-use crate::error::{ApiError, ApiResult};
-use crate::extractor::DbConnection::DbConnection;
-use crate::extractor::UserSession::UserSession;
-use crate::handler::{save_image, AuthorizedApiRequest};
-use crate::AppState;
-use axum::http::StatusCode;
-use axum::{async_trait, Json};
-use rustter_domain::ids::ImageId;
-use rustter_domain::Username;
-use rustter_endpoint::app_url::user_content;
-use rustter_endpoint::post::endpoint::{NewPost, NewPostOk, TrendingPostsOk};
-use rustter_endpoint::post::types::{Content, ImageKind, LikeStatus, PublicPost};
-use rustter_endpoint::{app_url, RequestFailed, TrendingPosts};
-use rustter_query::bookmark as bookmark_query;
-use rustter_query::post as post_query;
-use rustter_query::reaction as reaction_query;
-use rustter_query::reaction::AggregatePostInfo;
-use rustter_query::{user, AsyncConnection};
+use crate::{
+    error::{ApiError, ApiResult},
+    extractor::{DbConnection::DbConnection, UserSession::UserSession},
+    handler::{save_image, AuthorizedApiRequest},
+    AppState,
+};
+use axum::{async_trait, http::StatusCode, Json};
+use rustter_domain::{ids::ImageId, Username};
+use rustter_endpoint::{
+    app_url,
+    app_url::user_content,
+    post::{
+        endpoint::{NewPost, NewPostOk, TrendingPostsOk},
+        types::{Content, ImageKind, LikeStatus, PublicPost},
+    },
+    RequestFailed, TrendingPosts,
+};
+use rustter_query::{
+    bookmark as bookmark_query, post as post_query, reaction as reaction_query,
+    reaction::AggregatePostInfo, user, vote as vote_query, AsyncConnection,
+};
+
 use tracing::info;
 
 #[async_trait]
@@ -66,15 +70,32 @@ fn to_public(
     };
 
     if let Ok(mut content) = serde_json::from_value(post.content.0) {
-        if let Content::Image(ref mut image) = content {
-            if let ImageKind::Id(id) = image.kind {
-                let url = app_url::domain_and(user_content::ROOT)
-                    .join(user_content::IMAGES)
-                    .unwrap()
-                    .join(&id.to_string())
-                    .unwrap();
-                image.kind = ImageKind::Url(url);
+        match content {
+            Content::Image(ref mut image) => {
+                if let ImageKind::Id(id) = image.kind {
+                    let url = app_url::domain_and(user_content::ROOT)
+                        .join(user_content::IMAGES)
+                        .unwrap()
+                        .join(&id.to_string())
+                        .unwrap();
+                    image.kind = ImageKind::Url(url);
+                }
             }
+            Content::Poll(ref mut poll) => {
+                for (id, result) in vote_query::get_poll_results(conn, post.id)?.results {
+                    for choice in poll.choices.iter_mut() {
+                        if choice.id == id {
+                            choice.num_votes = result;
+                            break;
+                        }
+                    }
+                }
+
+                if let Some(session) = session {
+                    poll.voted = vote_query::did_vote(conn, session.user_id, post.id)?;
+                }
+            }
+            _ => (),
         }
 
         let AggregatePostInfo {
