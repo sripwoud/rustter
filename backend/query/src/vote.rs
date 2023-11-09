@@ -1,6 +1,6 @@
 use crate::DieselError;
-use diesel::prelude::*;
 use diesel::insert_into;
+use diesel::prelude::*;
 use rustter_domain::ids::{PollChoiceId, PostId, UserId};
 use rustter_endpoint::post::types::VoteCast;
 
