@@ -45,6 +45,8 @@ jobs:
         run: cargo fmt --all --check
 
       - name: Lint
+        env:
+          API_URL: http://localhost:8080 # to allow cargo clippy to run
         run: |
           cargo clippy -p frontend --target wasm32-unknown-unknown
           cargo clippy --workspace --exclude frontend
