@@ -1,3 +1,4 @@
+use dioxus::html::{img, label, title};
 use crate::elements::use_toaster;
 use crate::prelude::*;
 use dioxus::prelude::*;
@@ -147,6 +148,25 @@ pub fn NewChatPost(cx: Scope) -> Element {
     );
 
     render! {
+        AppBar {
+            title: "New Chat Post",
+            AppBarImgButton {
+                onclick: move|_| {},
+                img: "/static/icons/icon-message.svg",
+                label: "Chat",
+                title:"Post a new chat message",
+                disabled: true,
+                append_class: appbar::BUTTON_SELECTED
+            }
+            AppBarImgButton {
+                onclick: move|_| nav.replace(Route::NewImagePost),
+                img: "/static/icons/icon-image.svg",
+                label: "Image",
+                title:"Post a new image",
+                disabled: true,
+                append_class: appbar::BUTTON_SELECTED
+            }
+        }
         div {
             class: "flex flex-col gap-4",
             prevent_default: "onsubmit",
