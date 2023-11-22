@@ -42,7 +42,7 @@ pub mod app_url {
     try_load_dotenv!();
 
     pub fn api_url() -> String {
-        std::env!("API_URL").to_string()
+        std::env::var("API_URL").expect("API_URL must be set")
     }
 
     pub fn domain_and(fragment: &str) -> Url {
