@@ -4,7 +4,7 @@ pub mod navbar;
 pub use navbar::NavBar;
 pub mod post;
 pub use post::{use_post_manager, PublicPostEntry};
-mod toaster;
 pub mod appbar;
+mod toaster;
 
 pub use toaster::{use_toaster, ToastRoot, Toaster};

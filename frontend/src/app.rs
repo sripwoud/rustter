@@ -14,7 +14,7 @@ pub fn App(cx: Scope) -> Element {
 
     cx.render(rsx! {
         main{
-            class:"max-w-[var(--content-max-width)] min-w-[var(--content-min-width)] mb-[var(--navbar-height)] mx-auto p-4",
+            class:"max-w-[var(--content-max-width)] mt-[var(--appbar-height)] min-w-[var(--content-min-width)] mb-[var(--navbar-height)] mx-auto p-4",
             Router::<Route> { }
         }
         ToastRoot {

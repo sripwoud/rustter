@@ -34,6 +34,14 @@
         @apply border-indigo-300;
     }
 
+    .appbar-bg-color {
+        @apply bg-indigo-500;
+    }
+
+    .appbar-border-color {
+        @apply border-indigo-300;
+    }
+
     .err-text-color {
         @apply text-red-700;
     }

@@ -47,6 +47,8 @@ serve-ui *ARGS:
 
 # run API server
 serve-api *ARGS:
+    # check if postgres is running
+    pg_ctl status | grep "server is running" || pg_ctl start
     watchexec -r -i "frontend/**" -i "target/**" --exts rs,sql,toml cargo run -p rustter_server {{ ARGS }}
 
 # set up project dependencies

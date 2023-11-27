@@ -1,4 +1,3 @@
-use dioxus::html::{img, label, title};
 use crate::elements::use_toaster;
 use crate::prelude::*;
 use dioxus::prelude::*;
@@ -147,28 +146,40 @@ pub fn NewChatPost(cx: Scope) -> Element {
         }
     );
 
-    render! {
+cx.render(    rsx! {
         AppBar {
-            title: "New Chat Post",
+            title: "New Chat",
             AppBarImgButton {
-                onclick: move|_| {},
-                img: "/static/icons/icon-message.svg",
+                click_handler: move|_| {nav.replace(Route::NewChatPost {});},
+                img: "/static/icons/icon-messages.svg",
                 label: "Chat",
                 title:"Post a new chat message",
                 disabled: true,
                 append_class: appbar::BUTTON_SELECTED
             }
             AppBarImgButton {
-                onclick: move|_| nav.replace(Route::NewImagePost),
+                click_handler: move|_| {nav.replace(Route::NewImagePost {});},
                 img: "/static/icons/icon-image.svg",
                 label: "Image",
                 title:"Post a new image",
-                disabled: true,
+                append_class: appbar::BUTTON_SELECTED
+            }
+            AppBarImgButton {click_handler: move|_| {nav.replace(Route::NewPollPost {});},
+                img: "/static/icons/icon-poll.svg",
+                label: "Poll",
+                title:"Post a new poll",
+                append_class: appbar::BUTTON_SELECTED
+            }
+            AppBarImgButton {
+                click_handler: move|_| {nav.go_back();},
+                img: "/static/icons/icon-back.svg",
+                label: "Back",
+                title:"Go to previous page",
                 append_class: appbar::BUTTON_SELECTED
             }
         }
         div {
-            class: "flex flex-col gap-4",
+            class: "flex flex-col gap-4 mt-50",
             prevent_default: "onsubmit",
             HeadlineInput {
                 state: state.clone(),
@@ -185,5 +196,5 @@ pub fn NewChatPost(cx: Scope) -> Element {
             }
 
         }
-    }
+    })
 }
