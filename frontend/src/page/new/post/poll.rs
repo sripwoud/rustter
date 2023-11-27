@@ -220,6 +220,9 @@ pub fn NewPollPost(cx: Scope) -> Element {
     );
 
     render! {
+        AppBar {
+            title: "New Poll",
+        }
         div {
             class: "flex flex-col gap-4",
             prevent_default: "onsubmit",

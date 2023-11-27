@@ -179,6 +179,9 @@ pub fn NewImagePost(cx: Scope) -> Element {
     );
 
     render! {
+        AppBar {
+            title: "New Image",
+        }
         div {
             class: "flex flex-col gap-4",
             prevent_default: "onsubmit",

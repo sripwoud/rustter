@@ -146,37 +146,9 @@ pub fn NewChatPost(cx: Scope) -> Element {
         }
     );
 
-cx.render(    rsx! {
+    cx.render(rsx! {
         AppBar {
             title: "New Chat",
-            AppBarImgButton {
-                click_handler: move|_| {nav.replace(Route::NewChatPost {});},
-                img: "/static/icons/icon-messages.svg",
-                label: "Chat",
-                title:"Post a new chat message",
-                disabled: true,
-                append_class: appbar::BUTTON_SELECTED
-            }
-            AppBarImgButton {
-                click_handler: move|_| {nav.replace(Route::NewImagePost {});},
-                img: "/static/icons/icon-image.svg",
-                label: "Image",
-                title:"Post a new image",
-                append_class: appbar::BUTTON_SELECTED
-            }
-            AppBarImgButton {click_handler: move|_| {nav.replace(Route::NewPollPost {});},
-                img: "/static/icons/icon-poll.svg",
-                label: "Poll",
-                title:"Post a new poll",
-                append_class: appbar::BUTTON_SELECTED
-            }
-            AppBarImgButton {
-                click_handler: move|_| {nav.go_back();},
-                img: "/static/icons/icon-back.svg",
-                label: "Back",
-                title:"Go to previous page",
-                append_class: appbar::BUTTON_SELECTED
-            }
         }
         div {
             class: "flex flex-col gap-4 mt-50",

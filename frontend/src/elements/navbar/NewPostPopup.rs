@@ -14,7 +14,7 @@ pub fn NewPostPopup(cx: Scope, hide: UseState<bool>) -> Element {
             NewPostPopupButton {
                 to: Route::NewChatPost {},
                 img: "/static/icons/icon-messages.svg",
-                label: "Text",
+                label: "Chat",
                 onclick:move|_|{hide.set(true);}
             },
             NewPostPopupButton {
