@@ -3,6 +3,7 @@
 @tailwind utilities;
 
 :root {
+    --appbar-height: 3.5rem;
     --navbar-height: 3.8rem;
     --content-min-width: 300px;
     --content-max-width: 600x;
@@ -33,11 +34,23 @@
         @apply border-indigo-300;
     }
 
+    .appbar-bg-color {
+        @apply bg-indigo-500;
+    }
+
+    .appbar-border-color {
+        @apply border-indigo-300;
+    }
+
     .err-text-color {
         @apply text-red-700;
     }
 
     .actionbar-icon {
         @apply w-8 h-8;
+    }
+
+    .profile-portrait {
+        @apply object-cover rounded-md w-14 h-14;
     }
 }

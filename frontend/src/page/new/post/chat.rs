@@ -146,9 +146,12 @@ pub fn NewChatPost(cx: Scope) -> Element {
         }
     );
 
-    render! {
+    cx.render(rsx! {
+        AppBar {
+            title: "New Chat",
+        }
         div {
-            class: "flex flex-col gap-4",
+            class: "flex flex-col gap-4 mt-50",
             prevent_default: "onsubmit",
             HeadlineInput {
                 state: state.clone(),
@@ -165,5 +168,5 @@ pub fn NewChatPost(cx: Scope) -> Element {
             }
 
         }
-    }
+    })
 }

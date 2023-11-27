@@ -32,8 +32,13 @@ fn main() {
 }
 
 mod prelude {
-    pub use crate::elements::{use_post_manager, use_toaster};
+    pub use crate::elements::{
+        appbar::{self, AppBar},
+        use_post_manager, use_toaster,
+    };
     pub use crate::page::Route;
-    pub use crate::util::api_client::{fetch_json, post_json, ApiClient};
-    pub use crate::util::{async_handler, maybe_class, sync_handler};
+    pub use crate::util::{
+        api_client::{fetch_json, post_json, ApiClient},
+        async_handler, maybe_class, sync_handler, window,
+    };
 }

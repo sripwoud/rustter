@@ -17,6 +17,12 @@ pub fn NavBar(cx: Scope) -> Element {
             class: "max-w-[var(--content-max-width)] h-[var(--navbar-height)] fixed bottom-0 left-0 right-0 mx-auto border-t navbar-bg-color navbar-border-color",
             div {
                 class: "grid grid-cols-3 justify-around w-full h-full items-center shadow-inner",
+                NavButton {
+                    img: "/static/icons/icon-home.svg",
+                    label: "Home",
+                    onclick: |_|{},
+                    to: Route::Home {}
+                },
                 // NavButton {
                 //     img: "/static/icons/icon-search.svg",
                 //     label: "Search",
@@ -28,12 +34,6 @@ pub fn NavBar(cx: Scope) -> Element {
                     label: "Trending",
                     onclick: |_|{},
                     to: Route::TrendingPosts {}
-                },
-                NavButton {
-                    img: "/static/icons/icon-home.svg",
-                    label: "Home",
-                    onclick: |_|{},
-                    to: Route::Home {}
                 },
                 // NavButton {
                 //     img: "/static/icons/icon-messages.svg",
