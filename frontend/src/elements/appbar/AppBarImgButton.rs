@@ -4,7 +4,7 @@ use dioxus::prelude::*;
 
 #[derive(Props)]
 pub struct AppBarImgButtonProps<'a> {
-    pub append_class: Option<&'a str>,
+    // pub append_class: Option<&'a str>,
     pub disabled: Option<bool>,
     pub label: &'a str,
     pub img: &'a str,
@@ -13,7 +13,7 @@ pub struct AppBarImgButtonProps<'a> {
 }
 
 pub fn AppBarImgButton<'a>(cx: Scope<'a, AppBarImgButtonProps<'a>>) -> Element {
-    let append_class = cx.props.append_class.unwrap_or_default();
+    // let append_class = cx.props.append_class.unwrap_or_default();
 
     cx.render(rsx! {
         button {

@@ -1,9 +1,7 @@
 #![allow(non_snake_case)]
 
 mod AppBarImgButton;
-
-use dioxus::html::button;
-use AppBarImgButton::{AppBarImgButton, AppBarImgButtonProps};
+use AppBarImgButton::AppBarImgButton;
 
 use crate::prelude::*;
 use dioxus::prelude::*;
@@ -20,7 +18,6 @@ enum AppBarRoute {
 
 #[derive(Props)]
 pub struct AppBarProps<'a> {
-    children: Element<'a>,
     title: &'a str,
 }
 
@@ -95,7 +92,7 @@ pub fn AppBar<'a>(cx: Scope<'a, AppBarProps<'a>>) -> Element {
 
                     rsx!(
                         AppBarImgButton {
-                            append_class: appbar::BUTTON_SELECTED,
+                            // append_class: appbar::BUTTON_SELECTED,
                             disabled: disabled,
                             label: label,
                             img: img,

@@ -182,7 +182,7 @@ pub fn NewPollPost(cx: Scope) -> Element {
             use rustter_domain::post::PollHeadline;
             use rustter_endpoint::post::{
                 endpoint::{NewPost, NewPostOk},
-                types::{ImageKind, NewPostOptions, Poll, PollChoice},
+                types::{NewPostOptions, Poll, PollChoice},
             };
 
             let request = {
