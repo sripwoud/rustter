@@ -1,3 +1,4 @@
+use load_dotenv::load_dotenv;
 use serde::{Deserialize, Serialize};
 pub mod post;
 pub use post::endpoint::{
@@ -34,19 +35,16 @@ macro_rules! route {
     };
 }
 
+load_dotenv!();
+
 pub mod app_url {
-    use load_dotenv::try_load_dotenv;
     use std::str::FromStr;
     use url::Url;
 
-    try_load_dotenv!();
-
-    pub fn api_url() -> String {
-        std::env::var("API_URL").expect("API_URL must be set")
-    }
+    pub const API_URL: &str = std::env!("API_URL");
 
     pub fn domain_and(fragment: &str) -> Url {
-        Url::from_str(api_url().as_str())
+        Url::from_str(API_URL)
             .and_then(|url| url.join(fragment))
             .unwrap()
     }
