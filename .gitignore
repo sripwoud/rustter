@@ -3,6 +3,7 @@ usercontent/
 private_key.base64
 
 # Private
+*.env
 *.env.development.local
 *.env.test.local
 *.env.production.local
