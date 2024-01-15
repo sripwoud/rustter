@@ -244,6 +244,9 @@ pub fn UpdateProfile(cx: Scope) -> Element {
     let page_state = use_ref(cx, PageState::default);
     let nav = use_navigator(cx);
 
+    let disable_submit = page_state.with(|state|state.form_errors.has_messages());
+    let submit_btn_style = maybe_class!("button-disabled",disable_submit);
+
     cx.render(rsx! {
         div {
             class: "flex flex-col w-full gap-3",
@@ -262,7 +265,8 @@ pub fn UpdateProfile(cx: Scope) -> Element {
                     "Cancel"
                 },
                 button {
-                    class:"btn",
+                    class:"btn {submit_btn_style}",
+                    disabled: disable_submit,
                     onclick: move |_| {nav.go_back();},
                     "Submit"
                 }
