@@ -1,17 +1,19 @@
 use crate::error::ApiResult;
 use crate::extractor::DbConnection::DbConnection;
 use crate::extractor::UserSession::UserSession;
-use crate::handler::PublicApiRequest;
+use crate::handler::{save_image, AuthorizedApiRequest, PublicApiRequest};
 use crate::AppState;
 use axum::http::StatusCode;
 use axum::{async_trait, Json};
 use chrono::Duration;
-use rustter_domain::ids::UserId;
+use rustter_domain::ids::{ImageId, UserId};
 use rustter_domain::user::DisplayName;
 use rustter_endpoint::user::types::PublicUserProfile;
-use rustter_endpoint::{CreateUser, CreateUserOk, Login, LoginOk};
+use rustter_endpoint::{
+    CreateUser, CreateUserOk, GetProfileOk, Login, LoginOk, Update, UpdateProfile, UpdateProfileOk,
+};
 use rustter_query::session::Session;
-use rustter_query::user::User;
+use rustter_query::user::{UpdateProfileParams, User};
 use rustter_query::{session, AsyncConnection};
 use tracing::{info, span};
 use url::Url;
@@ -47,7 +49,7 @@ impl PublicApiRequest for CreateUser {
         DbConnection(mut conn): DbConnection,
         state: AppState,
     ) -> ApiResult<Self::Response> {
-        let password_hash = rustter_crypto::hash_password(self.password)?;
+        let password_hash = rustter_crypto::hash_password(&self.password)?;
         let user_id = rustter_query::user::new(&mut conn, password_hash, &self.username)?;
 
         info!(target:"rustter_server",username = self.username.as_ref(), "new user created");
@@ -117,4 +119,73 @@ pub fn to_public(user: User, session: Option<&UserSession>) -> ApiResult<PublicU
             .map(|session| session.user_id == user.id)
             .unwrap_or(false),
     })
+}
+
+pub async fn get_profile(
+    DbConnection(mut conn): DbConnection,
+    session: UserSession,
+) -> ApiResult<(StatusCode, Json<GetProfileOk>)> {
+    info!(target:"rustter_server", "getting user profile");
+
+    let user = rustter_query::user::get(&mut conn, session.user_id)?;
+    let profile_image = user.profile_image_url_from_id();
+
+    Ok((
+        StatusCode::OK,
+        Json(GetProfileOk {
+            display_name: user.display_name,
+            email: user.email,
+            profile_image,
+            user_id: user.id,
+        }),
+    ))
+}
+
+#[async_trait]
+impl AuthorizedApiRequest for UpdateProfile {
+    type Response = (StatusCode, Json<UpdateProfileOk>);
+
+    async fn process_request(
+        mut self,
+        DbConnection(mut conn): DbConnection,
+        session: UserSession,
+        _state: AppState,
+    ) -> ApiResult<Self::Response> {
+        info!(target:"rustter_server", "updating user profile");
+
+        let password_hash = {
+            if let Update::Change(ref password) = self.password {
+                Update::Change(rustter_crypto::hash_password(password)?)
+            } else {
+                Update::NoChange
+            }
+        };
+
+        if let Update::Change(ref img) = self.profile_image {
+            let id = ImageId::new();
+            save_image(id, img).await?;
+        };
+
+        let query_params = UpdateProfileParams {
+            id: session.user_id,
+            display_name: self.display_name,
+            email: self.email,
+            password_hash,
+            profile_image: self.profile_image.clone(),
+        };
+
+        rustter_query::user::update_profile(&mut conn, query_params)?;
+        let user = rustter_query::user::get(&mut conn, session.user_id)?;
+        let profile_image = user.profile_image_url_from_id();
+
+        Ok((
+            StatusCode::OK,
+            Json(UpdateProfileOk {
+                display_name: user.display_name,
+                email: user.email,
+                profile_image,
+                user_id: user.id,
+            }),
+        ))
+    }
 }

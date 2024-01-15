@@ -11,7 +11,10 @@ mod reaction;
 pub mod user;
 pub use reaction::{Reaction, ReactionOk};
 
-pub use user::endpoint::{CreateUser, CreateUserOk, Login, LoginOk};
+pub use user::endpoint::{
+    CreateUser, CreateUserOk, GetProfile, GetProfileOk, Login, LoginOk, Update, UpdateProfile,
+    UpdateProfileOk,
+};
 
 pub trait Endpoint {
     const URL: &'static str;
@@ -70,3 +73,5 @@ route!(Bookmark => "/bookmark");
 route!(Reaction => "/react");
 route!(Boost => "/boost");
 route!(Vote => "/vote");
+route!(GetProfile => "/profile/me");
+route!(UpdateProfile => "/profile/update");

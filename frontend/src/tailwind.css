@@ -10,7 +10,7 @@
 }
 
 main {
-    @apply flex flex-col overflow-x-hidden
+    @apply flex flex-col overflow-x-hidden mx-5
 }
 
 @layer components {
@@ -56,5 +56,13 @@ main {
 
     .profile-portrait {
         @apply object-cover rounded-md w-14 h-14;
+    }
+
+    .profile-portrait-lg {
+        @apply object-cover rounded-md w-40 h-40;
+    }
+
+    .fieldset {
+        @apply p-3 border-2 border-solid border-slate-300
     }
 }

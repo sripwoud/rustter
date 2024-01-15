@@ -4,7 +4,7 @@ use crate::elements::{KeyedNotifications, KeyedNotificationsBox};
 use crate::prelude::*;
 use dioxus::prelude::*;
 use dioxus_router::prelude::*;
-use rustter_domain::UserFacingError;
+use rustter_domain::ConstrainedUserFacingError;
 
 pub struct PageState {
     username: UseState<String>,

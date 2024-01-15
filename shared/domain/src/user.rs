@@ -1,7 +1,7 @@
-// use std::str::FromStr;
-use crate::{ConstrainedText, UserFacingError};
+use crate::{ConstrainedText, ConstrainedUserFacingError, UserFacingError};
 use nutype::nutype;
-// use derive_more::FromStr;
+use once_cell::sync::OnceCell;
+use regex::Regex;
 
 #[nutype(validate(min_len = 3, max_len = 30))]
 #[derive(AsRef, Clone, Debug, Deserialize, PartialEq, Serialize)]
@@ -15,7 +15,7 @@ impl ConstrainedText for Username {
     }
 }
 
-impl UserFacingError<Username> for UsernameError {
+impl ConstrainedUserFacingError<Username> for UsernameError {
     fn formatted_error(&self) -> String {
         match self {
             UsernameError::TooShort => Username::too_short_error(),
@@ -36,7 +36,7 @@ impl ConstrainedText for Password {
     }
 }
 
-impl UserFacingError<Password> for PasswordError {
+impl ConstrainedUserFacingError<Password> for PasswordError {
     // TODO: consider changing result type to have a dynamic error (that would e.g. display length of current pwd)
     fn formatted_error(&self) -> String {
         match self {
@@ -54,10 +54,45 @@ impl ConstrainedText for DisplayName {
     const MAX_CHARS: usize = 30;
 }
 
-impl UserFacingError<DisplayName> for DisplayNameError {
+impl ConstrainedUserFacingError<DisplayName> for DisplayNameError {
     fn formatted_error(&self) -> String {
         match self {
             DisplayNameError::TooLong => DisplayName::too_long_error(),
+        }
+    }
+}
+
+#[derive(Debug)]
+struct EmailRgx(Regex);
+impl EmailRgx {
+    // pub fn global() -> &'static Self {
+    //     EMAIL_RGX.get().expect("email regex is not initialized")
+    // }
+
+    pub fn init() -> Self {
+        // TODO: can be improved
+        Self(Regex::new(r#"^\S+@\S+\.\S{1,64}$"#).unwrap())
+    }
+
+    pub fn is_valid<T: AsRef<str>>(&self, text: T) -> bool {
+        self.0.is_match(text.as_ref())
+    }
+}
+static EMAIL_RGX: OnceCell<EmailRgx> = OnceCell::new();
+
+fn is_valid_email(email: &str) -> bool {
+    let email_regex = EMAIL_RGX.get_or_init(EmailRgx::init);
+    email_regex.is_valid(email)
+}
+
+#[nutype(validate(with=is_valid_email))]
+#[derive(AsRef, Clone, Debug, Deserialize, PartialEq, Serialize)]
+pub struct Email(String);
+
+impl UserFacingError for EmailError {
+    fn formatted_error(&self) -> String {
+        match self {
+            EmailError::Invalid => "Email is not valid. Expect format: mail.domain.com".to_string(),
         }
     }
 }
