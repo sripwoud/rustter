@@ -1,4 +1,4 @@
-use crate::{ConstrainedText, UserFacingError};
+use crate::{ConstrainedText, ConstrainedUserFacingError};
 use nutype::nutype;
 
 #[nutype(validate(max_len = 30))]
@@ -9,7 +9,7 @@ impl ConstrainedText for Headline {
     const MAX_CHARS: usize = 30;
 }
 
-impl UserFacingError<Headline> for HeadlineError {
+impl ConstrainedUserFacingError<Headline> for HeadlineError {
     fn formatted_error(&self) -> String {
         match self {
             HeadlineError::TooLong => Headline::too_long_error(),
@@ -28,7 +28,7 @@ impl ConstrainedText for Message {
     }
 }
 
-impl UserFacingError<Message> for MessageError {
+impl ConstrainedUserFacingError<Message> for MessageError {
     fn formatted_error(&self) -> String {
         match self {
             MessageError::TooShort => Message::too_short_error(),
@@ -48,7 +48,7 @@ impl ConstrainedText for Caption {
     }
 }
 
-impl UserFacingError<Caption> for CaptionError {
+impl ConstrainedUserFacingError<Caption> for CaptionError {
     fn formatted_error(&self) -> String {
         match self {
             CaptionError::TooShort => Caption::too_short_error(),
@@ -65,7 +65,7 @@ impl ConstrainedText for PollHeadline {
     const MAX_CHARS: usize = 50;
 }
 
-impl UserFacingError<PollHeadline> for PollHeadlineError {
+impl ConstrainedUserFacingError<PollHeadline> for PollHeadlineError {
     fn formatted_error(&self) -> String {
         match self {
             PollHeadlineError::TooLong => PollHeadline::too_long_error(),
@@ -84,7 +84,7 @@ impl ConstrainedText for PollChoiceDescription {
     }
 }
 
-impl UserFacingError<PollChoiceDescription> for PollChoiceDescriptionError {
+impl ConstrainedUserFacingError<PollChoiceDescription> for PollChoiceDescriptionError {
     fn formatted_error(&self) -> String {
         match self {
             PollChoiceDescriptionError::TooShort => PollChoiceDescription::too_short_error(),

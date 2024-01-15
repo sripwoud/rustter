@@ -38,6 +38,10 @@ pub trait ConstrainedText {
     }
 }
 
-pub trait UserFacingError<T: ConstrainedText> {
+pub trait ConstrainedUserFacingError<T: ConstrainedText> {
+    fn formatted_error(&self) -> String;
+}
+
+pub trait UserFacingError {
     fn formatted_error(&self) -> String;
 }
