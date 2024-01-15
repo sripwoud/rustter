@@ -2,7 +2,8 @@ use load_dotenv::load_dotenv;
 use serde::{Deserialize, Serialize};
 pub mod post;
 pub use post::endpoint::{
-    Bookmark, Boost, BoostOk, NewPost, NewPostOk, TrendingPosts, Vote, VoteOk,
+    Bookmark, BookmarkedPosts, Boost, BoostOk, HomePosts, LikedPosts, NewPost, NewPostOk,
+    TrendingPosts, Vote, VoteOk,
 };
 pub use post::types::LikeStatus;
 
@@ -61,7 +62,10 @@ route!(CreateUser => "/register");
 route!(Login => "/login");
 
 route!(NewPost => "/post");
-route!(TrendingPosts => "/posts");
+route!(HomePosts => "/posts");
+route!(BookmarkedPosts => "/posts/bookmarked");
+route!(LikedPosts => "/posts/liked");
+route!(TrendingPosts => "/posts/trending");
 route!(Bookmark => "/bookmark");
 route!(Reaction => "/react");
 route!(Boost => "/boost");

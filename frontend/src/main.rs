@@ -33,7 +33,7 @@ fn main() {
 
 mod prelude {
     pub use crate::elements::{
-        appbar::{self, AppBar},
+        appbar::{self, AppBar, AppBarRoute},
         use_post_manager, use_toaster,
     };
     pub use crate::page::Route;

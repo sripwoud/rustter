@@ -14,7 +14,7 @@ pub fn TrendingPosts(cx: Scope) -> Element {
 
         use_future(cx, (), |_| async move {
             use rustter_endpoint::post::endpoint::{TrendingPosts, TrendingPostsOk};
-            toaster.write().info("Fetching posts", None);
+            toaster.write().info("Fetching trending posts", None);
 
             let response = fetch_json!(<TrendingPostsOk>, api_client, TrendingPosts);
             match response {
@@ -40,7 +40,7 @@ pub fn TrendingPosts(cx: Scope) -> Element {
 
     cx.render(rsx! {
         div {
-         class:"overflow-y-auto max-h-[calc(100vh-var(--navbar-height))]",
+         class:"overflow-y-auto max-h-[calc(100vh-var(--navbar-height))] overflow-x-hidden",
             TrendingPosts.into_iter()
         }
     })

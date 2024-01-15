@@ -7,7 +7,8 @@ use axum::routing::{get, post};
 use axum::{Extension, Router};
 use hyper::{header::CONTENT_TYPE, Method};
 use rustter_endpoint::{
-    Bookmark, Boost, CreateUser, Endpoint, Login, NewPost, Reaction, TrendingPosts, Vote,
+    Bookmark, BookmarkedPosts, Boost, CreateUser, Endpoint, HomePosts, LikedPosts, Login, NewPost,
+    Reaction, TrendingPosts, Vote,
 };
 use tower::ServiceBuilder;
 use tower_http::{
@@ -34,6 +35,9 @@ pub fn new_router(state: AppState) -> Router {
 
     let authorized_routes = Router::new()
         .route(NewPost::URL, post(with_json_handler::<NewPost>))
+        .route(HomePosts::URL, get(post::home_posts))
+        .route(BookmarkedPosts::URL, get(post::bookmarked_posts))
+        .route(LikedPosts::URL, get(post::liked_posts))
         .route(TrendingPosts::URL, get(post::trending_posts))
         .route(Bookmark::URL, post(with_json_handler::<Bookmark>))
         .route(Boost::URL, post(with_json_handler::<Boost>))

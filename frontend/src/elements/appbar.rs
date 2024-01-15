@@ -9,22 +9,28 @@ use dioxus_router::hooks::use_navigator;
 
 pub const BUTTON_SELECTED: &str = "border-slate-600";
 
-enum AppBarRoute {
+#[derive(Clone)]
+pub enum AppBarRoute {
     NewChatPost,
     NewImagePost,
     NewPollPost,
     GoBack,
+    LikedPosts,
+    BookmarkedPosts,
+    Home,
 }
 
-#[derive(Props)]
+#[derive(Props, Clone)]
 pub struct AppBarProps<'a> {
     title: &'a str,
+    buttons: Vec<(AppBarRoute, &'a str, &'a str, &'a str)>,
 }
 
 pub fn AppBar<'a>(cx: Scope<'a, AppBarProps<'a>>) -> Element {
     let nav = use_navigator(cx);
     let path = window().location().pathname().unwrap();
     let path = path.split('/').last().unwrap();
+    let buttons = cx.props.buttons.clone();
 
     let slug = path
         .chars()
@@ -32,32 +38,32 @@ pub fn AppBar<'a>(cx: Scope<'a, AppBarProps<'a>>) -> Element {
         .map(|(i, c)| if i == 0 { c.to_ascii_uppercase() } else { c })
         .collect::<String>();
 
-    let buttons = vec![
-        (
-            AppBarRoute::NewChatPost,
-            "/static/icons/icon-messages.svg",
-            "Chat",
-            "Post a new chat message",
-        ),
-        (
-            AppBarRoute::NewImagePost,
-            "/static/icons/icon-image.svg",
-            "Image",
-            "Post a new image",
-        ),
-        (
-            AppBarRoute::NewPollPost,
-            "/static/icons/icon-poll.svg",
-            "Poll",
-            "Post a new poll",
-        ),
-        (
-            AppBarRoute::GoBack,
-            "/static/icons/icon-back.svg",
-            "Back",
-            "Go to previous page",
-        ),
-    ];
+    // let buttons = vec![
+    //     (
+    //         AppBarRoute::NewChatPost,
+    //         "/static/icons/icon-messages.svg",
+    //         "Chat",
+    //         "Post a new chat message",
+    //     ),
+    //     (
+    //         AppBarRoute::NewImagePost,
+    //         "/static/icons/icon-image.svg",
+    //         "Image",
+    //         "Post a new image",
+    //     ),
+    //     (
+    //         AppBarRoute::NewPollPost,
+    //         "/static/icons/icon-poll.svg",
+    //         "Poll",
+    //         "Post a new poll",
+    //     ),
+    //     (
+    //         AppBarRoute::GoBack,
+    //         "/static/icons/icon-back.svg",
+    //         "Back",
+    //         "Go to previous page",
+    //     ),
+    // ];
 
     cx.render(rsx! {
         div {
@@ -88,6 +94,9 @@ pub fn AppBar<'a>(cx: Scope<'a, AppBarProps<'a>>) -> Element {
                             AppBarRoute::NewImagePost => Box::new(move |_| { nav.replace(Route::NewImagePost {}); }),
                             AppBarRoute::NewPollPost => Box::new(move |_| { nav.replace(Route::NewPollPost {}); }),
                             AppBarRoute::GoBack => Box::new(move |_| { nav.go_back(); }),
+                            AppBarRoute::LikedPosts => Box::new(move |_| { nav.replace(Route::LikedPosts {}); }),
+                            AppBarRoute::BookmarkedPosts => Box::new(move |_| { nav.replace(Route::BookmarkedPosts {}); }),
+                            AppBarRoute::Home => Box::new(move |_| { nav.replace(Route::Home {}); }),
                     };
 
                     rsx!(

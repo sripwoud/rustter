@@ -181,6 +181,32 @@ pub fn NewImagePost(cx: Scope) -> Element {
     render! {
         AppBar {
             title: "New Image",
+            buttons: vec![
+        (
+            AppBarRoute::NewChatPost,
+            "/static/icons/icon-messages.svg",
+            "Chat",
+            "Post a new chat message",
+        ),
+        (
+            AppBarRoute::NewImagePost,
+            "/static/icons/icon-image.svg",
+            "Image",
+            "Post a new image",
+        ),
+        (
+            AppBarRoute::NewPollPost,
+            "/static/icons/icon-poll.svg",
+            "Poll",
+            "Post a new poll",
+        ),
+        (
+            AppBarRoute::GoBack,
+            "/static/icons/icon-back.svg",
+            "Back",
+            "Go to previous page",
+        ),
+    ]
         }
         div {
             class: "flex flex-col gap-4",
