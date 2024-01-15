@@ -108,13 +108,17 @@ pub fn EmailInput(cx: Scope, state: UseRef<PageState>) -> Element {
                 placeholder: "user@domain.com",
                 value:"{state.read().email}",
                 oninput:move|ev|{
-                    match Email::new(&ev.value) {
-                       Ok(_) => {
-                            state.with_mut(|state|state.form_errors.remove("bad-email"));
-                        },
-                        Err(e) => {
-                            state.with_mut(|state|state.form_errors.set("bad-email", e.formatted_error()));
+                    if !&ev.value.is_empty() {
+                        match Email::new(&ev.value) {
+                           Ok(_) => {
+                                state.with_mut(|state|state.form_errors.remove("bad-email"));
+                            },
+                            Err(e) => {
+                                state.with_mut(|state|state.form_errors.set("bad-email", e.formatted_error()));
+                            }
                         }
+                    } else {
+                        state.with_mut(|state|state.form_errors.remove("bad-email"));
                     }
                     state.with_mut(|state| state.email = ev.value.clone());
                 }
