@@ -170,7 +170,7 @@ impl AuthorizedApiRequest for UpdateProfile {
             id: session.user_id,
             display_name: self.display_name,
             email: self.email,
-            password_hash: password_hash,
+            password_hash,
             profile_image: self.profile_image.clone(),
         };
 

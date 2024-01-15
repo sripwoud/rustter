@@ -4,6 +4,7 @@ mod login;
 mod new;
 mod not_found;
 mod posts;
+mod profile;
 
 use crate::elements::NavBar;
 use dioxus::prelude::*;
@@ -16,6 +17,9 @@ use new::{
 };
 use not_found::NotFound;
 use posts::{bookmarked::BookmarkedPosts, liked::LikedPosts, trending::TrendingPosts};
+pub use profile::update::UpdateProfile;
+pub use profile::me::Me;
+
 use std::iter::Iterator;
 
 #[derive(Routable, Clone)]
@@ -44,6 +48,12 @@ pub enum Route {
         NewImagePost {},
         #[route("/poll")]
         NewPollPost {},
+    #[end_nest]
+    #[nest("/profile")]
+        #[route("/me")]
+        Me {},
+        #[route("/update")]
+        UpdateProfile {},
     #[end_nest]
     #[end_layout]
     #[route("/:..route")]
