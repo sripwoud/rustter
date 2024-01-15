@@ -177,7 +177,7 @@ pub fn NewChatPost(cx: Scope) -> Element {
     ]
         }
         div {
-            class: "flex flex-col gap-4 mt-50",
+            class: "flex flex-col gap-4 mt-[var(--appbar-height)]",
             prevent_default: "onsubmit",
             HeadlineInput {
                 state: state.clone(),

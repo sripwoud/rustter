@@ -65,9 +65,9 @@ impl ConstrainedUserFacingError<DisplayName> for DisplayNameError {
 #[derive(Debug)]
 struct EmailRgx(Regex);
 impl EmailRgx {
-    pub fn global() -> &'static Self {
-        EMAIL_RGX.get().expect("email regex is not initialized")
-    }
+    // pub fn global() -> &'static Self {
+    //     EMAIL_RGX.get().expect("email regex is not initialized")
+    // }
 
     pub fn init() -> Self {
         // TODO: can be improved

@@ -209,7 +209,7 @@ pub fn NewImagePost(cx: Scope) -> Element {
     ]
         }
         div {
-            class: "flex flex-col gap-4",
+            class: "flex flex-col gap-4 mt-[var(--appbar-height)]",
             prevent_default: "onsubmit",
             ImageInput {
                 state: state.clone(),

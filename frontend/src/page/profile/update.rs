@@ -5,6 +5,7 @@ use crate::prelude::*;
 use crate::util::document;
 use dioxus::prelude::*;
 use dioxus_router::hooks::use_navigator;
+use log::info;
 use rustter_domain::{ConstrainedText, ConstrainedUserFacingError, UserFacingError};
 use web_sys::HtmlInputElement;
 
@@ -83,7 +84,7 @@ pub fn ImagePreview(cx: Scope, state: UseRef<PageState>) -> Element {
 
     render! {
         div {
-            class: "flex flex-row justify-center",
+            class: "flex flex-row justify-center mt-[10px]",
             image_data
         }
     }
@@ -247,13 +248,107 @@ pub fn DisplayNameInput(cx: Scope, state: UseRef<PageState>) -> Element {
 pub fn UpdateProfile(cx: Scope) -> Element {
     let page_state = use_ref(cx, PageState::default);
     let nav = use_navigator(cx);
+    let api_client = ApiClient::global();
+    let toaster = use_toaster(cx);
+
+    // fetch profile
+    {
+        to_owned![api_client, toaster, page_state];
+
+        use_future(cx, (), |_| async move {
+            use rustter_endpoint::user::endpoint::{GetProfile, GetProfileOk};
+            toaster.write().info("Fetching profile", None);
+
+            let response = fetch_json!(<GetProfileOk>, api_client, GetProfile);
+            match response {
+                Ok(res) => {
+                    page_state.with_mut(|state| {
+                        state.display_name = res.display_name.unwrap_or_default();
+                        state.email = res.email.unwrap_or_default();
+                        state.profile_image = res.profile_image.map(|img|PreviewImageData::Remote(img.to_string()))
+                    })
+                },
+                Err(e) => {
+                    info!("failed to fetch profile {e}");
+                    toaster
+                        .write()
+                        .error(format!("failed to fetch posts {e}"), None);
+                }
+            };
+        });
+    }
+
 
     let disable_submit = page_state.with(|state|state.form_errors.has_messages());
     let submit_btn_style = maybe_class!("button-disabled",disable_submit);
 
+    let form_onsubmit = async_handler!(&cx, [api_client, page_state, nav, toaster], move |_| async move {
+        use rustter_endpoint::user::endpoint::{UpdateProfile as UpdateProfilePayload, UpdateProfileOk, Update};
+        let request_data = {
+            use rustter_domain::Password;
+            UpdateProfilePayload {
+                display_name: {
+                    let name = page_state.with(|state| state.display_name.clone());
+                    if name.is_empty() {
+                        Update::SetNull
+                    } else {
+                        Update::Change(name)
+                    }
+                },
+                email: {
+                    let email = page_state.with(|state| state.email.clone());
+                    if email.is_empty() {
+                        Update::SetNull
+                    } else {
+                        Update::Change(email)
+                    }
+                },
+                password: {
+                    let password = page_state.with(|state| state.password.clone());
+                    if password.is_empty() {
+                        Update::NoChange
+                    } else {
+                        Update::Change(Password::new(password).unwrap())
+                    }
+                },
+                profile_image: {
+                    let profile_image = page_state.with(|state|state.profile_image.clone());
+                    match profile_image {
+                        Some(PreviewImageData::DataUrl(data)) => Update::Change(data),
+                        Some(PreviewImageData::Remote(_)) => Update::NoChange,
+                        None => Update::SetNull
+                    }
+                }
+            }
+        };
+
+        let response = post_json!(<UpdateProfileOk>, api_client, request_data);
+        match response {
+            Ok(_res) => {
+                toaster.write().success("Profile updated", None);
+                nav.push(Route::Home {});
+            }
+            Err(e) => {
+                toaster.write().error(format!("Failed to update profile: {}", e), None);
+            }
+        }
+    });
+
+
     cx.render(rsx! {
+        AppBar {
+            title: "Update profile",
+            buttons: vec![
+                (
+            AppBarRoute::GoBack,
+            "/static/icons/icon-back.svg",
+            "Back",
+            "Go to previous page",
+        ),
+            ]
+        }
         div {
-            class: "flex flex-col w-full gap-3",
+            class: "flex flex-col w-full gap-3 mt-[var(--appbar-height)]",
             ImagePreview {state: page_state.clone()},
             ImageInput { state:page_state.clone()},
             DisplayNameInput {state: page_state.clone()},
@@ -271,7 +366,7 @@ pub fn UpdateProfile(cx: Scope) -> Element {
                 button {
                     class:"btn {submit_btn_style}",
                     disabled: disable_submit,
-                    onclick: move |_| {nav.go_back();},
+                    onclick: form_onsubmit,
                     "Submit"
                 }
             }
