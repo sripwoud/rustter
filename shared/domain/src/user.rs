@@ -74,7 +74,7 @@ impl EmailRgx {
         Self(Regex::new(r#"^\S+@\S+\.\S{1,64}$"#).unwrap())
     }
 
-    pub fn is_valid<T:AsRef<str>>(&self, text:T) -> bool {
+    pub fn is_valid<T: AsRef<str>>(&self, text: T) -> bool {
         self.0.is_match(text.as_ref())
     }
 }
@@ -92,9 +92,7 @@ pub struct Email(String);
 impl UserFacingError for EmailError {
     fn formatted_error(&self) -> String {
         match self {
-            EmailError::Invalid => "Email is not valid. Expect format: mail.domain.com".to_string()
+            EmailError::Invalid => "Email is not valid. Expect format: mail.domain.com".to_string(),
         }
     }
 }
-
-

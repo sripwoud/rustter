@@ -17,8 +17,8 @@ use new::{
 };
 use not_found::NotFound;
 use posts::{bookmarked::BookmarkedPosts, liked::LikedPosts, trending::TrendingPosts};
-pub use profile::update::UpdateProfile;
 pub use profile::me::Me;
+pub use profile::update::UpdateProfile;
 
 use std::iter::Iterator;
 
