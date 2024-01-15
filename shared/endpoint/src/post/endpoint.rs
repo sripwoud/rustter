@@ -15,12 +15,6 @@ pub struct NewPostOk {
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
-pub struct TrendingPosts; // no request data, we just return the most recent posts
-
-#[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
-pub struct TrendingPostsOk(pub Vec<PublicPost>);
-
-#[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
 pub struct Bookmark {
     pub post_id: PostId,
     pub action: BookmarkAction,
@@ -49,3 +43,19 @@ pub struct Vote {
 pub struct VoteOk {
     pub cast: VoteCast,
 }
+
+#[macro_export]
+macro_rules! PostsEndpoint {
+    ($name:ident, $name_ok:ident) => {
+        #[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
+        pub struct $name;
+
+        #[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
+        pub struct $name_ok(pub Vec<PublicPost>);
+    };
+}
+
+PostsEndpoint!(TrendingPosts, TrendingPostsOk);
+PostsEndpoint!(HomePosts, HomePostsOk);
+PostsEndpoint!(BookmarkedPosts, BookmarkedPostsOk);
+PostsEndpoint!(LikedPosts, LikedPostsOk);

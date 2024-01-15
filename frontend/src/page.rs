@@ -3,7 +3,7 @@ mod home;
 mod login;
 mod new;
 mod not_found;
-mod post;
+mod posts;
 
 use crate::elements::NavBar;
 use dioxus::prelude::*;
@@ -15,7 +15,7 @@ use new::{
     user::Register,
 };
 use not_found::NotFound;
-use post::trending::TrendingPosts;
+use posts::{bookmarked::BookmarkedPosts, liked::LikedPosts, trending::TrendingPosts};
 use std::iter::Iterator;
 
 #[derive(Routable, Clone)]
@@ -29,8 +29,14 @@ pub enum Route {
     Register {}, // TODO: Add redirect to home if logged in
     #[route("/login")] // TODO: Add redirect to home if logged in
     Login {},
-    #[route("/posts")]
-    TrendingPosts {},
+    #[nest("/posts")]
+        #[route("/trending")]
+        TrendingPosts {},
+        #[route("/liked")]
+        LikedPosts {},
+        #[route("/bookmarks")]
+        BookmarkedPosts {},
+    #[end_nest]
     #[nest("/post")]
         #[route("/chat")]
         NewChatPost {},

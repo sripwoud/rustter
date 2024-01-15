@@ -149,6 +149,32 @@ pub fn NewChatPost(cx: Scope) -> Element {
     cx.render(rsx! {
         AppBar {
             title: "New Chat",
+            buttons: vec![
+        (
+            AppBarRoute::NewChatPost,
+            "/static/icons/icon-messages.svg",
+            "Chat",
+            "Post a new chat message",
+        ),
+        (
+            AppBarRoute::NewImagePost,
+            "/static/icons/icon-image.svg",
+            "Image",
+            "Post a new image",
+        ),
+        (
+            AppBarRoute::NewPollPost,
+            "/static/icons/icon-poll.svg",
+            "Poll",
+            "Post a new poll",
+        ),
+        (
+            AppBarRoute::GoBack,
+            "/static/icons/icon-back.svg",
+            "Back",
+            "Go to previous page",
+        ),
+    ]
         }
         div {
             class: "flex flex-col gap-4 mt-50",

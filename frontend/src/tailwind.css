@@ -9,6 +9,10 @@
     --content-max-width: 600x;
 }
 
+main {
+    @apply flex flex-col overflow-x-hidden
+}
+
 @layer components {
     .btn {
         @apply px-4 py-2 rounded font-semibold text-sm shadow-sm bg-violet-500 text-white hover:bg-violet-600;

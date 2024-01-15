@@ -52,6 +52,15 @@ impl PostManager {
     pub fn remove(&mut self, id: PostId) {
         self.posts.remove(&id);
     }
+
+    pub fn all_to_public<'a, 'b>(&self) -> Vec<LazyNodes<'a, 'b>> {
+        self.posts
+            .iter()
+            .map(|(&id, _)| {
+                rsx! { PublicPostEntry { post_id: id } }
+            })
+            .collect()
+    }
 }
 
 pub fn use_post_manager(cx: &ScopeState) -> &UseAtomRef<PostManager> {

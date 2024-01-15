@@ -20,6 +20,7 @@ use rustter_query::{
     reaction::AggregatePostInfo, user, vote as vote_query, AsyncConnection,
 };
 
+use rustter_endpoint::post::endpoint::{BookmarkedPostsOk, HomePostsOk, LikedPostsOk};
 use tracing::info;
 
 #[async_trait]
@@ -190,4 +191,70 @@ pub async fn trending_posts(
     let posts = _trending_posts(conn, Some(&session), None)?;
 
     Ok((StatusCode::OK, Json(TrendingPostsOk(posts))))
+}
+
+pub async fn home_posts(
+    DbConnection(mut conn): DbConnection,
+    session: UserSession,
+) -> ApiResult<(StatusCode, Json<HomePostsOk>)> {
+    info!(target:"rustter_server", "fetching home posts");
+    let mut posts = vec![];
+
+    for post in post_query::get_home_posts(&mut conn, session.user_id)? {
+        let post_id = post.id;
+        match to_public(post, &mut conn, Some(&session)) {
+            Ok(post_id) => {
+                posts.push(post_id);
+            }
+            Err(e) => {
+                tracing::error!(target:"rustter_server",err=%e.err, post_id=?post_id, "post contains invalid data")
+            }
+        }
+    }
+
+    Ok((StatusCode::OK, Json(HomePostsOk(posts))))
+}
+
+pub async fn bookmarked_posts(
+    DbConnection(mut conn): DbConnection,
+    session: UserSession,
+) -> ApiResult<(StatusCode, Json<BookmarkedPostsOk>)> {
+    info!(target:"rustter_server", "fetching bookmarked posts");
+    let mut posts = vec![];
+
+    for post in post_query::get_bookmarked_posts(&mut conn, session.user_id)? {
+        let post_id = post.id;
+        match to_public(post, &mut conn, Some(&session)) {
+            Ok(post_id) => {
+                posts.push(post_id);
+            }
+            Err(e) => {
+                tracing::error!(target:"rustter_server",err=%e.err, post_id=?post_id, "post contains invalid data")
+            }
+        }
+    }
+
+    Ok((StatusCode::OK, Json(BookmarkedPostsOk(posts))))
+}
+
+pub async fn liked_posts(
+    DbConnection(mut conn): DbConnection,
+    session: UserSession,
+) -> ApiResult<(StatusCode, Json<LikedPostsOk>)> {
+    info!(target:"rustter_server", "fetching liked posts");
+    let mut posts = vec![];
+
+    for post in post_query::get_liked_posts(&mut conn, session.user_id)? {
+        let post_id = post.id;
+        match to_public(post, &mut conn, Some(&session)) {
+            Ok(post_id) => {
+                posts.push(post_id);
+            }
+            Err(e) => {
+                tracing::error!(target:"rustter_server",err=%e.err, post_id=?post_id, "post contains invalid data")
+            }
+        }
+    }
+
+    Ok((StatusCode::OK, Json(LikedPostsOk(posts))))
 }
