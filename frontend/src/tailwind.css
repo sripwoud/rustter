@@ -61,4 +61,8 @@ main {
     .profile-portrait-lg {
         @apply object-cover rounded-md w-40 h-40;
     }
+
+    .fieldset {
+        @apply p-3 border-2 border-solid border-slate-300
+    }
 }

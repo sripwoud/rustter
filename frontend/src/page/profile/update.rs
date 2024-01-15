@@ -124,6 +124,81 @@ pub fn EmailInput(cx: Scope, state: UseRef<PageState>) -> Element {
 }
 
 #[inline_props]
+pub fn PasswordInput(cx: Scope, state: UseRef<PageState>) -> Element {
+    use rustter_domain::user::Password;
+
+    let check_passwords_mismatch =
+        move || match state.with(|state| state.password == state.password_confirmation) {
+            true => {
+                state.with_mut(|state| state.form_errors.remove("password-mismatch"));
+            }
+            false => {
+                state.with_mut(|state| {
+                    state
+                        .form_errors
+                        .set("password-mismatch", "Passwords don't match")
+                });
+            }
+        };
+
+    render! {
+    fieldset {
+        class:"fieldset flex flex-row justify-around",
+        legend { "Set new password"}
+        div {
+            class:"flex flex-col",
+            label {
+                r#for:"password",
+                "Password",
+            },
+            input {
+                class:"input-field",
+                r#type: "password",
+                id:"password",
+                value:"{state.read().password}",
+                oninput:move|ev|{
+                    match Password::new(&ev.value) {
+                       Ok(_) => {
+                            state.with_mut(|state|state.form_errors.remove("bad-password"));
+                        },
+                        Err(e) => {
+                            state.with_mut(|state|state.form_errors.set("bad-password", e.formatted_error()));
+                        }
+                    }
+                    state.with_mut(|state| state.password = ev.value.clone());
+                    state.with_mut(|state| state.password_confirmation ="".to_string());
+
+                    if state.with(|state| state.password.is_empty()) {
+                        state.with_mut(|state|state.form_errors.remove("bad-password"));
+                        state.with_mut(|state|state.form_errors.remove("password-mismatch"));
+                    } else {
+                            check_passwords_mismatch();
+                    }
+                }
+            }
+        }
+        div {
+            class:"flex flex-col",
+            label {
+                r#for:"password-confirm",
+                "Confirm",
+            },
+            input {
+                class:"input-field",
+                r#type: "password",
+                id:"password-confirm",
+                value:"{state.read().password_confirmation}",
+                oninput:move|ev|{
+                    state.with_mut(|state| state.password_confirmation = ev.value.clone());
+                    check_passwords_mismatch();
+                }
+            }
+        }
+    }
+    }
+}
+
+#[inline_props]
 pub fn DisplayNameInput(cx: Scope, state: UseRef<PageState>) -> Element {
     use rustter_domain::user::DisplayName;
 
@@ -165,7 +240,6 @@ pub fn DisplayNameInput(cx: Scope, state: UseRef<PageState>) -> Element {
     }
 }
 
-
 pub fn UpdateProfile(cx: Scope) -> Element {
     let page_state = use_ref(cx, PageState::default);
     let nav = use_navigator(cx);
@@ -177,6 +251,7 @@ pub fn UpdateProfile(cx: Scope) -> Element {
             ImageInput { state:page_state.clone()},
             DisplayNameInput {state: page_state.clone()},
             EmailInput {state: page_state.clone()},
+            PasswordInput { state: page_state.clone()}
             KeyedNotificationsBox { notifications: page_state.clone().read().form_errors.clone() },
             div {
                 class: "flex flex-row justify-end gap-3",
