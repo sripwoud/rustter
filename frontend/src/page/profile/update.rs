@@ -261,13 +261,13 @@ pub fn UpdateProfile(cx: Scope) -> Element {
 
             let response = fetch_json!(<GetProfileOk>, api_client, GetProfile);
             match response {
-                Ok(res) => {
-                    page_state.with_mut(|state| {
-                        state.display_name = res.display_name.unwrap_or_default();
-                        state.email = res.email.unwrap_or_default();
-                        state.profile_image = res.profile_image.map(|img|PreviewImageData::Remote(img.to_string()))
-                    })
-                },
+                Ok(res) => page_state.with_mut(|state| {
+                    state.display_name = res.display_name.unwrap_or_default();
+                    state.email = res.email.unwrap_or_default();
+                    state.profile_image = res
+                        .profile_image
+                        .map(|img| PreviewImageData::Remote(img.to_string()))
+                }),
                 Err(e) => {
                     info!("failed to fetch profile {e}");
                     toaster
@@ -278,62 +278,68 @@ pub fn UpdateProfile(cx: Scope) -> Element {
         });
     }
 
+    let disable_submit = page_state.with(|state| state.form_errors.has_messages());
+    let submit_btn_style = maybe_class!("button-disabled", disable_submit);
 
-    let disable_submit = page_state.with(|state|state.form_errors.has_messages());
-    let submit_btn_style = maybe_class!("button-disabled",disable_submit);
+    let form_onsubmit = async_handler!(
+        &cx,
+        [api_client, page_state, nav, toaster],
+        move |_| async move {
+            use rustter_endpoint::user::endpoint::{
+                Update, UpdateProfile as UpdateProfilePayload, UpdateProfileOk,
+            };
+            let request_data = {
+                use rustter_domain::Password;
+                UpdateProfilePayload {
+                    display_name: {
+                        let name = page_state.with(|state| state.display_name.clone());
+                        if name.is_empty() {
+                            Update::SetNull
+                        } else {
+                            Update::Change(name)
+                        }
+                    },
+                    email: {
+                        let email = page_state.with(|state| state.email.clone());
+                        if email.is_empty() {
+                            Update::SetNull
+                        } else {
+                            Update::Change(email)
+                        }
+                    },
+                    password: {
+                        let password = page_state.with(|state| state.password.clone());
+                        if password.is_empty() {
+                            Update::NoChange
+                        } else {
+                            Update::Change(Password::new(password).unwrap())
+                        }
+                    },
+                    profile_image: {
+                        let profile_image = page_state.with(|state| state.profile_image.clone());
+                        match profile_image {
+                            Some(PreviewImageData::DataUrl(data)) => Update::Change(data),
+                            Some(PreviewImageData::Remote(_)) => Update::NoChange,
+                            None => Update::SetNull,
+                        }
+                    },
+                }
+            };
 
-    let form_onsubmit = async_handler!(&cx, [api_client, page_state, nav, toaster], move |_| async move {
-        use rustter_endpoint::user::endpoint::{UpdateProfile as UpdateProfilePayload, UpdateProfileOk, Update};
-        let request_data = {
-            use rustter_domain::Password;
-            UpdateProfilePayload {
-                display_name: {
-                    let name = page_state.with(|state| state.display_name.clone());
-                    if name.is_empty() {
-                        Update::SetNull
-                    } else {
-                        Update::Change(name)
-                    }
-                },
-                email: {
-                    let email = page_state.with(|state| state.email.clone());
-                    if email.is_empty() {
-                        Update::SetNull
-                    } else {
-                        Update::Change(email)
-                    }
-                },
-                password: {
-                    let password = page_state.with(|state| state.password.clone());
-                    if password.is_empty() {
-                        Update::NoChange
-                    } else {
-                        Update::Change(Password::new(password).unwrap())
-                    }
-                },
-                profile_image: {
-                    let profile_image = page_state.with(|state|state.profile_image.clone());
-                    match profile_image {
-                        Some(PreviewImageData::DataUrl(data)) => Update::Change(data),
-                        Some(PreviewImageData::Remote(_)) => Update::NoChange,
-                        None => Update::SetNull
-                    }
+            let response = post_json!(<UpdateProfileOk>, api_client, request_data);
+            match response {
+                Ok(_res) => {
+                    toaster.write().success("Profile updated", None);
+                    nav.push(Route::Home {});
+                }
+                Err(e) => {
+                    toaster
+                        .write()
+                        .error(format!("Failed to update profile: {}", e), None);
                 }
             }
-        };
-
-        let response = post_json!(<UpdateProfileOk>, api_client, request_data);
-        match response {
-            Ok(_res) => {
-                toaster.write().success("Profile updated", None);
-                nav.push(Route::Home {});
-            }
-            Err(e) => {
-                toaster.write().error(format!("Failed to update profile: {}", e), None);
-            }
         }
-    });
-
+    );
 
     cx.render(rsx! {
         AppBar {
