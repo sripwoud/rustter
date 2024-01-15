@@ -36,3 +36,55 @@ pub struct LoginOk {
     pub profile_image: Option<Url>,
     pub user_id: UserId,
 }
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub enum Update<T> {
+    Change(T),
+    NoChange,
+    SetNull,
+}
+
+impl<T> Update<T> {
+    pub fn into_option(self) -> Option<T> {
+        match self {
+            Self::Change(data) => Some(data),
+            Self::NoChange => None,
+            Self::SetNull => None,
+        }
+    }
+
+    pub fn into_nullable(self) -> Option<Option<T>> {
+        match self {
+            Self::Change(data) => Some(Some(data)),
+            Self::NoChange => None,
+            Self::SetNull => Some(None),
+        }
+    }
+}
+
+#[derive(Clone, Deserialize, Serialize)]
+pub struct GetProfile;
+
+#[derive(Clone, Deserialize, Serialize)]
+pub struct GetProfileOk {
+    pub display_name: Option<String>,
+    pub email: Option<String>,
+    pub profile_image: Option<Url>,
+    pub user_id: UserId,
+}
+
+#[derive(Clone, Deserialize, Serialize)]
+pub struct UpdateProfile {
+    pub display_name: Update<String>,
+    pub email: Update<String>,
+    pub profile_image: Update<String>,
+    pub password: Update<Password>,
+}
+
+#[derive(Clone, Deserialize, Serialize)]
+pub struct UpdateProfileOk {
+    pub display_name: Option<String>,
+    pub email: Option<String>,
+    pub profile_image: Option<Url>,
+    pub user_id: UserId,
+}
