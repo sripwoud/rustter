@@ -2,6 +2,8 @@ use chrono::{DateTime, Utc};
 use rustter_domain::{ids::*, Password, Username};
 use serde::{Deserialize, Serialize};
 use url::Url;
+use crate::post::types::PublicPost;
+use crate::user::types::PublicUserProfile;
 
 #[derive(Clone, Deserialize, Serialize)]
 pub struct CreateUser {
@@ -62,11 +64,12 @@ impl<T> Update<T> {
     }
 }
 
+// Get profile of authed user
 #[derive(Clone, Deserialize, Serialize)]
-pub struct GetProfile;
+pub struct GetMyProfile;
 
 #[derive(Clone, Deserialize, Serialize)]
-pub struct GetProfileOk {
+pub struct GetMyProfileOk {
     pub display_name: Option<String>,
     pub email: Option<String>,
     pub profile_image: Option<Url>,
@@ -87,4 +90,16 @@ pub struct UpdateProfileOk {
     pub email: Option<String>,
     pub profile_image: Option<Url>,
     pub user_id: UserId,
+}
+
+// View public profile of other user
+#[derive(Clone, Deserialize, Serialize)]
+pub struct ViewProfile {
+    pub for_user: UserId,
+}
+
+#[derive(Clone, Deserialize, Serialize)]
+pub struct ViewProfileOk {
+    pub profile: PublicUserProfile,
+    pub posts: Vec<PublicPost>
 }

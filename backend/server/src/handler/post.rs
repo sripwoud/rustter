@@ -22,6 +22,7 @@ use rustter_query::{
 
 use rustter_endpoint::post::endpoint::{BookmarkedPostsOk, HomePostsOk, LikedPostsOk};
 use tracing::info;
+use rustter_domain::ids::UserId;
 
 #[async_trait]
 impl AuthorizedApiRequest for NewPost {
@@ -56,7 +57,7 @@ fn to_public(
     session: Option<&UserSession>,
 ) -> ApiResult<PublicPost> {
     let user = user::get(conn, post.user_id).unwrap();
-    let author = super::user::to_public(user, session)?;
+    let author = super::user::to_public(user)?;
     let reply_to = match post.reply_to {
         Some(reply_to) => {
             let replied_post = post_query::get(conn, reply_to)?;
@@ -165,6 +166,29 @@ fn _trending_posts(
 
     Ok(posts)
 }
+
+pub fn public_posts(
+    DbConnection(mut conn): DbConnection,
+    session: Option<&UserSession>,
+    for_user: UserId,
+) -> ApiResult<Vec<PublicPost>> {
+    let mut posts = vec![];
+
+    for post in post_query::public_posts(&mut conn, for_user, None)? {
+        let post_id = post.id;
+        match to_public(post, &mut conn, session) {
+            Ok(post_id) => {
+                posts.push(post_id);
+            }
+            Err(e) => {
+                tracing::error!(target:"rustter_server",err=%e.err, post_id=?post_id, "post contains invalid data")
+            }
+        }
+    }
+
+    Ok(posts)
+}
+
 
 #[async_trait]
 impl AuthorizedApiRequest for TrendingPosts {

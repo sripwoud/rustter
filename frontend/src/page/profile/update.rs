@@ -256,10 +256,10 @@ pub fn UpdateProfile(cx: Scope) -> Element {
         to_owned![api_client, toaster, page_state];
 
         use_future(cx, (), |_| async move {
-            use rustter_endpoint::user::endpoint::{GetProfile, GetProfileOk};
+            use rustter_endpoint::user::endpoint::{GetMyProfile, GetMyProfileOk};
             toaster.write().info("Fetching profile", None);
 
-            let response = fetch_json!(<GetProfileOk>, api_client, GetProfile);
+            let response = fetch_json!(<GetMyProfileOk>, api_client, GetMyProfile);
             match response {
                 Ok(res) => page_state.with_mut(|state| {
                     state.display_name = res.display_name.unwrap_or_default();

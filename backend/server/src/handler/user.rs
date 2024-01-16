@@ -9,14 +9,13 @@ use chrono::Duration;
 use rustter_domain::ids::{ImageId, UserId};
 use rustter_domain::user::DisplayName;
 use rustter_endpoint::user::types::PublicUserProfile;
-use rustter_endpoint::{
-    CreateUser, CreateUserOk, GetProfileOk, Login, LoginOk, Update, UpdateProfile, UpdateProfileOk,
-};
+use rustter_endpoint::{CreateUser, CreateUserOk, GetMyProfileOk, Login, LoginOk, Update, UpdateProfile, UpdateProfileOk, ViewProfile};
 use rustter_query::session::Session;
 use rustter_query::user::{UpdateProfileParams, User};
 use rustter_query::{session, AsyncConnection};
 use tracing::{info, span};
 use url::Url;
+use rustter_endpoint::user::endpoint::ViewProfileOk;
 
 #[derive(Clone)]
 struct SessionSignature(String);
@@ -108,37 +107,65 @@ impl PublicApiRequest for Login {
     }
 }
 
-pub fn to_public(user: User, session: Option<&UserSession>) -> ApiResult<PublicUserProfile> {
+pub fn to_public(user: User) -> ApiResult<PublicUserProfile> {
     Ok(PublicUserProfile {
         id: user.id,
         display_name: user.display_name.and_then(|s| DisplayName::new(s).ok()),
         handle: user.handle,
-        profile_image: user.profile_image.and_then(|s| Url::parse(&s).ok()),
+        // TODO
+        profile_image: None,
         created_at: user.created_at,
-        am_following: session
-            .map(|session| session.user_id == user.id)
-            .unwrap_or(false),
+        // TODO
+        am_following: false,
     })
 }
 
-pub async fn get_profile(
+pub async fn get_my_profile(
     DbConnection(mut conn): DbConnection,
     session: UserSession,
-) -> ApiResult<(StatusCode, Json<GetProfileOk>)> {
-    info!(target:"rustter_server", "getting user profile");
+) -> ApiResult<(StatusCode, Json<GetMyProfileOk>)> {
+    info!(target:"rustter_server", user_id=session.user_id.to_string(), "getting authed user profile");
 
     let user = rustter_query::user::get(&mut conn, session.user_id)?;
     let profile_image = user.profile_image_url_from_id();
 
     Ok((
         StatusCode::OK,
-        Json(GetProfileOk {
+        Json(GetMyProfileOk {
             display_name: user.display_name,
             email: user.email,
             profile_image,
             user_id: user.id,
         }),
     ))
+}
+
+#[async_trait]
+impl AuthorizedApiRequest for ViewProfile {
+    type Response = (StatusCode, Json<ViewProfileOk>);
+
+    async fn process_request(
+        mut self,
+        DbConnection(mut conn): DbConnection,
+        session: UserSession,
+        _state: AppState,
+    ) -> ApiResult<Self::Response> {
+        info!(target:"rustter_server", user_id=self.for_user.to_string(), "viewing user profile");
+
+        let profile = rustter_query::user::get(&mut conn, self.for_user)?;
+        let profile = to_public(profile)?;
+
+        let posts = super::post::public_posts(DbConnection(conn), Some(&session), self.for_user)?;
+
+
+        Ok((
+            StatusCode::OK,
+            Json(ViewProfileOk {
+                profile,
+                posts,
+            }),
+        ))
+    }
 }
 
 #[async_trait]

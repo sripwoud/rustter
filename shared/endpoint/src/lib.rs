@@ -12,8 +12,8 @@ pub mod user;
 pub use reaction::{Reaction, ReactionOk};
 
 pub use user::endpoint::{
-    CreateUser, CreateUserOk, GetProfile, GetProfileOk, Login, LoginOk, Update, UpdateProfile,
-    UpdateProfileOk,
+    CreateUser, CreateUserOk, GetMyProfile, GetMyProfileOk, Login, LoginOk, Update, UpdateProfile,
+    UpdateProfileOk, ViewProfile
 };
 
 pub trait Endpoint {
@@ -73,5 +73,6 @@ route!(Bookmark => "/bookmark");
 route!(Reaction => "/react");
 route!(Boost => "/boost");
 route!(Vote => "/vote");
-route!(GetProfile => "/profile/me");
+route!(GetMyProfile => "/profile/me");
 route!(UpdateProfile => "/profile/update");
+route!(ViewProfile => "profile/view");
