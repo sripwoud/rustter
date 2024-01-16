@@ -64,7 +64,7 @@ pub fn trending_posts(
 
 pub fn public_posts(
     conn: &mut PgConnection,
-    for_user_id:UserId,
+    for_user_id: UserId,
     limit: Option<i64>,
 ) -> Result<Vec<Post>, DieselError> {
     use crate::schema::posts::dsl::*;

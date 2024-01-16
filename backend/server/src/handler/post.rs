@@ -20,9 +20,9 @@ use rustter_query::{
     reaction::AggregatePostInfo, user, vote as vote_query, AsyncConnection,
 };
 
+use rustter_domain::ids::UserId;
 use rustter_endpoint::post::endpoint::{BookmarkedPostsOk, HomePostsOk, LikedPostsOk};
 use tracing::info;
-use rustter_domain::ids::UserId;
 
 #[async_trait]
 impl AuthorizedApiRequest for NewPost {
@@ -188,7 +188,6 @@ pub fn public_posts(
 
     Ok(posts)
 }
-
 
 #[async_trait]
 impl AuthorizedApiRequest for TrendingPosts {

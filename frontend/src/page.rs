@@ -5,6 +5,7 @@ mod new;
 mod not_found;
 mod posts;
 mod profile;
+pub use profile::{me::Me, update::UpdateProfile, view::ViewProfile};
 
 use crate::elements::NavBar;
 use dioxus::prelude::*;
@@ -17,8 +18,6 @@ use new::{
 };
 use not_found::NotFound;
 use posts::{bookmarked::BookmarkedPosts, liked::LikedPosts, trending::TrendingPosts};
-pub use profile::me::Me;
-pub use profile::update::UpdateProfile;
 
 use std::iter::Iterator;
 
@@ -54,6 +53,10 @@ pub enum Route {
         Me {},
         #[route("/update")]
         UpdateProfile {},
+        #[route("/view/:user_id")]
+        ViewProfile {
+            user_id: String
+        },
     #[end_nest]
     #[end_layout]
     #[route("/:..route")]

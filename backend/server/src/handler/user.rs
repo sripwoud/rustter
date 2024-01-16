@@ -1,21 +1,22 @@
 use crate::error::ApiResult;
-use crate::extractor::DbConnection::DbConnection;
-use crate::extractor::UserSession::UserSession;
+use crate::extractor::{DbConnection::DbConnection, UserSession::UserSession};
 use crate::handler::{save_image, AuthorizedApiRequest, PublicApiRequest};
 use crate::AppState;
-use axum::http::StatusCode;
-use axum::{async_trait, Json};
+use axum::{async_trait, http::StatusCode, Json};
 use chrono::Duration;
 use rustter_domain::ids::{ImageId, UserId};
 use rustter_domain::user::DisplayName;
 use rustter_endpoint::user::types::PublicUserProfile;
-use rustter_endpoint::{CreateUser, CreateUserOk, GetMyProfileOk, Login, LoginOk, Update, UpdateProfile, UpdateProfileOk, ViewProfile};
-use rustter_query::session::Session;
-use rustter_query::user::{UpdateProfileParams, User};
-use rustter_query::{session, AsyncConnection};
+use rustter_endpoint::{
+    CreateUser, CreateUserOk, GetMyProfileOk, Login, LoginOk, Update, UpdateProfile,
+    UpdateProfileOk, ViewProfile, ViewProfileOk,
+};
+use rustter_query::{
+    session::{self, Session},
+    user::{UpdateProfileParams, User},
+    AsyncConnection,
+};
 use tracing::{info, span};
-use url::Url;
-use rustter_endpoint::user::endpoint::ViewProfileOk;
 
 #[derive(Clone)]
 struct SessionSignature(String);
@@ -110,10 +111,14 @@ impl PublicApiRequest for Login {
 pub fn to_public(user: User) -> ApiResult<PublicUserProfile> {
     Ok(PublicUserProfile {
         id: user.id,
-        display_name: user.display_name.and_then(|s| DisplayName::new(s).ok()),
-        handle: user.handle,
-        // TODO
-        profile_image: None,
+        // TODO: should not have to clone
+        display_name: user
+            .display_name
+            .clone()
+            .and_then(|s| DisplayName::new(s).ok()),
+        // TODO: should not have to clone
+        handle: user.handle.clone(),
+        profile_image: user.profile_image_url_from_id(),
         created_at: user.created_at,
         // TODO
         am_following: false,
@@ -157,14 +162,7 @@ impl AuthorizedApiRequest for ViewProfile {
 
         let posts = super::post::public_posts(DbConnection(conn), Some(&session), self.for_user)?;
 
-
-        Ok((
-            StatusCode::OK,
-            Json(ViewProfileOk {
-                profile,
-                posts,
-            }),
-        ))
+        Ok((StatusCode::OK, Json(ViewProfileOk { profile, posts })))
     }
 }
 

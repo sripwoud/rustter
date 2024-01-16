@@ -13,7 +13,7 @@ pub use reaction::{Reaction, ReactionOk};
 
 pub use user::endpoint::{
     CreateUser, CreateUserOk, GetMyProfile, GetMyProfileOk, Login, LoginOk, Update, UpdateProfile,
-    UpdateProfileOk, ViewProfile
+    UpdateProfileOk, ViewProfile, ViewProfileOk,
 };
 
 pub trait Endpoint {
@@ -75,4 +75,4 @@ route!(Boost => "/boost");
 route!(Vote => "/vote");
 route!(GetMyProfile => "/profile/me");
 route!(UpdateProfile => "/profile/update");
-route!(ViewProfile => "profile/view");
+route!(ViewProfile => "/profile/view");
