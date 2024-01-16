@@ -1,8 +1,7 @@
-use crate::schema::followers::dsl::followers;
 use crate::{DeleteStatus, DieselError};
 use diesel::prelude::*;
 use diesel::{delete, insert_into};
-use rustter_domain::ids::{PostId, UserId};
+use rustter_domain::ids::UserId;
 
 pub fn follow(conn: &mut PgConnection, user_id: UserId, follow: UserId) -> Result<(), DieselError> {
     let uid = user_id;
