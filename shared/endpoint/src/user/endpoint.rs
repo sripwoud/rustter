@@ -1,5 +1,5 @@
+use super::types::{FollowAction, PublicUserProfile};
 use crate::post::types::PublicPost;
-use crate::user::types::PublicUserProfile;
 use chrono::{DateTime, Utc};
 use rustter_domain::{ids::*, Password, Username};
 use serde::{Deserialize, Serialize};
@@ -102,4 +102,14 @@ pub struct ViewProfile {
 pub struct ViewProfileOk {
     pub profile: PublicUserProfile,
     pub posts: Vec<PublicPost>,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
+pub struct Follow {
+    pub user_id: UserId,
+    pub action: FollowAction,
+}
+#[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
+pub struct FollowOk {
+    pub status: FollowAction,
 }

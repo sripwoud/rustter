@@ -6,10 +6,10 @@ use axum::{async_trait, http::StatusCode, Json};
 use chrono::Duration;
 use rustter_domain::ids::{ImageId, UserId};
 use rustter_domain::user::DisplayName;
-use rustter_endpoint::user::types::PublicUserProfile;
+use rustter_endpoint::user::types::{FollowAction, PublicUserProfile};
 use rustter_endpoint::{
-    CreateUser, CreateUserOk, GetMyProfileOk, Login, LoginOk, Update, UpdateProfile,
-    UpdateProfileOk, ViewProfile, ViewProfileOk,
+    CreateUser, CreateUserOk, Follow, FollowOk, GetMyProfileOk, Login, LoginOk, Update,
+    UpdateProfile, UpdateProfileOk, ViewProfile, ViewProfileOk,
 };
 use rustter_query::{
     session::{self, Session},
@@ -210,6 +210,36 @@ impl AuthorizedApiRequest for UpdateProfile {
                 email: user.email,
                 profile_image,
                 user_id: user.id,
+            }),
+        ))
+    }
+}
+
+#[async_trait]
+impl AuthorizedApiRequest for Follow {
+    type Response = (StatusCode, Json<FollowOk>);
+
+    async fn process_request(
+        mut self,
+        DbConnection(mut conn): DbConnection,
+        session: UserSession,
+        _state: AppState,
+    ) -> ApiResult<Self::Response> {
+        info!(target:"rustter_server","follow action");
+
+        match self.action {
+            FollowAction::Follow => {
+                rustter_query::follow::follow(&mut conn, session.user_id, self.user_id)?;
+            }
+            FollowAction::Unfollow => {
+                rustter_query::follow::unfollow(&mut conn, session.user_id, self.user_id)?;
+            }
+        }
+
+        Ok((
+            StatusCode::OK,
+            Json(FollowOk {
+                status: self.action,
             }),
         ))
     }
