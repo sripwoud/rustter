@@ -16,6 +16,8 @@ pub fn LikedPosts(cx: Scope) -> Element {
             use rustter_endpoint::post::endpoint::{LikedPosts, LikedPostsOk};
             toaster.write().info("Fetching liked posts", None);
 
+            post_manager.write().clear();
+
             let response = fetch_json!(<LikedPostsOk>, api_client, LikedPosts);
             match response {
                 Ok(res) => post_manager.write().populate(res.0.into_iter()),

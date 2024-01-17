@@ -16,6 +16,8 @@ pub fn BookmarkedPosts(cx: Scope) -> Element {
             use rustter_endpoint::post::endpoint::{BookmarkedPosts, BookmarkedPostsOk};
             toaster.write().info("Fetching bookmarked posts", None);
 
+            post_manager.write().clear();
+
             let response = fetch_json!(<BookmarkedPostsOk>, api_client, BookmarkedPosts);
             match response {
                 Ok(res) => post_manager.write().populate(res.0.into_iter()),
