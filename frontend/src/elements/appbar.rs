@@ -3,6 +3,7 @@
 mod AppBarImgButton;
 use AppBarImgButton::AppBarImgButton;
 
+use crate::elements::post::ProfileImage::view_profile_onclick;
 use crate::prelude::*;
 use dioxus::prelude::*;
 use dioxus_router::hooks::use_navigator;
@@ -27,6 +28,13 @@ pub struct AppBarProps<'a> {
 }
 
 pub fn AppBar<'a>(cx: Scope<'a, AppBarProps<'a>>) -> Element {
+    let local_profile = use_local_profile(cx);
+    let local_profile = local_profile.read();
+    let profile_img_src = local_profile
+        .image
+        .as_ref()
+        .map(|url| url.as_str())
+        .unwrap_or_else(|| "");
     let nav = use_navigator(cx);
     let path = window().location().pathname().unwrap();
     let path = path.split('/').last().unwrap();
@@ -73,11 +81,11 @@ pub fn AppBar<'a>(cx: Scope<'a, AppBarProps<'a>>) -> Element {
                 div {
                     class: "cursor-pointer",
                     onclick: move |_| {
-
+                        // TODO
                     },
                     img {
                         class: "profile-portrait",
-                        src: "" // TODO
+                        src: "{profile_img_src}"
                     }
                 },
                 div {

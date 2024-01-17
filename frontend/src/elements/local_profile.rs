@@ -5,7 +5,7 @@ use fermi::{use_atom_ref, UseAtomRef};
 use rustter_domain::ids::UserId;
 use url::Url;
 
-#[derive(Default)]
+#[derive(Clone, Default)]
 pub struct LocalProfile {
     pub image: Option<Url>,
     pub user_id: Option<UserId>,
