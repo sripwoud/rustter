@@ -63,7 +63,6 @@ pub mod app_url {
 
 route!(CreateUser => "/register");
 route!(Login => "/login");
-// todo: logout
 
 route!(NewPost => "/post");
 route!(HomePosts => "/posts");
