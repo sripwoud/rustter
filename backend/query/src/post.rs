@@ -160,3 +160,42 @@ pub fn get_bookmarked_posts(
         .limit(30)
         .get_results(conn)
 }
+
+#[cfg(test)]
+pub mod tests {
+    use crate::test_db::Result;
+    use crate::user::tests::util as user_test;
+    use rustter_endpoint::post::types::NewPostOptions;
+
+    use crate::post::Post;
+    use crate::test_db;
+    use util as post_test;
+
+    pub mod util {
+        use rustter_domain::post::Message;
+        use rustter_endpoint::post::types::{Chat, Content};
+
+        pub fn new_chat_post(msg: &str) -> Content {
+            Content::Chat(Chat {
+                headline: None,
+                message: Message::new(msg).unwrap(),
+            })
+        }
+    }
+
+    #[test]
+    fn new_and_get() -> Result<()> {
+        let mut conn = test_db::new_connection();
+        let user1 = user_test::new_user(&mut conn, "user 1");
+
+        let content = post_test::new_chat_post("test message");
+        let post = Post::new(user1.id, content, NewPostOptions::default())
+            .expect("failed to create new post structure");
+        let post_id = super::new(&mut conn, post).expect("failed to make post");
+        let post = super::get(&mut conn, post_id)?;
+
+        assert_eq!(post.id, post_id);
+
+        Ok(())
+    }
+}
