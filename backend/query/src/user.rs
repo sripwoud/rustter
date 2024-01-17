@@ -113,3 +113,28 @@ pub fn update_profile(
         .execute(conn)
         .map(|_| ())
 }
+
+pub fn is_following(
+    conn: &mut PgConnection,
+    user_id: UserId,
+    follows: UserId,
+) -> Result<bool, DieselError> {
+    let uid = user_id;
+    let fid = follows;
+
+    {
+        use crate::schema::followers::dsl::*;
+        use diesel::dsl::count;
+
+        followers
+            .filter(follows.eq(fid))
+            .filter(user_id.eq(uid))
+            .select(count(user_id))
+            .get_result(conn)
+            .optional()
+            .map(|n: Option<i64>| match n {
+                Some(n) => n > 0,
+                None => false,
+            })
+    }
+}

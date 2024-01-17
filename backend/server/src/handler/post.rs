@@ -57,7 +57,7 @@ fn to_public(
     session: Option<&UserSession>,
 ) -> ApiResult<PublicPost> {
     let user = user::get(conn, post.user_id).unwrap();
-    let author = super::user::to_public(user)?;
+    let author = super::user::to_public(conn, session, user)?;
     let reply_to = match post.reply_to {
         Some(reply_to) => {
             let replied_post = post_query::get(conn, reply_to)?;
