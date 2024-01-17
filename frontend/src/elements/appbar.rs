@@ -3,7 +3,6 @@
 mod AppBarImgButton;
 use AppBarImgButton::AppBarImgButton;
 
-use crate::elements::post::ProfileImage::view_profile_onclick;
 use crate::prelude::*;
 use dioxus::prelude::*;
 use dioxus_router::hooks::use_navigator;
