@@ -18,6 +18,9 @@ pub fn Home(cx: Scope) -> Element {
             use rustter_endpoint::post::endpoint::{HomePosts, HomePostsOk};
             toaster.write().info("Fetching home posts", None);
 
+            // need to clear the posts manager before fetching new ones (to avoid clashes between home/trending pages)
+            post_manager.write().clear();
+
             let response = fetch_json!(<HomePostsOk>, api_client, HomePosts);
             match response {
                 Ok(res) => post_manager.write().populate(res.0.into_iter()),
