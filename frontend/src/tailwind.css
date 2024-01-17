@@ -8,6 +8,7 @@
     --content-min-width: 300px;
     --content-max-width: 600x;
     --sidebar-width: 200px;
+    --appbar-plus-navbar-height: 7.3rem;
 }
 
 main {

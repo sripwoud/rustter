@@ -16,6 +16,9 @@ pub fn TrendingPosts(cx: Scope) -> Element {
             use rustter_endpoint::post::endpoint::{TrendingPosts, TrendingPostsOk};
             toaster.write().info("Fetching trending posts", None);
 
+            // need to clear the posts manager before fetching new ones (to avoid clashes between home/trending pages)
+            post_manager.write().clear();
+
             let response = fetch_json!(<TrendingPostsOk>, api_client, TrendingPosts);
             match response {
                 Ok(res) => post_manager.write().populate(res.0.into_iter()),
@@ -39,8 +42,19 @@ pub fn TrendingPosts(cx: Scope) -> Element {
         .collect::<Vec<LazyNodes>>();
 
     cx.render(rsx! {
+        AppBar {
+            title: "Trending posts",
+            buttons: vec![
+                (
+            AppBarRoute::GoBack,
+            "/static/icons/icon-back.svg",
+            "Back",
+            "Go to previous page",
+        ),
+            ]
+        },
         div {
-         class:"overflow-y-auto max-h-[calc(100vh-var(--navbar-height))] overflow-x-hidden",
+         class:"overflow-y-auto mt-[var(--appbar-height)] max-h-[calc(100vh_-_var(--appbar-plus-navbar-height))] overflow-x-hidden",
             TrendingPosts.into_iter()
         }
     })
