@@ -47,8 +47,6 @@ pub fn Sidebar(cx: Scope) -> Element {
         "w-0"
     };
 
-    info!("{sidebar_width}");
-
     let overlay_class = if sidebar.read().is_open() {
         "w-full opacity-40"
     } else {
