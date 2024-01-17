@@ -37,41 +37,37 @@ pub fn ViewProfile(cx: Scope, user_id: String) -> Element {
         }
     });
 
-    let follow_onclick = async_handler!(
-        &cx,
-        [api_client, toaster, profile, local_profile],
-        move |_| async move {
-            use rustter_endpoint::user::{
-                endpoint::{Follow, FollowOk},
-                types::FollowAction,
-            };
+    let follow_onclick = async_handler!(&cx, [api_client, toaster, profile], move |_| async move {
+        use rustter_endpoint::user::{
+            endpoint::{Follow, FollowOk},
+            types::FollowAction,
+        };
 
-            let am_following = match profile.read().as_ref() {
-                Some(profile) => profile.am_following,
-                None => false,
-            };
+        let am_following = match profile.read().as_ref() {
+            Some(profile) => profile.am_following,
+            None => false,
+        };
 
-            let action = match am_following {
-                true => FollowAction::Unfollow,
-                false => FollowAction::Follow,
-            };
+        let action = match am_following {
+            true => FollowAction::Unfollow,
+            false => FollowAction::Follow,
+        };
 
-            let request = Follow { user_id, action };
+        let request = Follow { user_id, action };
 
-            match post_json!(<FollowOk>,api_client, request) {
-                Ok(res) => {
-                    profile.with_mut(|profile| {
-                        profile.as_mut().map(|p| p.am_following = res.status.into())
-                    });
-                }
-                Err(e) => {
-                    toaster
-                        .write()
-                        .error(format!("Failed to update follow status {}", e), None);
-                }
-            };
-        }
-    );
+        match post_json!(<FollowOk>,api_client, request) {
+            Ok(res) => {
+                profile.with_mut(|profile| {
+                    profile.as_mut().map(|p| p.am_following = res.status.into())
+                });
+            }
+            Err(e) => {
+                toaster
+                    .write()
+                    .error(format!("Failed to update follow status {}", e), None);
+            }
+        };
+    });
 
     let ProfileSection = {
         match profile.with(|profile| profile.clone()) {

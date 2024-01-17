@@ -49,8 +49,6 @@ pub enum Route {
         NewPollPost {},
     #[end_nest]
     #[nest("/profile")]
-        #[route("/me")]
-        Me {},
         #[route("/update")]
         UpdateProfile {},
         #[route("/view/:user_id")]
