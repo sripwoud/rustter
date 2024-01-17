@@ -89,3 +89,6 @@ deploy-ui:
 
 test:
     cargo nextest run
+
+genkey:
+  cargo run -p rustter_server -- gen-key
