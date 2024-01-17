@@ -98,10 +98,10 @@ impl PublicApiRequest for Login {
                 session_signature: signature.0,
                 session_id: session.id,
                 session_expires: session.expires_at,
-
-                display_name: user.display_name,
-                email: user.email,
-                profile_image: None,
+                // FIXME: should not have to clone
+                display_name: user.clone().display_name,
+                email: user.clone().email,
+                profile_image: user.profile_image_url_from_id(),
                 user_id: user.id,
             }),
         ))
