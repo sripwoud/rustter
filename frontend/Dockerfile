@@ -1,6 +1,6 @@
 FROM nginx as base
 
-FROM rust:alpine3.18 as build
+FROM rust:1-slim as build
 
 WORKDIR /app
 
