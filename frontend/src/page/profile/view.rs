@@ -10,7 +10,7 @@ pub fn ViewProfile(cx: Scope, user_id: String) -> Element {
     let api_client = ApiClient::global();
     let toaster = use_toaster(cx);
     let post_manager = use_post_manager(cx);
-
+    let local_profile = use_local_profile(cx);
     let profile = use_ref(cx, || None);
     let user_id = UserId::from_str(user_id).ok().unwrap_or_default();
 
