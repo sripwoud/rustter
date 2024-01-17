@@ -7,7 +7,7 @@ use rustter_domain::Username;
 use rustter_endpoint::user::endpoint::Update;
 use url::Url;
 
-#[derive(Debug, Queryable)]
+#[derive(Debug, Queryable, Clone)]
 pub struct User {
     pub id: UserId,
     pub email: Option<String>,

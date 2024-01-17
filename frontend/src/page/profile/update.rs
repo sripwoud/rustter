@@ -250,16 +250,17 @@ pub fn UpdateProfile(cx: Scope) -> Element {
     let nav = use_navigator(cx);
     let api_client = ApiClient::global();
     let toaster = use_toaster(cx);
+    let local_profile = use_local_profile(cx);
 
     // fetch profile
     {
         to_owned![api_client, toaster, page_state];
 
         use_future(cx, (), |_| async move {
-            use rustter_endpoint::user::endpoint::{GetProfile, GetProfileOk};
+            use rustter_endpoint::user::endpoint::{GetMyProfile, GetMyProfileOk};
             toaster.write().info("Fetching profile", None);
 
-            let response = fetch_json!(<GetProfileOk>, api_client, GetProfile);
+            let response = fetch_json!(<GetMyProfileOk>, api_client, GetMyProfile);
             match response {
                 Ok(res) => page_state.with_mut(|state| {
                     state.display_name = res.display_name.unwrap_or_default();
@@ -283,7 +284,7 @@ pub fn UpdateProfile(cx: Scope) -> Element {
 
     let form_onsubmit = async_handler!(
         &cx,
-        [api_client, page_state, nav, toaster],
+        [api_client, page_state, nav, toaster, local_profile],
         move |_| async move {
             use rustter_endpoint::user::endpoint::{
                 Update, UpdateProfile as UpdateProfilePayload, UpdateProfileOk,
@@ -328,8 +329,11 @@ pub fn UpdateProfile(cx: Scope) -> Element {
 
             let response = post_json!(<UpdateProfileOk>, api_client, request_data);
             match response {
-                Ok(_res) => {
+                Ok(res) => {
                     toaster.write().success("Profile updated", None);
+
+                    local_profile.write().image = res.profile_image;
+
                     nav.push(Route::Home {});
                 }
                 Err(e) => {

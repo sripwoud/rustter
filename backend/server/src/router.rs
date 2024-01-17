@@ -7,8 +7,8 @@ use axum::routing::{get, post};
 use axum::{Extension, Router};
 use hyper::{header::CONTENT_TYPE, Method};
 use rustter_endpoint::{
-    Bookmark, BookmarkedPosts, Boost, CreateUser, Endpoint, GetProfile, HomePosts, LikedPosts,
-    Login, NewPost, Reaction, TrendingPosts, UpdateProfile, Vote,
+    Bookmark, BookmarkedPosts, Boost, CreateUser, Endpoint, Follow, GetMyProfile, HomePosts,
+    LikedPosts, Login, NewPost, Reaction, TrendingPosts, UpdateProfile, ViewProfile, Vote,
 };
 use tower::ServiceBuilder;
 use tower_http::{
@@ -43,7 +43,10 @@ pub fn new_router(state: AppState) -> Router {
         .route(Boost::URL, post(with_json_handler::<Boost>))
         .route(Vote::URL, post(with_json_handler::<Vote>))
         .route(Reaction::URL, post(with_json_handler::<Reaction>))
-        .route(GetProfile::URL, get(user::get_profile))
+        .route(Follow::URL, post(with_json_handler::<Follow>))
+        // TODO: this should only be a get endpoint with a Path Extractor
+        .route(ViewProfile::URL, post(with_json_handler::<ViewProfile>))
+        .route(GetMyProfile::URL, get(user::get_my_profile))
         .route(UpdateProfile::URL, post(with_json_handler::<UpdateProfile>))
         .layer(DefaultBodyLimit::disable())
         .layer(RequestBodyLimitLayer::new(EIGHT_MEGABYTES));

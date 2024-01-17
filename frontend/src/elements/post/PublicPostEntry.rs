@@ -1,4 +1,4 @@
-use super::{use_post_manager, Header};
+use super::{use_post_manager, Header, ProfileImage::ProfileImage};
 use super::{ActionBar, Content};
 use dioxus::prelude::*;
 use dioxus_router::prelude::*;
@@ -18,7 +18,9 @@ pub fn PublicPostEntry(cx: Scope, post_id: PostId) -> Element {
         div {
             key: "{this_post.id.to_string()}",
             class: "flex flex-col gap-2 mb-4",
-            div { /* profile image*/ },
+            ProfileImage {
+                post: this_post
+            },
             div {
                 class: "flex flex-col gap-3 mx-4",
                 Header { post: this_post },

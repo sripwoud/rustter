@@ -62,6 +62,20 @@ pub fn trending_posts(
         .get_results(conn)
 }
 
+pub fn public_posts(
+    conn: &mut PgConnection,
+    for_user_id: UserId,
+    limit: Option<i64>,
+) -> Result<Vec<Post>, DieselError> {
+    use crate::schema::posts::dsl::*;
+    posts
+        .filter(user_id.eq(for_user_id.as_uuid()))
+        .filter(reply_to.is_null())
+        .order(created_at.desc())
+        .limit(limit.unwrap_or(20))
+        .get_results(conn)
+}
+
 pub fn get(conn: &mut PgConnection, post_id: PostId) -> Result<Post, DieselError> {
     use crate::schema::posts::dsl::*;
     posts.find(post_id).first(conn)

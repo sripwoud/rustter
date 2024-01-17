@@ -84,35 +84,43 @@ pub fn Register(cx: Scope) -> Element {
     let page_state = PageState::new(cx);
     let page_state = use_ref(cx, || page_state);
     let nav = use_navigator(cx);
+    let local_profile = use_local_profile(cx);
 
-    let form_onsubmit = async_handler!(&cx, [api_client, page_state, nav], move |_| async move {
-        use rustter_endpoint::user::endpoint::{CreateUser, CreateUserOk};
-        let request_data = {
-            use rustter_domain::{Password, Username};
-            CreateUser {
-                username: Username::new(
-                    page_state.with(|state| state.username.current().to_string()),
-                )
-                .unwrap(),
-                password: Password::new(
-                    page_state.with(|state| state.password.current().to_string()),
-                )
-                .unwrap(),
+    let form_onsubmit = async_handler!(
+        &cx,
+        [api_client, page_state, nav, local_profile],
+        move |_| async move {
+            use rustter_endpoint::user::endpoint::{CreateUser, CreateUserOk};
+            let request_data = {
+                use rustter_domain::{Password, Username};
+                CreateUser {
+                    username: Username::new(
+                        page_state.with(|state| state.username.current().to_string()),
+                    )
+                    .unwrap(),
+                    password: Password::new(
+                        page_state.with(|state| state.password.current().to_string()),
+                    )
+                    .unwrap(),
+                }
+            };
+            let response = post_json!(<CreateUserOk>, api_client, request_data);
+            match response {
+                Ok(res) => {
+                    crate::util::cookie::set_session(
+                        res.session_id,
+                        res.session_signature,
+                        res.session_expires,
+                    );
+                    // local_profile.write().image = res.profile_image; // no user id provided upon registration
+                    local_profile.write().user_id = Some(res.user_id);
+
+                    nav.push(Route::Home {});
+                }
+                Err(_e) => (),
             }
-        };
-        let response = post_json!(<CreateUserOk>, api_client, request_data);
-        match response {
-            Ok(res) => {
-                crate::util::cookie::set_session(
-                    res.session_id,
-                    res.session_signature,
-                    res.session_expires,
-                );
-                nav.push(Route::Home {});
-            }
-            Err(_e) => (),
         }
-    });
+    );
 
     let username_oninput = sync_handler!([page_state], move |ev: FormEvent| {
         if let Err(e) = rustter_domain::Username::new(&ev.value) {

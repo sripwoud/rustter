@@ -6,6 +6,7 @@ mod PublicPostEntry;
 pub use PublicPostEntry::PublicPostEntry;
 mod ActionBar;
 mod Header;
+pub mod ProfileImage;
 
 pub use ActionBar::ActionBar;
 pub use Header::Header;
