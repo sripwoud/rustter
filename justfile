@@ -82,10 +82,13 @@ build-docker-ui *ARGS:
 
 # deploy api
 deploy-api:
-    flyctl deploy -c {{ API_FLY_CONFIG_FILE }} --dockerfile {{ API_DOCKER_FILE }} --remote-only# deploy api
+    flyctl deploy -c {{ API_FLY_CONFIG_FILE }} --dockerfile {{ API_DOCKER_FILE }} --remote-only
 
 deploy-ui:
     flyctl deploy -c {{ UI_FLY_CONFIG_FILE }} --dockerfile {{ UI_DOCKER_FILE }} --remote-only
 
 test:
     cargo nextest run
+
+genkey:
+  cargo run -p rustter_server -- gen-key

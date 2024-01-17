@@ -2576,6 +2576,7 @@ name = "rustter_endpoint"
 version = "0.1.0"
 dependencies = [
  "chrono",
+ "dotenvy",
  "load-dotenv",
  "rustter_domain",
  "serde",

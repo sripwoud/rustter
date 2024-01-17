@@ -1,6 +1,6 @@
 FROM nginx as base
 
-FROM rust:1-slim-bookworm as build
+FROM rust:alpine3.18 as build
 
 WORKDIR /app
 
