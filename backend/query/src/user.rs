@@ -138,3 +138,19 @@ pub fn is_following(
             })
     }
 }
+
+#[cfg(test)]
+pub mod tests {
+    pub mod util {
+        use crate::user::User;
+        use diesel::PgConnection;
+
+        pub fn new_user(conn: &mut PgConnection, handle: &str) -> User {
+            use crate::user as user_query;
+
+            let hash = rustter_crypto::hash_password("password123").unwrap();
+            let id = user_query::new(conn, hash, handle).unwrap();
+            user_query::get(conn, id).unwrap()
+        }
+    }
+}

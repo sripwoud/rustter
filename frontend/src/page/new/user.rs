@@ -2,10 +2,8 @@
 
 use crate::elements::{KeyedNotifications, KeyedNotificationsBox};
 use crate::prelude::*;
-use dioxus::html::legend;
 use dioxus::prelude::*;
 use dioxus_router::prelude::*;
-use log::info;
 use rustter_domain::ConstrainedUserFacingError;
 
 pub struct PageState {
