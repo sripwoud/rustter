@@ -1,8 +1,7 @@
-#[cfg(debug_assertions)]
-use load_dotenv::load_dotenv;
-
 use serde::{Deserialize, Serialize};
+
 pub mod post;
+
 pub use post::endpoint::{
     Bookmark, BookmarkedPosts, Boost, BoostOk, HomePosts, LikedPosts, NewPost, NewPostOk,
     TrendingPosts, Vote, VoteOk,
@@ -11,6 +10,7 @@ pub use post::types::LikeStatus;
 
 mod reaction;
 pub mod user;
+
 pub use reaction::{Reaction, ReactionOk};
 
 pub use user::endpoint::{
@@ -41,22 +41,23 @@ macro_rules! route {
     };
 }
 
-#[cfg(all(debug_assertions, not(env = "RUST_CI_ENV")))]
-load_dotenv!(); // we expect env var to be available at compile time only in dev mode
-
 pub mod app_url {
+    use std::env;
     use std::str::FromStr;
     use url::Url;
 
     #[cfg(debug_assertions)]
     pub fn api_url() -> String {
-        env!("API_URL").to_string()
+        if env::var("RUST_CI").is_err() {
+            dotenvy::dotenv().expect(".env file not found");
+        }
+        env::var("API_URL").expect("API_URL must be set")
     }
 
     #[cfg(not(debug_assertions))]
     pub fn api_url() -> String {
         // in prod, env var is only available at runtime (deployment secret)
-        std::env::var("API_URL").expect("API_URL must be set")
+        env::var("API_URL").expect("API_URL must be set")
     }
 
     pub fn domain_and(fragment: &str) -> Url {

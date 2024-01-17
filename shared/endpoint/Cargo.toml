@@ -14,3 +14,4 @@ url = { version = "2.4.1", features = ["serde"] }
 uuid = { version = "1.4.1", features = ["v4", "js", "serde"] }
 
 rustter_domain = { path = "../domain" }
+dotenvy = "0.15.7"
