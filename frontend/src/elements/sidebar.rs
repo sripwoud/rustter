@@ -4,7 +4,6 @@ use crate::prelude::*;
 use dioxus::prelude::*;
 use dioxus_router::hooks::use_navigator;
 use fermi::{use_atom_ref, UseAtomRef};
-use log::info;
 
 pub fn use_sidebar(cx: &ScopeState) -> &UseAtomRef<SidebarManager> {
     use_atom_ref(cx, &crate::app::SIDEBAR)

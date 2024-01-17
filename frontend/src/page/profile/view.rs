@@ -85,6 +85,20 @@ pub fn ViewProfile(cx: Scope, user_id: String) -> Element {
                     false => "Follow",
                 };
 
+                let FollowButton = local_profile.read().user_id.map(|user_id| {
+                    if user_id == profile.id {
+                        None
+                    } else {
+                        render! {
+                            button {
+                                class: "btn",
+                                onclick: follow_onclick,
+                                "{follow_button_text}"
+                            }
+                        }
+                    }
+                });
+
                 rsx! {
                     div {
                         class: "flex flex-col gap-3 mt-[var(--appbar-height)]",
@@ -97,11 +111,7 @@ pub fn ViewProfile(cx: Scope, user_id: String) -> Element {
                         },
                         div { "Handle: {profile.handle}"},
                         div {"Name: {display_name}"},
-                        button {
-                            class: "btn",
-                            onclick: follow_onclick,
-                            "{follow_button_text}"
-                        }
+                        FollowButton
                     }
                 }
             }

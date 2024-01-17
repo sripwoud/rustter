@@ -1,4 +1,4 @@
-use crate::error::ApiResult;
+use crate::error::{ApiError, ApiResult};
 use crate::extractor::{DbConnection::DbConnection, UserSession::UserSession};
 use crate::handler::{save_image, AuthorizedApiRequest, PublicApiRequest};
 use crate::AppState;
@@ -8,8 +8,8 @@ use rustter_domain::ids::{ImageId, UserId};
 use rustter_domain::user::DisplayName;
 use rustter_endpoint::user::types::{FollowAction, PublicUserProfile};
 use rustter_endpoint::{
-    CreateUser, CreateUserOk, Follow, FollowOk, GetMyProfileOk, Login, LoginOk, Update,
-    UpdateProfile, UpdateProfileOk, ViewProfile, ViewProfileOk,
+    CreateUser, CreateUserOk, Follow, FollowOk, GetMyProfileOk, Login, LoginOk, RequestFailed,
+    Update, UpdateProfile, UpdateProfileOk, ViewProfile, ViewProfileOk,
 };
 use rustter_query::{
     session::{self, Session},
@@ -108,7 +108,11 @@ impl PublicApiRequest for Login {
     }
 }
 
-pub fn to_public(user: User) -> ApiResult<PublicUserProfile> {
+pub fn to_public(
+    conn: &mut AsyncConnection,
+    session: Option<&UserSession>,
+    user: User,
+) -> ApiResult<PublicUserProfile> {
     Ok(PublicUserProfile {
         id: user.id,
         // TODO: should not have to clone
@@ -120,8 +124,12 @@ pub fn to_public(user: User) -> ApiResult<PublicUserProfile> {
         handle: user.handle.clone(),
         profile_image: user.profile_image_url_from_id(),
         created_at: user.created_at,
-        // TODO
-        am_following: false,
+        am_following: {
+            match session {
+                Some(session) => rustter_query::user::is_following(conn, session.user_id, user.id)?,
+                None => false,
+            }
+        },
     })
 }
 
@@ -158,7 +166,7 @@ impl AuthorizedApiRequest for ViewProfile {
         info!(target:"rustter_server", user_id=self.for_user.to_string(), "viewing user profile");
 
         let profile = rustter_query::user::get(&mut conn, self.for_user)?;
-        let profile = to_public(profile)?;
+        let profile = to_public(&mut conn, Some(&session), profile)?;
 
         let posts = super::post::public_posts(DbConnection(conn), Some(&session), self.for_user)?;
 
@@ -226,6 +234,15 @@ impl AuthorizedApiRequest for Follow {
         session: UserSession,
         _state: AppState,
     ) -> ApiResult<Self::Response> {
+        if self.user_id == session.user_id {
+            // can't follow oneself
+            return Err(ApiError {
+                code: Some(StatusCode::BAD_REQUEST),
+                err: color_eyre::Report::new(RequestFailed {
+                    msg: "cannot follow self".to_string(),
+                }),
+            });
+        }
         info!(target:"rustter_server","follow action");
 
         match self.action {

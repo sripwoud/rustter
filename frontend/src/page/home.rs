@@ -78,7 +78,7 @@ pub fn Home(cx: Scope) -> Element {
     ]
             }
         div {
-         class:"overflow-y-auto max-h-[calc(100vh-var(--navbar-height))]",
+         class:"overflow-y-auto mt-[var(--appbar-height)] max-h-[calc(100vh_-_var(--appbar-plus-navbar-height))]",
             Posts
         }
     }

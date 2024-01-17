@@ -39,7 +39,8 @@ pub fn TrendingPosts(cx: Scope) -> Element {
         .map(|(&id, _)| {
             rsx! { PublicPostEntry { post_id: id } }
         })
-        .collect::<Vec<LazyNodes>>();
+        .collect::<Vec<LazyNodes>>()
+        .into_iter();
 
     cx.render(rsx! {
         AppBar {
@@ -55,7 +56,7 @@ pub fn TrendingPosts(cx: Scope) -> Element {
         },
         div {
          class:"overflow-y-auto mt-[var(--appbar-height)] max-h-[calc(100vh_-_var(--appbar-plus-navbar-height))] overflow-x-hidden",
-            TrendingPosts.into_iter()
+            TrendingPosts
         }
     })
 }

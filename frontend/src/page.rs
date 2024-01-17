@@ -5,7 +5,7 @@ mod new;
 mod not_found;
 mod posts;
 mod profile;
-pub use profile::{me::Me, update::UpdateProfile, view::ViewProfile};
+pub use profile::{update::UpdateProfile, view::ViewProfile};
 
 use crate::elements::NavBar;
 use dioxus::prelude::*;
@@ -49,8 +49,6 @@ pub enum Route {
         NewPollPost {},
     #[end_nest]
     #[nest("/profile")]
-        #[route("/me")]
-        Me {},
         #[route("/update")]
         UpdateProfile {},
         #[route("/view/:user_id")]
