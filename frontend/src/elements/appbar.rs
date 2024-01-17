@@ -28,13 +28,16 @@ pub struct AppBarProps<'a> {
 
 pub fn AppBar<'a>(cx: Scope<'a, AppBarProps<'a>>) -> Element {
     let local_profile = use_local_profile(cx);
+    let nav = use_navigator(cx);
+    let sidebar = use_sidebar(cx);
+
     let local_profile = local_profile.read();
     let profile_img_src = local_profile
         .image
         .as_ref()
         .map(|url| url.as_str())
         .unwrap_or_else(|| "");
-    let nav = use_navigator(cx);
+
     let path = window().location().pathname().unwrap();
     let path = path.split('/').last().unwrap();
     let buttons = cx.props.buttons.clone();
@@ -79,9 +82,7 @@ pub fn AppBar<'a>(cx: Scope<'a, AppBarProps<'a>>) -> Element {
                 class: "flex flex-row gap-8 items-center w-full h-full pr-5",
                 div {
                     class: "cursor-pointer",
-                    onclick: move |_| {
-                        // TODO
-                    },
+                    onclick: move |_| sidebar.write().open(),
                     img {
                         class: "profile-portrait",
                         src: "{profile_img_src}"

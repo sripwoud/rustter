@@ -1,6 +1,7 @@
 #![allow(non_snake_case)]
 
 use super::{NavButton, NewPostPopup};
+use crate::elements::Sidebar;
 use crate::prelude::*;
 use dioxus::prelude::*;
 use dioxus_router::prelude::*;
@@ -47,6 +48,7 @@ pub fn NavBar(cx: Scope) -> Element {
 
     cx.render(rsx! {
         Init {},
+        Sidebar {},
         nav {
             class: "max-w-[var(--content-max-width)] h-[var(--navbar-height)] fixed bottom-0 left-0 right-0 mx-auto border-t navbar-bg-color navbar-border-color",
             div {
