@@ -62,7 +62,6 @@ pub fn Sidebar(cx: Scope) -> Element {
     render! {
         Overlay,
         div {
-            // TODO: fix layout
             class: "{sidebar_width} z-[100] fixed top-0 left-0 h-full overflow-x-hidden flex flex-col navbar-bg-color transition-[width] duration-300",
             a {
                 class: "flex flex-row justify-center py-5 cursor-pointer",

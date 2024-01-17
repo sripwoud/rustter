@@ -25,12 +25,12 @@ use std::iter::Iterator;
 #[rustfmt::skip]
 pub enum Route {
     #[layout(NavBar)]
-    #[route("/")] // TODO: Add redirect to login if not logged in
+    #[route("/")]
     Home {},
     #[redirect("/home", || Route::Home {})]
     #[route("/register")]
-    Register {}, // TODO: Add redirect to home if logged in
-    #[route("/login")] // TODO: Add redirect to home if logged in
+    Register {},
+    #[route("/login")]
     Login {},
     #[nest("/posts")]
         #[route("/trending")]
