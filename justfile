@@ -23,8 +23,8 @@ lint:
     cargo clippy -p frontend --target wasm32-unknown-unknown
     cargo clippy --workspace --exclude frontend
 
-# validate: check format, lint, build
-validate: fmt lint build
+# validate: check format, lint, test
+validate: fmt lint test
 
 # run `clippy fix`
 fix:
@@ -86,3 +86,6 @@ deploy-api:
 
 deploy-ui:
     flyctl deploy -c {{ UI_FLY_CONFIG_FILE }} --dockerfile {{ UI_DOCKER_FILE }} --remote-only
+
+test:
+    cargo nextest run
