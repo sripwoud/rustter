@@ -1,4 +1,4 @@
-use crate::error::ApiResult;
+use crate::error::{ApiError, ApiResult};
 use crate::extractor::{DbConnection::DbConnection, UserSession::UserSession};
 use crate::handler::{save_image, AuthorizedApiRequest, PublicApiRequest};
 use crate::AppState;
@@ -8,8 +8,8 @@ use rustter_domain::ids::{ImageId, UserId};
 use rustter_domain::user::DisplayName;
 use rustter_endpoint::user::types::{FollowAction, PublicUserProfile};
 use rustter_endpoint::{
-    CreateUser, CreateUserOk, Follow, FollowOk, GetMyProfileOk, Login, LoginOk, Update,
-    UpdateProfile, UpdateProfileOk, ViewProfile, ViewProfileOk,
+    CreateUser, CreateUserOk, Follow, FollowOk, GetMyProfileOk, Login, LoginOk, RequestFailed,
+    Update, UpdateProfile, UpdateProfileOk, ViewProfile, ViewProfileOk,
 };
 use rustter_query::{
     session::{self, Session},
@@ -234,6 +234,15 @@ impl AuthorizedApiRequest for Follow {
         session: UserSession,
         _state: AppState,
     ) -> ApiResult<Self::Response> {
+        if self.user_id == session.user_id {
+            // can't follow oneself
+            return Err(ApiError {
+                code: Some(StatusCode::BAD_REQUEST),
+                err: color_eyre::Report::new(RequestFailed {
+                    msg: "cannot follow self".to_string(),
+                }),
+            });
+        }
         info!(target:"rustter_server","follow action");
 
         match self.action {

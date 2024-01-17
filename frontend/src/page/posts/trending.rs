@@ -39,7 +39,8 @@ pub fn TrendingPosts(cx: Scope) -> Element {
         .map(|(&id, _)| {
             rsx! { PublicPostEntry { post_id: id } }
         })
-        .collect::<Vec<LazyNodes>>().into_iter();
+        .collect::<Vec<LazyNodes>>()
+        .into_iter();
 
     cx.render(rsx! {
         AppBar {

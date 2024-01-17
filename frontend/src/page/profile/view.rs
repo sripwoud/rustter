@@ -10,7 +10,7 @@ pub fn ViewProfile(cx: Scope, user_id: String) -> Element {
     let api_client = ApiClient::global();
     let toaster = use_toaster(cx);
     let post_manager = use_post_manager(cx);
-    let _local_profile = use_local_profile(cx);
+    let local_profile = use_local_profile(cx);
     let profile = use_ref(cx, || None);
     let user_id = UserId::from_str(user_id).ok().unwrap_or_default();
 
@@ -37,37 +37,41 @@ pub fn ViewProfile(cx: Scope, user_id: String) -> Element {
         }
     });
 
-    let follow_onclick = async_handler!(&cx, [api_client, toaster, profile], move |_| async move {
-        use rustter_endpoint::user::{
-            endpoint::{Follow, FollowOk},
-            types::FollowAction,
-        };
+    let follow_onclick = async_handler!(
+        &cx,
+        [api_client, toaster, profile, local_profile],
+        move |_| async move {
+            use rustter_endpoint::user::{
+                endpoint::{Follow, FollowOk},
+                types::FollowAction,
+            };
 
-        let am_following = match profile.read().as_ref() {
-            Some(profile) => profile.am_following,
-            None => false,
-        };
+            let am_following = match profile.read().as_ref() {
+                Some(profile) => profile.am_following,
+                None => false,
+            };
 
-        let action = match am_following {
-            true => FollowAction::Unfollow,
-            false => FollowAction::Follow,
-        };
+            let action = match am_following {
+                true => FollowAction::Unfollow,
+                false => FollowAction::Follow,
+            };
 
-        let request = Follow { user_id, action };
+            let request = Follow { user_id, action };
 
-        match post_json!(<FollowOk>,api_client, request) {
-            Ok(res) => {
-                profile.with_mut(|profile| {
-                    profile.as_mut().map(|p| p.am_following = res.status.into())
-                });
-            }
-            Err(e) => {
-                toaster
-                    .write()
-                    .error(format!("Failed to update follow status {}", e), None);
-            }
-        };
-    });
+            match post_json!(<FollowOk>,api_client, request) {
+                Ok(res) => {
+                    profile.with_mut(|profile| {
+                        profile.as_mut().map(|p| p.am_following = res.status.into())
+                    });
+                }
+                Err(e) => {
+                    toaster
+                        .write()
+                        .error(format!("Failed to update follow status {}", e), None);
+                }
+            };
+        }
+    );
 
     let ProfileSection = {
         match profile.with(|profile| profile.clone()) {
@@ -85,6 +89,20 @@ pub fn ViewProfile(cx: Scope, user_id: String) -> Element {
                     false => "Follow",
                 };
 
+                let FollowButton = local_profile.read().user_id.map(|user_id| {
+                    if user_id == profile.id {
+                        None
+                    } else {
+                        render! {
+                            button {
+                                class: "btn",
+                                onclick: follow_onclick,
+                                "{follow_button_text}"
+                            }
+                        }
+                    }
+                });
+
                 rsx! {
                     div {
                         class: "flex flex-col gap-3 mt-[var(--appbar-height)]",
@@ -97,11 +115,7 @@ pub fn ViewProfile(cx: Scope, user_id: String) -> Element {
                         },
                         div { "Handle: {profile.handle}"},
                         div {"Name: {display_name}"},
-                        button {
-                            class: "btn",
-                            onclick: follow_onclick,
-                            "{follow_button_text}"
-                        }
+                        FollowButton
                     }
                 }
             }
