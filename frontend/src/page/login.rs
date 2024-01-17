@@ -132,7 +132,8 @@ pub fn Login(cx: Scope) -> Element {
                     nav.push(Route::Home {});
                 }
                 Err(e) => {
-                    page_state.with_mut(|state|state.server_messages.set("login-failed", e.to_string()));
+                    page_state
+                        .with_mut(|state| state.server_messages.set("login-failed", e.to_string()));
                 }
             }
         }
