@@ -41,7 +41,7 @@ macro_rules! route {
     };
 }
 
-#[cfg(debug_assertions)]
+#[cfg(all(debug_assertions, not(env = "RUST_CI_ENV")))]
 load_dotenv!(); // we expect env var to be available at compile time only in dev mode
 
 pub mod app_url {

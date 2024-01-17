@@ -46,6 +46,7 @@ jobs:
 
       - name: Lint
         env:
+          RUST_CI_ENV: true
           API_URL: http://localhost:8080 # to allow cargo clippy to run
         run: |
           cargo clippy -p frontend --target wasm32-unknown-unknown
@@ -53,6 +54,7 @@ jobs:
 
       - name: Check
         env:
+          RUST_CI_ENV: true
           API_URL: http://localhost:8080 # to allow cargo check to run
         run: |
           cargo check -p frontend --target wasm32-unknown-unknown
