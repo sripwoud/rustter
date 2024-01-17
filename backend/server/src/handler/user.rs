@@ -1,4 +1,4 @@
-use crate::error::{ApiError, ApiResult};
+use crate::error::{ApiError, ApiResult, ServerError};
 use crate::extractor::{DbConnection::DbConnection, UserSession::UserSession};
 use crate::handler::{save_image, AuthorizedApiRequest, PublicApiRequest};
 use crate::AppState;
@@ -50,7 +50,8 @@ impl PublicApiRequest for CreateUser {
         state: AppState,
     ) -> ApiResult<Self::Response> {
         let password_hash = rustter_crypto::hash_password(&self.password)?;
-        let user_id = rustter_query::user::new(&mut conn, password_hash, &self.username)?;
+        let user_id = rustter_query::user::new(&mut conn, password_hash, &self.username)
+            .map_err(|_| ServerError::account_exists())?;
 
         info!(target:"rustter_server",username = self.username.as_ref(), "new user created");
 
@@ -84,11 +85,15 @@ impl PublicApiRequest for Login {
         user = %self.username.as_ref())
         .entered();
 
-        let password_hash = rustter_query::user::get_password_hash(&mut conn, &self.username)?;
-        let password_hash = rustter_crypto::password::deserialize_hash(&password_hash)?;
-        rustter_crypto::verify_password(self.password, &password_hash)?;
+        let password_hash = rustter_query::user::get_password_hash(&mut conn, &self.username)
+            .map_err(|_| ServerError::wrong_password())?;
+        let password_hash = rustter_crypto::password::deserialize_hash(&password_hash)
+            .map_err(|_| ServerError::wrong_password())?;
+        rustter_crypto::verify_password(self.password, &password_hash)
+            .map_err(|_| ServerError::wrong_password())?;
 
-        let user = rustter_query::user::find(&mut conn, &self.username)?;
+        let user = rustter_query::user::find(&mut conn, &self.username)
+            .map_err(|_| ServerError::missing_login())?;
 
         let (session, signature) = new_session(&state, &mut conn, user.id)?;
 

@@ -10,6 +10,7 @@ pub struct PageState {
     username: UseState<String>,
     password: UseState<String>,
     form_errors: KeyedNotifications,
+    server_messages: KeyedNotifications,
 }
 
 impl PageState {
@@ -18,6 +19,7 @@ impl PageState {
             username: use_state(cx, String::new).clone(),
             password: use_state(cx, String::new).clone(),
             form_errors: KeyedNotifications::default(),
+            server_messages: KeyedNotifications::default(),
         }
     }
 
@@ -129,7 +131,10 @@ pub fn Login(cx: Scope) -> Element {
 
                     nav.push(Route::Home {});
                 }
-                Err(_e) => {}
+                Err(e) => {
+                    page_state
+                        .with_mut(|state| state.server_messages.set("login-failed", e.to_string()));
+                }
             }
         }
     );
@@ -166,6 +171,11 @@ pub fn Login(cx: Scope) -> Element {
     cx.render(rsx! {
         div {
             class: "flex flex-col gap-5 m-5",
+            KeyedNotificationsBox {
+                legend: "Login Errors",
+                notifications:page_state.clone().with(|state|state.server_messages.clone())
+            }
+
             UsernameInput {
                 state: page_state.with(|state|state.username.clone()),
                 oninput:username_oninput
