@@ -79,6 +79,17 @@ pub fn PasswordInput<'a>(
     })
 }
 
+// TODO: extract in Component Element
+pub fn RegisterLink(cx: Scope) -> Element {
+    render! {
+        Link {
+            class:"link text-center",
+            to: Route::Register {},
+            "Register"
+        }
+    }
+}
+
 pub fn Login(cx: Scope) -> Element {
     let api_client = ApiClient::global();
     let page_state = PageState::new(cx);
@@ -165,6 +176,8 @@ pub fn Login(cx: Scope) -> Element {
                 oninput: password_oninput
             }
 
+            RegisterLink {}
+
             KeyedNotificationsBox {
                 legend: "Form Errors",
                 notifications:page_state.clone().with(|state|state.form_errors.clone())
@@ -176,8 +189,6 @@ pub fn Login(cx: Scope) -> Element {
                 disabled: !page_state.with(|state|state.can_submit()),
                 "Login"
             }
-
-            // TODO: add a link to the register page
         }
     })
 }

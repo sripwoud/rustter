@@ -79,6 +79,16 @@ pub fn PasswordInput<'a>(
     })
 }
 
+pub fn LoginLink(cx: Scope) -> Element {
+    render! {
+        Link {
+            class:"link text-center",
+            to: Route::Login {},
+            "Login"
+        }
+    }
+}
+
 pub fn Register(cx: Scope) -> Element {
     let api_client = ApiClient::global();
     let page_state = PageState::new(cx);
@@ -163,6 +173,8 @@ pub fn Register(cx: Scope) -> Element {
                 state: page_state.with(|state|state.password.clone()),
                 oninput: password_oninput
             }
+
+            LoginLink {}
 
             KeyedNotificationsBox {
                 legend: "Form Errors",

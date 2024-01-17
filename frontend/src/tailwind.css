@@ -29,7 +29,7 @@ main {
     }
 
     .button-disabled {
-        @apply bg-violet-300 cursor-not-allowed;
+        @apply bg-violet-300 cursor-not-allowed hover:bg-violet-300;
     }
 
     .navbar-bg-color {
