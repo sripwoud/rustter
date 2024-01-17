@@ -1,8 +1,10 @@
 use crate::prelude::*;
 use dioxus::prelude::*;
+use dioxus_router::hooks::use_navigator;
 use log::info;
 
 pub fn LikedPosts(cx: Scope) -> Element {
+    let nav = use_navigator(cx);
     let toaster = use_toaster(cx);
     let api_client = ApiClient::global();
     let post_manager = use_post_manager(cx);
@@ -15,6 +17,8 @@ pub fn LikedPosts(cx: Scope) -> Element {
         use_future(cx, (), |_| async move {
             use rustter_endpoint::post::endpoint::{LikedPosts, LikedPostsOk};
             toaster.write().info("Fetching liked posts", None);
+
+            post_manager.write().clear();
 
             let response = fetch_json!(<LikedPostsOk>, api_client, LikedPosts);
             match response {
@@ -29,7 +33,33 @@ pub fn LikedPosts(cx: Scope) -> Element {
         });
     }
 
-    let Posts = post_manager.read().all_to_public();
+    // FIXME: duplicate (home and bookmarks page), refactor
+    let Posts = {
+        let posts = post_manager.read().all_to_public();
+
+        if posts.is_empty() {
+            let TrendingLink = rsx! {
+                a {
+                    class: "link",
+                    onclick: move|_| {
+                        nav.push(Route::TrendingPosts {});
+                    },
+                    "trending,"
+                }
+            };
+
+            rsx! {
+                div {
+                    class: "flex flex-col text-center justify-center h-[calc(100vh_-_var(--navbar-height)_-_var(--appbar-height))]",
+                    span {
+                        "You don't have any liked posts yet. Check out what's " TrendingLink " and follow some users to get started."
+                    }
+                }
+            }
+        } else {
+            rsx! { posts.into_iter() }
+        }
+    };
 
     render! {
         AppBar {title: "Liked", buttons: vec![
@@ -55,7 +85,7 @@ pub fn LikedPosts(cx: Scope) -> Element {
             }
         div {
          class:"overflow-y-auto max-h-[calc(100vh-var(--navbar-height))]",
-            Posts.into_iter()
+            Posts
         }
     }
 }
