@@ -189,6 +189,7 @@ impl AuthorizedApiRequest for UpdateProfile {
         if let Update::Change(ref img) = self.profile_image {
             let id = ImageId::new();
             save_image(id, img).await?;
+            self.profile_image = Update::Change(id.to_string());
         };
 
         let query_params = UpdateProfileParams {

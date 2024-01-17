@@ -50,7 +50,7 @@ pub fn Poll<'a>(cx: Scope<'a>, post_id: PostId, poll: &'a types::Poll) -> Elemen
     let Choices = poll.choices.iter().map(|choice|{
         let percent = if total_votes > 0 {
             let percent = (choice.num_votes as f64 / total_votes as f64) * 100.0;
-            format!("{:.2}%", percent)
+            format!("{:.0}%", percent)
         } else {
             "0%".to_string()
         };
