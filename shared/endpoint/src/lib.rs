@@ -57,7 +57,10 @@ pub mod app_url {
     #[cfg(not(debug_assertions))]
     pub fn api_url() -> String {
         // in prod, env var is only available at runtime (deployment secret)
-        env::var("API_URL").expect("API_URL must be set")
+        match env::var("API_URL") {
+            Ok(url) => url,
+            Err(_) => "https://rustter-api.fly.dev/".to_string(),
+        }
     }
 
     pub fn domain_and(fragment: &str) -> Url {
