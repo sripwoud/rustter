@@ -53,7 +53,7 @@ impl IntoResponse for ApiError {
             };
         }
 
-        err_response(StatusCode::INTERNAL_SERVER_ERROR, "server error")
+        err_response(StatusCode::INTERNAL_SERVER_ERROR, format!("{}", self.err))
     }
 }
 
