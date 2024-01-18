@@ -41,15 +41,19 @@ pub fn remove_session() {
     document().set_cookie(&cookie).unwrap()
 }
 
-#[cfg(not(debug_assertions))]
 fn standard_options() -> &'static str {
-    "SameSite=Strict; Path=/; Secure"
+    "SameSite=None; Path=/; Secure"
 }
 
-#[cfg(debug_assertions)]
-fn standard_options() -> &'static str {
-    "SameSite=Strict; Path=/;"
-}
+// #[cfg(not(debug_assertions))]
+// fn standard_options() -> &'static str {
+//     "SameSite=Strict; Path=/; Secure"
+// }
+//
+// #[cfg(debug_assertions)]
+// fn standard_options() -> &'static str {
+//     "SameSite=Strict; Path=/;"
+// }
 
 fn format_expiration(expires: DateTime<Utc>) -> String {
     expires.format("expires=%a, %d %b %Y %T GMT").to_string()
