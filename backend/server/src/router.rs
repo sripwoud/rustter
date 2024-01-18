@@ -72,10 +72,9 @@ pub fn new_router(state: AppState) -> Router {
                         .allow_methods([Method::GET, Method::POST, Method::OPTIONS])
                         .allow_credentials(true)
                         .allow_origin(
-                            std::env::var("FRONTEND_URL")
-                                .unwrap_or(String::from("*"))
-                                .parse::<HeaderValue>()
-                                .unwrap(),
+                            // std::env::var("FRONTEND_URL")
+                            //     .unwrap_or(String::from("*"))
+                            "https://rustter-ui.fly.dev".parse::<HeaderValue>().unwrap(),
                         )
                         .allow_headers([CONTENT_TYPE]),
                 )
