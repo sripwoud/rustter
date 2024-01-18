@@ -1,6 +1,11 @@
 FROM nginx as base
 
-FROM rust:1-slim as build
+FROM rust:1-slim as build-base
+
+# https://github.com/rust-lang/rls/issues/250
+RUN apt update && apt -y upgrade && apt -y install pkg-config libssl-dev
+
+FROM build-base as build
 
 WORKDIR /app
 
