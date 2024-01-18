@@ -70,7 +70,7 @@ pub fn new_router(state: AppState) -> Router {
                 .layer(
                     CorsLayer::new()
                         .allow_methods([Method::GET, Method::POST, Method::OPTIONS])
-                        .allow_credentials(std::env::var("FRONTEND_URL").is_ok())
+                        .allow_credentials(true)
                         .allow_origin(
                             std::env::var("FRONTEND_URL")
                                 .unwrap_or(String::from("*"))
