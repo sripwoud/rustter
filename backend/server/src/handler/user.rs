@@ -51,7 +51,7 @@ impl PublicApiRequest for CreateUser {
     ) -> ApiResult<Self::Response> {
         let password_hash = rustter_crypto::hash_password(&self.password)?;
         let user_id = rustter_query::user::new(&mut conn, password_hash, &self.username)?;
-            // .map_err(|_| ServerError::account_exists())?;
+        // .map_err(|_| ServerError::account_exists())?;
 
         info!(target:"rustter_server",username = self.username.as_ref(), "new user created");
 
