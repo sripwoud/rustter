@@ -14,6 +14,8 @@ kill_timeout = "5s"
 [build]
 
 [[services]]
+  auto_stop_machines = "stop"
+  auto_start_machines = true
   protocol = "tcp"
   internal_port = 80
   processes = ["app"]
